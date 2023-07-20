@@ -50,8 +50,12 @@ const App: React.FC = () => {
       const isPDF = file.type === "application/pdf";
       if (!isPDF) {
         void message.error(`${file.name} is not a pdf file`);
+        return Upload.LIST_IGNORE;
       }
-      return isPDF || Upload.LIST_IGNORE;
+
+      setFileList([...fileList, file]);
+
+      return false;
     },
     // onChange: (info) => {
     //   console.log(info.fileList);

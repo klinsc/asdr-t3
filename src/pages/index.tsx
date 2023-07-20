@@ -25,7 +25,9 @@ export default function Home() {
             ASDR: Automatic System to Diagnose and Recognize Electrical Drawings
           </Typography.Title>
         </Col>
+      </Row>
 
+      <Row justify="center" align="middle" gutter={[16, 16]}>
         {/* Select the type of drawing */}
         <Col
           span={24}
@@ -36,13 +38,6 @@ export default function Home() {
           <Typography.Title level={5}>
             Select the type of drawing
           </Typography.Title>
-        </Col>
-        <Col
-          span={24}
-          style={{
-            textAlign: "center",
-          }}
-        >
           <Select
             defaultValue="mt"
             onChange={handleChange}
@@ -56,7 +51,12 @@ export default function Home() {
         </Col>
 
         {/* Upload a PDF file*/}
-        <Col span={12}>
+        <Col
+          span={6}
+          style={{
+            textAlign: "center",
+          }}
+        >
           <UploadPDF />
         </Col>
       </Row>
