@@ -1,9 +1,15 @@
 import { UploadOutlined } from "@ant-design/icons";
-import { Space, type UploadFile, type UploadProps } from "antd";
-import { Button, message, Upload } from "antd";
+import {
+  Button,
+  message,
+  Space,
+  Upload,
+  type UploadFile,
+  type UploadProps,
+} from "antd";
 import { type RcFile } from "antd/es/upload";
-import { useState } from "react";
 import Image from "next/image";
+import { useState } from "react";
 
 const App: React.FC = () => {
   // hooks
@@ -11,6 +17,7 @@ const App: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
 
+  // handlers
   const handleUpload = () => {
     const formData = new FormData();
     fileList.forEach((file) => {
@@ -43,6 +50,7 @@ const App: React.FC = () => {
       });
   };
 
+  // props
   const props: UploadProps = {
     onRemove: (file) => {
       const index = fileList.indexOf(file);
