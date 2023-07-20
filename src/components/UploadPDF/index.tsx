@@ -1,5 +1,5 @@
 import { UploadOutlined } from "@ant-design/icons";
-import { Space, UploadFile, UploadProps } from "antd";
+import { Space, type UploadFile, type UploadProps } from "antd";
 import { Button, message, Upload } from "antd";
 import { type RcFile } from "antd/es/upload";
 import { useState } from "react";
