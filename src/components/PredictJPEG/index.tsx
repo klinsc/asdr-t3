@@ -6,11 +6,12 @@ import { useState } from 'react'
 
 const PredictJPEG = ({ imageFile }: { imageFile: File | null }) => {
   // hooks
-  const [uploading, setUploading] = useState(false)
+  const [predicting, setPredicting] = useState(false)
   const [csvUrl, setCsvUrl] = useState('')
 
   // handlers
   const handlePredict = () => {
+    setPredicting(true)
     const formData = new FormData()
     formData.append('files[]', imageFile as RcFile)
     // You can use any AJAX library you like
@@ -35,26 +36,32 @@ const PredictJPEG = ({ imageFile }: { imageFile: File | null }) => {
         void message.error('upload failed.')
       })
       .finally(() => {
-        setUploading(false)
+        setPredicting(false)
       })
   }
 
   return (
-    <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
-      <Typography.Title level={5}>Send to prediction</Typography.Title>
+    <Space direction="vertical" size="small" style={{ display: 'flex' }}>
+      <Typography.Title level={5}>Preview image</Typography.Title>
       <Image
         src={imageFile ? URL.createObjectURL(imageFile) : '/android-chrome-512x512.png'}
         alt="Image to be predicted"
         width={100}
         height={100}
       />
-      <Button loading={uploading} type="primary" icon={<SearchOutlined />} onClick={handlePredict}>
-        Predict JPEG
+      <Button
+        loading={predicting}
+        type="primary"
+        icon={<SearchOutlined />}
+        disabled={!imageFile}
+        onClick={handlePredict}>
+        Predict
       </Button>
 
       <Button
         type="link"
         href={csvUrl}
+        disabled={!csvUrl}
         download="predictions.csv"
         style={{
           display: 'flex',

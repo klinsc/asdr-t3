@@ -5,7 +5,7 @@ import {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons'
-import { Col, MenuProps, Row, Typography } from 'antd'
+import { Col, type MenuProps, Row, Typography } from 'antd'
 import { Layout, Menu, theme } from 'antd'
 import React, { useState } from 'react'
 

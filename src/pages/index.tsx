@@ -2,9 +2,8 @@ import { Col, Row, Select, Typography } from 'antd'
 import Head from 'next/head'
 import { useState } from 'react'
 import Layout from '~/components/Layout'
-import UploadPDF from '~/components/UploadPDF'
-import Image from 'next/image'
 import PredictJPEG from '~/components/PredictJPEG'
+import UploadPDF from '~/components/UploadPDF'
 
 export default function Home() {
   // hooks
@@ -51,11 +50,11 @@ export default function Home() {
 
         {/* Upload a PDF file*/}
         <Col
-          span={24}
+          span={6}
           style={{
             textAlign: 'center',
           }}>
-          <UploadPDF setImageFile={setImageFile} />
+          <UploadPDF imageFile={imageFile} setImageFile={setImageFile} />
         </Col>
 
         {/* Send to prediction */}

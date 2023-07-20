@@ -3,7 +3,13 @@ import { Button, message, Space, Upload, type UploadFile, type UploadProps } fro
 import { type RcFile } from 'antd/es/upload'
 import { useState } from 'react'
 
-const UploadPDF = ({ setImageFile }: { setImageFile: (imageFile: File | null) => void }) => {
+const UploadPDF = ({
+  imageFile,
+  setImageFile,
+}: {
+  imageFile: File | null
+  setImageFile: (imageFile: File | null) => void
+}) => {
   // hooks
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [uploading, setUploading] = useState(false)
@@ -71,7 +77,10 @@ const UploadPDF = ({ setImageFile }: { setImageFile: (imageFile: File | null) =>
   return (
     <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
       <Upload {...props}>
-        <Button icon={<UploadOutlined />} loading={uploading}>
+        <Button
+          icon={<UploadOutlined />}
+          loading={uploading}
+          type={fileList.length === 0 && imageFile?.length === 0 ? 'primary' : 'default'}>
           Select File
         </Button>
       </Upload>
