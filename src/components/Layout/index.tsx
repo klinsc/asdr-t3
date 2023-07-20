@@ -48,7 +48,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   return (
     <Layout>

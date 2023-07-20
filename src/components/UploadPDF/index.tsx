@@ -1,12 +1,15 @@
 import { UploadOutlined } from "@ant-design/icons";
-import type { UploadFile, UploadProps } from "antd";
+import { Space, UploadFile, UploadProps } from "antd";
 import { Button, message, Upload } from "antd";
 import { type RcFile } from "antd/es/upload";
 import { useState } from "react";
+import Image from "next/image";
 
 const App: React.FC = () => {
+  // hooks
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [imageSrc, setImageSrc] = useState("");
 
   const handleUpload = () => {
     const formData = new FormData();
@@ -15,11 +18,19 @@ const App: React.FC = () => {
     });
     setUploading(true);
     // You can use any AJAX library you like
-    fetch("https://www.mocky.io/v2/5cc8019d300000980a055e76", {
+    fetch("http://localhost:5000/upload", {
       method: "POST",
+      headers: {
+        enctype: "multipart/form-data",
+        responseType: "arraybuffer",
+      },
       body: formData,
     })
-      .then((res) => res.json())
+      .then(async (res) => {
+        const blob = await res.blob();
+        const imageUrl = URL.createObjectURL(blob);
+        setImageSrc(imageUrl);
+      })
       .then(() => {
         setFileList([]);
         void message.success("upload successfully.");
@@ -64,7 +75,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <>
+    <Space direction="vertical" size="middle" style={{ display: "flex" }}>
       <Upload {...props}>
         <Button icon={<UploadOutlined />}>Select File</Button>
       </Upload>
@@ -77,7 +88,10 @@ const App: React.FC = () => {
       >
         {uploading ? "Uploading" : "Start Upload"}
       </Button>
-    </>
+      {imageSrc && (
+        <Image src={imageSrc} alt="Fetched" width={100} height={100} />
+      )}
+    </Space>
   );
 };
 
