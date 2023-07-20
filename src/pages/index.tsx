@@ -25,9 +25,7 @@ export default function Home() {
       <Row justify="center" align="middle">
         {/* Title */}
         <Col span={24}>
-          <Typography.Title level={3}>
-            ASDR: Automatic System to Diagnose and Recognize Electrical Drawings
-          </Typography.Title>
+          <Typography.Title level={4}>Diagnose a Drawing</Typography.Title>
         </Col>
       </Row>
 

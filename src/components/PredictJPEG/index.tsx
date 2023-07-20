@@ -43,8 +43,8 @@ const PredictJPEG = ({ imageFile }: { imageFile: File | null }) => {
     <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
       <Typography.Title level={5}>Send to prediction</Typography.Title>
       <Image
-        src={imageFile ? URL.createObjectURL(imageFile) : ''}
-        alt="Fetched"
+        src={imageFile ? URL.createObjectURL(imageFile) : '/android-chrome-512x512.png'}
+        alt="Image to be predicted"
         width={100}
         height={100}
       />
