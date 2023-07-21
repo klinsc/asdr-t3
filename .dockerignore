@@ -1,0 +1,20 @@
+**/node_modules/
+**/.git
+**/README.md
+**/LICENSE
+**/.vscode
+**/npm-debug.log
+**/coverage
+# **/.env
+**/.editorconfig
+**/.aws
+**/dist
+**/.next
+
+# Docker
+docker-compose.yml
+.docker
+
+# Production
+/postgres-data/
+/deploy/pgsql/certs/

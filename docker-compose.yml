@@ -1,0 +1,49 @@
+version: "3.9"
+services:
+  app:
+    stdin_open: true
+    tty: true
+    build: .
+    image: klinsc/asdr-t3:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_DB=default
+      - POSTGRE_NAME=postgres
+      - POSTGRE_USER=postgres
+      - POSTGRE_PASSWORD=
+      - POSTGRE_PORT=5432
+      - POSTGRE_HOST=db
+      - LABEL_STUDIO_HOST=${LABEL_STUDIO_HOST:-}
+      - JSON_LOG=1
+    #      - LOG_LEVEL=DEBUG
+    # volumes:
+    #   - ./mydata:/label-studio/data:rw
+    # command: label-studio-uwsgi
+
+  db:
+    image: postgres:11.5
+    hostname: db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ${POSTGRES_DATA_DIR:-./postgres-data}:/var/lib/postgresql/data
+      - ./deploy/pgsql/certs:/var/lib/postgresql/certs:ro
+    # then the string url is: postgresql://postgres@db:5432/postgres
+  ml:
+    stdin_open: true
+    tty: true
+    build: .
+    image: klinsc/asdr-flask:latest
+    restart: unless-stopped
+    expose:
+      - 5000
+    depends_on:
+      - app
+    volumes:
+      - ./assets:/asdr-flask/assets:rw
+      - ./runs:/asdr-flask/runs:rw
