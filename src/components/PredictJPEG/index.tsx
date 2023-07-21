@@ -3,11 +3,15 @@ import { Button, message, Space, Typography } from 'antd'
 import type { RcFile } from 'antd/es/upload'
 import Image from 'next/image'
 import { useState } from 'react'
+import { api } from '~/utils/api'
 
 const PredictJPEG = ({ imageFile }: { imageFile: File | null }) => {
   // hooks
   const [predicting, setPredicting] = useState(false)
   const [csvUrl, setCsvUrl] = useState('')
+
+  // trpcs
+  const serverGetSelected = api.server.getSelected.useQuery()
 
   // handlers
   const handlePredict = () => {
@@ -15,7 +19,7 @@ const PredictJPEG = ({ imageFile }: { imageFile: File | null }) => {
     const formData = new FormData()
     formData.append('files[]', imageFile as RcFile)
     // You can use any AJAX library you like
-    fetch('http://localhost:5000/predict?type=csv', {
+    fetch(`${serverGetSelected?.data?.url}predict?type=csv`, {
       method: 'POST',
       headers: {
         enctype: 'multipart/form-data',

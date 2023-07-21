@@ -1,51 +1,59 @@
-import {
-  DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from '@ant-design/icons'
-import { Col, type MenuProps, Row, Typography } from 'antd'
-import { Layout, Menu, theme } from 'antd'
-import React, { useState } from 'react'
+import { DesktopOutlined, FileSearchOutlined } from '@ant-design/icons'
+import { Col, Layout, Menu, Row, theme, Typography, type MenuProps } from 'antd'
+import { useRouter } from 'next/router'
+import React, { useMemo, useState } from 'react'
 
 const { Header, Content, Footer, Sider } = Layout
 
 type MenuItem = Required<MenuProps>['items'][number]
 
-function getItem(
-  label: React.ReactNode,
-  key: React.Key,
-  icon?: React.ReactNode,
-  children?: MenuItem[],
-): MenuItem {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  } as MenuItem
-}
-
-const items: MenuItem[] = [
-  getItem('App', '1', <DesktopOutlined />),
-  getItem('Option 1', '2', <PieChartOutlined />),
-
-  getItem('User', 'sub1', <UserOutlined />, [
-    getItem('Tom', '3'),
-    getItem('Bill', '4'),
-    getItem('Alex', '5'),
-  ]),
-  getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
-  getItem('Files', '9', <FileOutlined />),
-]
-
 const App = ({ children }: { children: React.ReactNode }) => {
+  // routers
+  const router = useRouter()
+
   const {
     token: { colorBgContainer },
   } = theme.useToken()
 
   const [collapsed, setCollapsed] = useState(true)
+
+  const getItem = useMemo(
+    () =>
+      (
+        label: React.ReactNode,
+        key: React.Key,
+        icon?: React.ReactNode,
+        children?: MenuItem[],
+      ): MenuItem => {
+        return {
+          key,
+          icon,
+          children,
+          label,
+          onClick: () => {
+            void router.push(`/${key}`)
+          },
+        } as MenuItem
+      },
+    [router],
+  )
+
+  const items = useMemo(
+    () => [
+      getItem('Diagnose a Drawing', '/', <FileSearchOutlined />),
+      getItem('Machine Learning Server', 'server', <DesktopOutlined />),
+
+      // getItem('User', 'sub1', <UserOutlined />, [
+      //   getItem('Tom', '3'),
+      //   getItem('Bill', '4'),
+      //   getItem('Alex', '5'),
+      // ]),
+
+      // getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
+      // getItem('Files', '9', <FileOutlined />),
+    ],
+    [getItem],
+  )
 
   return (
     <Layout>

@@ -64,3 +64,14 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+// Machine learning server
+model MLServer {
+    id          String   @id @default(cuid())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    name        String
+    description String?
+    url         String
+    selected    Boolean  @default(false)
+}

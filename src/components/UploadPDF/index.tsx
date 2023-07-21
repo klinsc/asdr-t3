@@ -2,6 +2,7 @@ import { UploadOutlined } from '@ant-design/icons'
 import { Button, message, Space, Upload, type UploadFile, type UploadProps } from 'antd'
 import { type RcFile } from 'antd/es/upload'
 import { useState } from 'react'
+import { api } from '~/utils/api'
 
 const UploadPDF = ({
   imageFile,
@@ -14,6 +15,9 @@ const UploadPDF = ({
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [uploading, setUploading] = useState(false)
 
+  // trpcs
+  const serverGetSelected = api.server.getSelected.useQuery()
+
   // props
   const props: UploadProps = {
     customRequest: () => {
@@ -23,7 +27,7 @@ const UploadPDF = ({
       })
       setUploading(true)
       // You can use any AJAX library you like
-      fetch('http://localhost:5000/upload', {
+      fetch(`${serverGetSelected?.data?.url}upload?type=csv`, {
         method: 'POST',
         headers: {
           enctype: 'multipart/form-data',
