@@ -1,3 +1,4 @@
+import { type MLServer } from '@prisma/client'
 import {
   Button,
   Card,
@@ -108,7 +109,7 @@ export default function Home() {
         </Col>
 
         {serverGetAll?.data && serverGetAll?.data?.length > 0 ? (
-          serverGetAll.data.map((server) => (
+          serverGetAll.data.map((server: MLServer) => (
             <Col span={6} key={server.id}>
               <Card
                 style={{ width: 300 }}

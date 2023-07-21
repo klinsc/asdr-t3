@@ -50,7 +50,7 @@ export default function Home() {
 
         {/* Upload a PDF file*/}
         <Col
-          span={6}
+          span={24}
           style={{
             textAlign: 'center',
           }}>
@@ -59,7 +59,7 @@ export default function Home() {
 
         {/* Send to prediction */}
         <Col
-          span={24}
+          span={6}
           style={{
             textAlign: 'center',
           }}>

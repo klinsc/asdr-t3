@@ -20,8 +20,13 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+RUN npm run postinstall
+
 # Expose port 3000
 EXPOSE 3000
+
+# Environment variables
+ENV NODE_ENV="production"
 
 # Build the app
 RUN npm run build
