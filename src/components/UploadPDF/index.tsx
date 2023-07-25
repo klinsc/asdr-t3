@@ -37,17 +37,19 @@ const UploadPDF = ({
       })
         .then(async (res) => {
           const blob = await res.blob()
+          if(res.status !== 200) throw new Error('Upload failed')
 
           setImageFile(blob as File)
+
         })
         .then(() => {
-          setFileList([])
           void message.success('upload successfully.')
         })
         .catch(() => {
           void message.error('upload failed.')
         })
         .finally(() => {
+          setFileList([])
           setUploading(false)
         })
     },

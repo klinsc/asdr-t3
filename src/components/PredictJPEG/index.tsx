@@ -1,19 +1,50 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, message, Space, Typography } from 'antd'
+import { Button, Checkbox, message, Space, Typography } from 'antd'
 import type { RcFile } from 'antd/es/upload'
 import Image from 'next/image'
 import { useState } from 'react'
+import type {
+  DrawingComponent,
+  LineType,
+  MissingComponent,
+  RemainingComponent,
+} from '~/models/drawings.model'
 import { api } from '~/utils/api'
 
-const PredictJPEG = ({ imageFile }: { imageFile: File | null }) => {
+const PredictJPEG = ({
+  imageFile,
+  lineTypes,
+  setLineTypes,
+  drawingComponents,
+  setDrawingComponents,
+  missingComponents,
+  setMissingComponents,
+  remainingComponents,
+  setRemainingComponents,
+}: {
+  imageFile: File | null
+  lineTypes: LineType[]
+  setLineTypes: (lineTypes: LineType[]) => void
+  drawingComponents: DrawingComponent[]
+  setDrawingComponents: (drawingComponents: DrawingComponent[]) => void
+  missingComponents: MissingComponent[]
+  setMissingComponents: (missingComponents: MissingComponent[]) => void
+  remainingComponents: RemainingComponent[]
+  setRemainingComponents: (remainingComponents: RemainingComponent[]) => void
+}) => {
   // hooks
   const [predicting, setPredicting] = useState(false)
   const [csvUrl, setCsvUrl] = useState('')
+  const [checkbox, setCheckbox] = useState(false)
 
   // trpcs
   const serverGetSelected = api.server.getSelected.useQuery()
 
   // handlers
+  const handleCheckbox = () => {
+    setCheckbox(!checkbox)
+  }
+
   const handlePredict = () => {
     setPredicting(true)
     const formData = new FormData()
@@ -28,16 +59,59 @@ const PredictJPEG = ({ imageFile }: { imageFile: File | null }) => {
       body: formData,
     })
       .then(async (res) => {
-        // the response is a Response instance
-        // with the response type set to "text/csv"
-
-        // download the file
         const blob = await res.blob()
+        if (res.status !== 200) throw new Error('Prediction failed!')
+
         const csvUrl = URL.createObjectURL(blob)
         setCsvUrl(csvUrl)
+
+        void message.success('Prediction successfully!')
       })
       .catch(() => {
-        void message.error('upload failed.')
+        void message.error('Prediction failed!')
+      })
+      .finally(() => {
+        setPredicting(false)
+      })
+  }
+
+  const handleTestPredict = () => {
+    setPredicting(true)
+    const formData = new FormData()
+    formData.append('files[]', imageFile as RcFile)
+    // You can use any AJAX library you like
+    fetch(`${serverGetSelected?.data?.url}test-predict?test=${checkbox.toString()}`, {
+      method: 'POST',
+      headers: {
+        enctype: 'multipart/form-data',
+        responseType: 'application/json',
+      },
+      body: formData,
+    })
+      .then(async (res) => {
+        const json = (await res.json()) as {
+          line_types: string
+          drawing_components: string
+          missing_components: string
+          remaining_components: string
+        }
+        if (res.status !== 200) throw new Error('Prediction failed!')
+
+        // parse json
+        const lineTypes = JSON.parse(json.line_types) as LineType[]
+        const drawingComponents = JSON.parse(json.drawing_components) as DrawingComponent[]
+        const missingComponents = JSON.parse(json.missing_components) as MissingComponent[]
+        const remainingComponents = JSON.parse(json.remaining_components) as RemainingComponent[]
+
+        setLineTypes(lineTypes)
+        setDrawingComponents(drawingComponents)
+        setMissingComponents(missingComponents)
+        setRemainingComponents(remainingComponents)
+
+        void message.success('Prediction successfully!')
+      })
+      .catch(() => {
+        void message.error('Prediction failed!')
       })
       .finally(() => {
         setPredicting(false)
@@ -46,7 +120,7 @@ const PredictJPEG = ({ imageFile }: { imageFile: File | null }) => {
 
   return (
     <Space direction="vertical" size="small" style={{ display: 'flex' }}>
-      <Typography.Title level={5}>Preview image</Typography.Title>
+      <Typography.Title level={4}>Preview image</Typography.Title>
       <Image
         src={imageFile ? URL.createObjectURL(imageFile) : '/android-chrome-512x512.png'}
         alt="Image to be predicted"
@@ -55,7 +129,7 @@ const PredictJPEG = ({ imageFile }: { imageFile: File | null }) => {
       />
       <Button
         loading={predicting}
-        type="primary"
+        type={!csvUrl && lineTypes.length === 0 ? 'primary' : 'default'}
         icon={<SearchOutlined />}
         disabled={!imageFile}
         onClick={handlePredict}>
@@ -63,7 +137,7 @@ const PredictJPEG = ({ imageFile }: { imageFile: File | null }) => {
       </Button>
 
       <Button
-        type="link"
+        type={csvUrl ? 'primary' : 'link'}
         href={csvUrl}
         disabled={!csvUrl}
         download="predictions.csv"
@@ -74,6 +148,18 @@ const PredictJPEG = ({ imageFile }: { imageFile: File | null }) => {
         }}>
         Download CSV
       </Button>
+
+      <Button
+        loading={predicting}
+        type={!csvUrl && lineTypes.length === 0 ? 'primary' : 'default'}
+        icon={<SearchOutlined />}
+        disabled={!imageFile}
+        onClick={handleTestPredict}>
+        Predict and display JSON
+      </Button>
+      <Checkbox onClick={handleCheckbox} checked={checkbox}>
+        Test mode
+      </Checkbox>
     </Space>
   )
 }

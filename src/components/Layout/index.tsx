@@ -82,7 +82,6 @@ const App = ({ children }: { children: React.ReactNode }) => {
               style={{
                 textAlign: 'center',
               }}>
-              <div className="demo-logo" />
               <Typography.Title
                 level={3}
                 style={{
@@ -93,12 +92,27 @@ const App = ({ children }: { children: React.ReactNode }) => {
                 ASDR: Automatic System to Diagnose and Recognize Electrical Drawings
               </Typography.Title>
             </Col>
+            <Col
+              span={24}
+              style={{
+                textAlign: 'center',
+              }}>
+              <Typography.Title
+                level={5}
+                style={{
+                  color: 'white',
+                  margin: 0,
+                  marginLeft: 16,
+                }}>
+                Chatbordin Klinsrisuk
+              </Typography.Title>
+            </Col>
           </Row>
         </Header>
 
         <Content style={{ padding: '0 24px', minHeight: 280 }}>{children}</Content>
 
-        <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer>
+        <Footer style={{ textAlign: 'center' }}>ASDR ©2023 Created by Chatbordin Klinsrisuk</Footer>
       </Layout>
     </Layout>
   )

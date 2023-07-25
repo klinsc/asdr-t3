@@ -83,7 +83,7 @@ export default function Home() {
           style={{
             textAlign: 'center',
           }}>
-          <Typography.Title level={5}>Add a new predicting server</Typography.Title>
+          <Typography.Title level={4}>Add a new predicting server</Typography.Title>
         </Col>
 
         {/* Input for a new server*/}

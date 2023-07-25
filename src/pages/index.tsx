@@ -3,11 +3,22 @@ import Head from 'next/head'
 import { useState } from 'react'
 import Layout from '~/components/Layout'
 import PredictJPEG from '~/components/PredictJPEG'
+import PredictionTable from '~/components/PredictionTable'
 import UploadPDF from '~/components/UploadPDF'
+import type {
+  DrawingComponent,
+  LineType,
+  MissingComponent,
+  RemainingComponent,
+} from '~/models/drawings.model'
 
 export default function Home() {
   // hooks
   const [imageFile, setImageFile] = useState<File | null>(null)
+  const [lineTypes, setLineTypes] = useState<LineType[]>([])
+  const [drawingComponents, setDrawingComponents] = useState<DrawingComponent[]>([])
+  const [missingComponents, setMissingComponents] = useState<MissingComponent[]>([])
+  const [remainingComponents, setRemainingComponents] = useState<RemainingComponent[]>([])
 
   const handleChange = (value: string) => {
     console.log(`selected ${value}`)
@@ -35,7 +46,7 @@ export default function Home() {
           style={{
             textAlign: 'center',
           }}>
-          <Typography.Title level={5}>Select the type of drawing</Typography.Title>
+          <Typography.Title level={4}>Select the type of drawing</Typography.Title>
           <Select
             defaultValue="mt"
             onChange={handleChange}
@@ -63,7 +74,35 @@ export default function Home() {
           style={{
             textAlign: 'center',
           }}>
-          <PredictJPEG imageFile={imageFile} />
+          <PredictJPEG
+            imageFile={imageFile}
+            lineTypes={lineTypes}
+            setLineTypes={setLineTypes}
+            drawingComponents={drawingComponents}
+            setDrawingComponents={setDrawingComponents}
+            missingComponents={missingComponents}
+            setMissingComponents={setMissingComponents}
+            remainingComponents={remainingComponents}
+            setRemainingComponents={setRemainingComponents}
+          />
+        </Col>
+
+        {/* Display prediction */}
+        <Col
+          span={24}
+          style={{
+            textAlign: 'center',
+          }}>
+          <PredictionTable
+            lineTypes={lineTypes}
+            setLineTypes={setLineTypes}
+            drawingComponents={drawingComponents}
+            setDrawingComponents={setDrawingComponents}
+            missingComponents={missingComponents}
+            setMissingComponents={setMissingComponents}
+            remainingComponents={remainingComponents}
+            setRemainingComponents={setRemainingComponents}
+          />
         </Col>
       </Row>
     </Layout>
