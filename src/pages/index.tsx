@@ -4,7 +4,7 @@ import {
   TableOutlined,
   UploadOutlined,
 } from '@ant-design/icons'
-import { Button, Col, Row, Select, Steps, Typography, message, theme } from 'antd'
+import { Col, Row, Select, Steps, Typography, theme } from 'antd'
 import Head from 'next/head'
 import { useCallback, useMemo, useState } from 'react'
 import Layout from '~/components/Layout'
@@ -28,14 +28,16 @@ export default function Home() {
   const { token } = theme.useToken()
   const [current, setCurrent] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
+  const [csvUrl, setCsvUrl] = useState('')
+  const [jsonUrl, setJsonUrl] = useState('')
 
   // handlers
   const next = useCallback(() => {
     setCurrent(current + 1)
   }, [current])
-  const prev = () => {
-    setCurrent(current - 1)
-  }
+  // const prev = () => {
+  //   setCurrent(current - 1)
+  // }
   const handleChange = (value: string) => {
     console.log(`selected ${value}`)
   }
@@ -93,22 +95,21 @@ export default function Home() {
           <>
             {/* Send to prediction */}
             <Col
-              span={6}
+              span={16}
               style={{
                 textAlign: 'center',
               }}>
               <PredictJPEG
                 imageFile={imageFile}
-                lineTypes={lineTypes}
                 setLineTypes={setLineTypes}
-                drawingComponents={drawingComponents}
                 setDrawingComponents={setDrawingComponents}
-                missingComponents={missingComponents}
                 setMissingComponents={setMissingComponents}
-                remainingComponents={remainingComponents}
                 setRemainingComponents={setRemainingComponents}
                 isLoading={isLoading}
                 setIsLoading={setIsLoading}
+                setCsvUrl={setCsvUrl}
+                setJsonUrl={setJsonUrl}
+                next={next}
               />
             </Col>
           </>
@@ -127,13 +128,11 @@ export default function Home() {
               }}>
               <PredictionTable
                 lineTypes={lineTypes}
-                setLineTypes={setLineTypes}
                 drawingComponents={drawingComponents}
-                setDrawingComponents={setDrawingComponents}
                 missingComponents={missingComponents}
-                setMissingComponents={setMissingComponents}
                 remainingComponents={remainingComponents}
-                setRemainingComponents={setRemainingComponents}
+                csvUrl={csvUrl}
+                jsonUrl={jsonUrl}
               />
             </Col>
           </>
