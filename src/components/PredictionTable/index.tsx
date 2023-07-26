@@ -31,16 +31,16 @@ const PredictionTable = ({
 }) => {
   return (
     <Row justify="center" align="top" gutter={[16, 16]}>
-      <Col span={5}>
+      <Col>
         <DrawingComponentTable drawingComponents={drawingComponents} />
       </Col>
-      <Col span={5}>
+      <Col>
         <LineTypeTable lineTypes={lineTypes} />
       </Col>
-      <Col span={5}>
+      <Col>
         <RemainingComponentTable remainingComponents={remainingComponents} />
       </Col>
-      <Col span={5}>
+      <Col>
         <MissingComponentTable missingComponents={missingComponents} />
       </Col>
       {/* <Col span={5}>
