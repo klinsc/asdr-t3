@@ -43,6 +43,7 @@ const LineTypeTable = (props: LineTypeTableProps) => {
 
   return (
     <Table
+      bordered
       onChange={handleChange}
       caption={<Typography.Title level={5}>Line Types</Typography.Title>}
       columns={columns}
