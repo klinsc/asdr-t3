@@ -4,18 +4,17 @@ import { type RcFile } from 'antd/es/upload'
 import { useState } from 'react'
 import { api } from '~/utils/api'
 
-const UploadPDF = ({
-  imageFile,
-  setImageFile,
-  next,
-}: {
+interface UploadPDFProps {
   imageFile: File | null
   setImageFile: (imageFile: File | null) => void
   next: () => void
-}) => {
+  isLoading: boolean
+  setIsLoading: (isLoading: boolean) => void
+}
+
+const UploadPDF = ({ imageFile, setImageFile, next, isLoading, setIsLoading }: UploadPDFProps) => {
   // hooks
   const [fileList, setFileList] = useState<UploadFile[]>([])
-  const [uploading, setUploading] = useState(false)
 
   // trpcs
   const serverGetSelected = api.server.getSelected.useQuery()
@@ -27,7 +26,7 @@ const UploadPDF = ({
       fileList.forEach((file) => {
         formData.append('files[]', file as RcFile)
       })
-      setUploading(true)
+      setIsLoading(true)
       // You can use any AJAX library you like
       fetch(`${serverGetSelected?.data?.url}upload?type=csv`, {
         method: 'POST',
@@ -39,10 +38,9 @@ const UploadPDF = ({
       })
         .then(async (res) => {
           const blob = await res.blob()
-          if(res.status !== 200) throw new Error('Upload failed')
+          if (res.status !== 200) throw new Error('Upload failed')
 
           setImageFile(blob as File)
-
         })
         .then(() => {
           void message.success('upload successfully.')
@@ -53,7 +51,7 @@ const UploadPDF = ({
         })
         .finally(() => {
           setFileList([])
-          setUploading(false)
+          setIsLoading(false)
         })
     },
     onRemove: (file) => {
@@ -88,7 +86,7 @@ const UploadPDF = ({
       <Upload {...props}>
         <Button
           icon={<UploadOutlined />}
-          loading={uploading}
+          loading={isLoading}
           type={fileList.length === 0 && imageFile?.length === 0 ? 'primary' : 'default'}>
           Select File
         </Button>
