@@ -47,6 +47,7 @@ const RemainingComponentTable = (props: RemainingComponentTableProps) => {
 
   return (
     <Table
+      bordered
       onChange={handleChange}
       caption={<Typography.Title level={5}>Remaining Components</Typography.Title>}
       columns={columns}
