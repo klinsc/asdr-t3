@@ -1,3 +1,9 @@
+import {
+  FileSearchOutlined,
+  LoadingOutlined,
+  TableOutlined,
+  UploadOutlined,
+} from '@ant-design/icons'
 import { Button, Col, Row, Select, Steps, Typography, message, theme } from 'antd'
 import Head from 'next/head'
 import { useCallback, useMemo, useState } from 'react'
@@ -21,6 +27,7 @@ export default function Home() {
   const [remainingComponents, setRemainingComponents] = useState<RemainingComponent[]>([])
   const { token } = theme.useToken()
   const [current, setCurrent] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
 
   // handlers
   const next = useCallback(() => {
@@ -40,6 +47,7 @@ export default function Home() {
     () => [
       {
         title: 'Upload Drawing',
+        icon: current === 0 && isLoading ? <LoadingOutlined /> : <UploadOutlined />,
         content: (
           <>
             {/* Select the type of drawing */}
@@ -67,13 +75,20 @@ export default function Home() {
               style={{
                 textAlign: 'center',
               }}>
-              <UploadPDF imageFile={imageFile} setImageFile={setImageFile} next={next} />
+              <UploadPDF
+                imageFile={imageFile}
+                setImageFile={setImageFile}
+                next={next}
+                isLoading={isLoading}
+                setIsLoading={setIsLoading}
+              />
             </Col>
           </>
         ),
       },
       {
         title: 'Predict & Diagnose',
+        icon: current === 1 && isLoading ? <LoadingOutlined /> : <FileSearchOutlined />,
         content: (
           <>
             {/* Send to prediction */}
@@ -92,6 +107,8 @@ export default function Home() {
                 setMissingComponents={setMissingComponents}
                 remainingComponents={remainingComponents}
                 setRemainingComponents={setRemainingComponents}
+                isLoading={isLoading}
+                setIsLoading={setIsLoading}
               />
             </Col>
           </>
@@ -99,6 +116,7 @@ export default function Home() {
       },
       {
         title: 'Display Results',
+        icon: current === 2 && isLoading ? <LoadingOutlined /> : <TableOutlined />,
         content: (
           <>
             {/* Display prediction */}
@@ -122,7 +140,16 @@ export default function Home() {
         ),
       },
     ],
-    [drawingComponents, imageFile, lineTypes, missingComponents, next, remainingComponents],
+    [
+      current,
+      drawingComponents,
+      imageFile,
+      isLoading,
+      lineTypes,
+      missingComponents,
+      next,
+      remainingComponents,
+    ],
   )
   const items = steps.map((item) => ({ key: item.title, title: item.title }))
 
@@ -161,7 +188,7 @@ export default function Home() {
             {steps[current]?.content}
           </Row>
 
-          <Row
+          {/* <Row
             justify="space-between"
             align="middle"
             gutter={[16, 16]}
@@ -188,7 +215,7 @@ export default function Home() {
                 </Button>
               )}
             </Col>
-          </Row>
+          </Row> */}
         </>
       </Row>
     </Layout>
