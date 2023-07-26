@@ -11,6 +11,20 @@ import type {
 } from '~/models/drawings.model'
 import { api } from '~/utils/api'
 
+interface PredictJPEGProps {
+  imageFile: File | null
+  lineTypes: LineType[]
+  setLineTypes: (lineTypes: LineType[]) => void
+  drawingComponents: DrawingComponent[]
+  setDrawingComponents: (drawingComponents: DrawingComponent[]) => void
+  missingComponents: MissingComponent[]
+  setMissingComponents: (missingComponents: MissingComponent[]) => void
+  remainingComponents: RemainingComponent[]
+  setRemainingComponents: (remainingComponents: RemainingComponent[]) => void
+  isLoading: boolean
+  setIsLoading: (isLoading: boolean) => void
+}
+
 const PredictJPEG = ({
   imageFile,
   lineTypes,
@@ -21,19 +35,10 @@ const PredictJPEG = ({
   setMissingComponents,
   remainingComponents,
   setRemainingComponents,
-}: {
-  imageFile: File | null
-  lineTypes: LineType[]
-  setLineTypes: (lineTypes: LineType[]) => void
-  drawingComponents: DrawingComponent[]
-  setDrawingComponents: (drawingComponents: DrawingComponent[]) => void
-  missingComponents: MissingComponent[]
-  setMissingComponents: (missingComponents: MissingComponent[]) => void
-  remainingComponents: RemainingComponent[]
-  setRemainingComponents: (remainingComponents: RemainingComponent[]) => void
-}) => {
+  isLoading,
+  setIsLoading,
+}: PredictJPEGProps) => {
   // hooks
-  const [predicting, setPredicting] = useState(false)
   const [csvUrl, setCsvUrl] = useState('')
   const [checkbox, setCheckbox] = useState(false)
 
@@ -46,7 +51,7 @@ const PredictJPEG = ({
   }
 
   const handlePredict = () => {
-    setPredicting(true)
+    setIsLoading(true)
     const formData = new FormData()
     formData.append('files[]', imageFile as RcFile)
     // You can use any AJAX library you like
@@ -71,12 +76,12 @@ const PredictJPEG = ({
         void message.error('Prediction failed!')
       })
       .finally(() => {
-        setPredicting(false)
+        setIsLoading(false)
       })
   }
 
   const handleTestPredict = () => {
-    setPredicting(true)
+    setIsLoading(true)
     const formData = new FormData()
     formData.append('files[]', imageFile as RcFile)
     // You can use any AJAX library you like
@@ -114,7 +119,7 @@ const PredictJPEG = ({
         void message.error('Prediction failed!')
       })
       .finally(() => {
-        setPredicting(false)
+        setIsLoading(false)
       })
   }
 
@@ -128,7 +133,7 @@ const PredictJPEG = ({
         height={100}
       />
       <Button
-        loading={predicting}
+        loading={isLoading}
         type={!csvUrl && lineTypes.length === 0 ? 'primary' : 'default'}
         icon={<SearchOutlined />}
         disabled={!imageFile}
@@ -150,7 +155,7 @@ const PredictJPEG = ({
       </Button>
 
       <Button
-        loading={predicting}
+        loading={isLoading}
         type={!csvUrl && lineTypes.length === 0 ? 'primary' : 'default'}
         icon={<SearchOutlined />}
         disabled={!imageFile}
