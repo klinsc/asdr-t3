@@ -1,4 +1,5 @@
-import { Button, Col, Row, Space } from 'antd'
+import { Button, Card, Checkbox, Col, Row, Space } from 'antd'
+import { useState } from 'react'
 import type {
   DrawingComponent,
   LineType,
@@ -27,9 +28,18 @@ const PredictionTable = ({
   csvUrl,
   jsonUrl,
 }: PredictionTableProps) => {
+  const [hidden, setHidden] = useState([true, true, true, true])
+
+  // handlers
+  const handleCheckbox = (index: number) => {
+    const newHidden = [...hidden]
+    newHidden[index] = !newHidden[index]
+    setHidden(newHidden)
+  }
+
   return (
     <>
-      <Space style={{ width: '100%', justifyContent: 'space-end' }}>
+      <Space style={{ width: '100%', justifyContent: 'center' }}>
         {csvUrl && (
           <Button type="link" href={csvUrl} target="_blank" rel="noopener noreferrer">
             Download CSV
@@ -42,20 +52,63 @@ const PredictionTable = ({
         )}
       </Space>
 
-      <Row justify="center" align="top" gutter={[16, 16]}>
-        <Col>
+      <Space style={{ width: '100%', justifyContent: 'center' }}>
+        <Checkbox onChange={() => handleCheckbox(0)} checked={hidden[0]}>
+          Drawing Components
+        </Checkbox>
+        <Checkbox onChange={() => handleCheckbox(1)} checked={hidden[1]}>
+          Line Types
+        </Checkbox>
+        <Checkbox onChange={() => handleCheckbox(2)} checked={hidden[2]}>
+          Remaining Components
+        </Checkbox>
+        <Checkbox onChange={() => handleCheckbox(3)} checked={hidden[3]}>
+          Missing Components
+        </Checkbox>
+      </Space>
+
+      <Space style={{ width: '100%', justifyContent: 'center' }}>
+        <Row justify="center" align="top" gutter={[16, 16]}>
+          <Col
+            style={{
+              display: hidden[0] ? 'block' : 'none',
+            }}>
+            <DrawingComponentTable drawingComponents={drawingComponents} />
+          </Col>
+          <Col
+            style={{
+              display: hidden[1] ? 'block' : 'none',
+            }}>
+            <LineTypeTable lineTypes={lineTypes} />
+          </Col>
+          <Col
+            style={{
+              display: hidden[2] ? 'block' : 'none',
+            }}>
+            <RemainingComponentTable remainingComponents={remainingComponents} />
+          </Col>
+          <Col
+            style={{
+              display: hidden[3] ? 'block' : 'none',
+            }}>
+            <MissingComponentTable missingComponents={missingComponents} />
+          </Col>
+        </Row>
+      </Space>
+      {/* <Space direction="vertical" size={16}>
+        <Card title="Default size card" extra={<a href="#">More</a>} style={{ width: 300 }}>
           <DrawingComponentTable drawingComponents={drawingComponents} />
-        </Col>
-        <Col>
+        </Card>
+        <Card title="Default size card" extra={<a href="#">More</a>} style={{ width: 300 }}>
           <LineTypeTable lineTypes={lineTypes} />
-        </Col>
-        <Col>
+        </Card>
+        <Card title="Default size card" extra={<a href="#">More</a>} style={{ width: 300 }}>
           <RemainingComponentTable remainingComponents={remainingComponents} />
-        </Col>
-        <Col>
+        </Card>
+        <Card title="Default size card" extra={<a href="#">More</a>} style={{ width: 300 }}>
           <MissingComponentTable missingComponents={missingComponents} />
-        </Col>
-      </Row>
+        </Card>
+      </Space> */}
     </>
   )
 }
