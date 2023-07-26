@@ -140,10 +140,12 @@ export default function Home() {
       },
     ],
     [
+      csvUrl,
       current,
       drawingComponents,
       imageFile,
       isLoading,
+      jsonUrl,
       lineTypes,
       missingComponents,
       next,
