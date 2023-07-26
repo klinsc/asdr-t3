@@ -43,9 +43,6 @@ const PredictionTable = ({
       <Col>
         <MissingComponentTable missingComponents={missingComponents} />
       </Col>
-      {/* <Col span={5}>
-        <ExampleTable />
-      </Col> */}
     </Row>
   )
 }

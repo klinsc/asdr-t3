@@ -7,9 +7,11 @@ import { api } from '~/utils/api'
 const UploadPDF = ({
   imageFile,
   setImageFile,
+  next,
 }: {
   imageFile: File | null
   setImageFile: (imageFile: File | null) => void
+  next: () => void
 }) => {
   // hooks
   const [fileList, setFileList] = useState<UploadFile[]>([])
@@ -44,6 +46,7 @@ const UploadPDF = ({
         })
         .then(() => {
           void message.success('upload successfully.')
+          next()
         })
         .catch(() => {
           void message.error('upload failed.')

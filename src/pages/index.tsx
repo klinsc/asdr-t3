@@ -1,6 +1,6 @@
-import { Col, Row, Select, Typography } from 'antd'
+import { Button, Col, Row, Select, Steps, Typography, message, theme } from 'antd'
 import Head from 'next/head'
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Layout from '~/components/Layout'
 import PredictJPEG from '~/components/PredictJPEG'
 import PredictionTable from '~/components/PredictionTable'
@@ -19,10 +19,112 @@ export default function Home() {
   const [drawingComponents, setDrawingComponents] = useState<DrawingComponent[]>([])
   const [missingComponents, setMissingComponents] = useState<MissingComponent[]>([])
   const [remainingComponents, setRemainingComponents] = useState<RemainingComponent[]>([])
+  const { token } = theme.useToken()
+  const [current, setCurrent] = useState(0)
 
+  // handlers
+  const next = useCallback(() => {
+    setCurrent(current + 1)
+  }, [current])
+  const prev = () => {
+    setCurrent(current - 1)
+  }
   const handleChange = (value: string) => {
     console.log(`selected ${value}`)
   }
+  const handleChangeStep = (current: number) => {
+    setCurrent(current)
+  }
+
+  const steps = useMemo(
+    () => [
+      {
+        title: 'Upload Drawing',
+        content: (
+          <>
+            {/* Select the type of drawing */}
+            <Col
+              span={24}
+              style={{
+                textAlign: 'center',
+              }}>
+              <Typography.Title level={4}>Select the type of drawing</Typography.Title>
+              <Select
+                defaultValue="mt"
+                onChange={handleChange}
+                options={[
+                  { value: 'mt', label: 'Main & Transfer' },
+                  { value: 'h', label: 'H-config' },
+                  { value: 'bh', label: 'Breaker & a Half' },
+                  { value: 'dbsb', label: 'Double Bus Single Breaker' },
+                ]}
+              />
+            </Col>
+
+            {/* Upload a PDF file*/}
+            <Col
+              span={24}
+              style={{
+                textAlign: 'center',
+              }}>
+              <UploadPDF imageFile={imageFile} setImageFile={setImageFile} next={next} />
+            </Col>
+          </>
+        ),
+      },
+      {
+        title: 'Predict & Diagnose',
+        content: (
+          <>
+            {/* Send to prediction */}
+            <Col
+              span={6}
+              style={{
+                textAlign: 'center',
+              }}>
+              <PredictJPEG
+                imageFile={imageFile}
+                lineTypes={lineTypes}
+                setLineTypes={setLineTypes}
+                drawingComponents={drawingComponents}
+                setDrawingComponents={setDrawingComponents}
+                missingComponents={missingComponents}
+                setMissingComponents={setMissingComponents}
+                remainingComponents={remainingComponents}
+                setRemainingComponents={setRemainingComponents}
+              />
+            </Col>
+          </>
+        ),
+      },
+      {
+        title: 'Display Results',
+        content: (
+          <>
+            {/* Display prediction */}
+            <Col
+              span={24}
+              style={{
+                textAlign: 'center',
+              }}>
+              <PredictionTable
+                lineTypes={lineTypes}
+                setLineTypes={setLineTypes}
+                drawingComponents={drawingComponents}
+                setDrawingComponents={setDrawingComponents}
+                missingComponents={missingComponents}
+                setMissingComponents={setMissingComponents}
+                remainingComponents={remainingComponents}
+                setRemainingComponents={setRemainingComponents}
+              />
+            </Col>
+          </>
+        ),
+      },
+    ],
+    [drawingComponents, imageFile, lineTypes, missingComponents, next, remainingComponents],
+  )
+  const items = steps.map((item) => ({ key: item.title, title: item.title }))
 
   return (
     <Layout>
@@ -39,72 +141,123 @@ export default function Home() {
         </Col>
       </Row>
 
-      <Row justify="center" align="middle" gutter={[16, 16]}>
-        {/* Select the type of drawing */}
-        <Col
-          span={24}
-          style={{
-            textAlign: 'center',
-          }}>
-          <Typography.Title level={4}>Select the type of drawing</Typography.Title>
-          <Select
-            defaultValue="mt"
-            onChange={handleChange}
-            options={[
-              { value: 'mt', label: 'Main & Transfer' },
-              { value: 'h', label: 'H-config' },
-              { value: 'bh', label: 'Breaker & a Half' },
-              { value: 'dbsb', label: 'Double Bus Single Breaker' },
-            ]}
-          />
-        </Col>
+      <Row justify="center" align="middle" style={{ width: '100%' }}>
+        {/* Steps */}
+        <>
+          <Steps current={current} items={items} onChange={handleChangeStep} />
+          <Row
+            justify="center"
+            align="top"
+            gutter={[16, 16]}
+            style={{
+              // minHeight: 600,
+              marginTop: 16,
+              padding: 16,
+              width: '100%',
+              borderRadius: token.borderRadiusLG,
+              border: `1px dashed ${token.colorBorder}`,
+              alignContent: 'flex-start',
+            }}>
+            {steps[current]?.content}
+          </Row>
 
-        {/* Upload a PDF file*/}
-        <Col
-          span={24}
-          style={{
-            textAlign: 'center',
-          }}>
-          <UploadPDF imageFile={imageFile} setImageFile={setImageFile} />
-        </Col>
+          <Row
+            justify="space-between"
+            align="middle"
+            gutter={[16, 16]}
+            style={{
+              padding: 16,
+              width: '100%',
+            }}>
+            <Col>
+              {current > 0 && (
+                <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
+                  Previous
+                </Button>
+              )}
+            </Col>
 
-        {/* Send to prediction */}
-        <Col
-          span={6}
-          style={{
-            textAlign: 'center',
-          }}>
-          <PredictJPEG
-            imageFile={imageFile}
-            lineTypes={lineTypes}
-            setLineTypes={setLineTypes}
-            drawingComponents={drawingComponents}
-            setDrawingComponents={setDrawingComponents}
-            missingComponents={missingComponents}
-            setMissingComponents={setMissingComponents}
-            remainingComponents={remainingComponents}
-            setRemainingComponents={setRemainingComponents}
-          />
-        </Col>
-
-        {/* Display prediction */}
-        <Col
-          span={24}
-          style={{
-            textAlign: 'center',
-          }}>
-          <PredictionTable
-            lineTypes={lineTypes}
-            setLineTypes={setLineTypes}
-            drawingComponents={drawingComponents}
-            setDrawingComponents={setDrawingComponents}
-            missingComponents={missingComponents}
-            setMissingComponents={setMissingComponents}
-            remainingComponents={remainingComponents}
-            setRemainingComponents={setRemainingComponents}
-          />
-        </Col>
+            <Col>
+              {current === steps.length - 1 ? (
+                <Button type="primary" onClick={() => void message.success('Processing complete!')}>
+                  Done
+                </Button>
+              ) : (
+                <Button type="primary" onClick={() => next()}>
+                  Next
+                </Button>
+              )}
+            </Col>
+          </Row>
+        </>
       </Row>
     </Layout>
   )
 }
+
+// <Row justify="center" align="middle" gutter={[16, 16]}>
+//   {/* Select the type of drawing */}
+//   <Col
+//     span={24}
+//     style={{
+//       textAlign: 'center',
+//     }}>
+//     <Typography.Title level={4}>Select the type of drawing</Typography.Title>
+//     <Select
+//       defaultValue="mt"
+//       onChange={handleChange}
+//       options={[
+//         { value: 'mt', label: 'Main & Transfer' },
+//         { value: 'h', label: 'H-config' },
+//         { value: 'bh', label: 'Breaker & a Half' },
+//         { value: 'dbsb', label: 'Double Bus Single Breaker' },
+//       ]}
+//     />
+//   </Col>
+
+//   {/* Upload a PDF file*/}
+//   <Col
+//     span={24}
+//     style={{
+//       textAlign: 'center',
+//     }}>
+//     <UploadPDF imageFile={imageFile} setImageFile={setImageFile} />
+//   </Col>
+
+//   {/* Send to prediction */}
+//   <Col
+//     span={6}
+//     style={{
+//       textAlign: 'center',
+//     }}>
+//     <PredictJPEG
+//       imageFile={imageFile}
+//       lineTypes={lineTypes}
+//       setLineTypes={setLineTypes}
+//       drawingComponents={drawingComponents}
+//       setDrawingComponents={setDrawingComponents}
+//       missingComponents={missingComponents}
+//       setMissingComponents={setMissingComponents}
+//       remainingComponents={remainingComponents}
+//       setRemainingComponents={setRemainingComponents}
+//     />
+//   </Col>
+
+//   {/* Display prediction */}
+//   <Col
+//     span={24}
+//     style={{
+//       textAlign: 'center',
+//     }}>
+//     <PredictionTable
+//       lineTypes={lineTypes}
+//       setLineTypes={setLineTypes}
+//       drawingComponents={drawingComponents}
+//       setDrawingComponents={setDrawingComponents}
+//       missingComponents={missingComponents}
+//       setMissingComponents={setMissingComponents}
+//       remainingComponents={remainingComponents}
+//       setRemainingComponents={setRemainingComponents}
+//     />
+//   </Col>
+// </Row>
