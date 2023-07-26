@@ -63,6 +63,7 @@ const MissingComponentTable = (props: MissingComponentTableProps) => {
 
   return (
     <Table
+      bordered
       onChange={handleChange}
       caption={<Typography.Title level={5}>Missing Components</Typography.Title>}
       columns={columns}
