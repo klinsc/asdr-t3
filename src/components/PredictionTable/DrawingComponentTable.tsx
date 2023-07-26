@@ -47,6 +47,7 @@ const DrawingComponentTable = (props: DrawingComponentTableProps) => {
 
   return (
     <Table
+      bordered
       onChange={handleChange}
       caption={<Typography.Title level={5}>Drawing Components</Typography.Title>}
       columns={columns}
