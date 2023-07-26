@@ -1,4 +1,4 @@
-import { Button, Col, Row, Image, Space } from 'antd'
+import { Button, Col, Row, Space } from 'antd'
 import type {
   DrawingComponent,
   LineType,
