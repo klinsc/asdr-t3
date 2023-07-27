@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Col, Row, Space } from 'antd'
+import { Button, Checkbox, Col, Row, Space } from 'antd'
 import { useState } from 'react'
 import type {
   DrawingComponent,
@@ -19,6 +19,25 @@ interface PredictionTableProps {
   csvUrl: string
   jsonUrl: string
 }
+
+const checkBoxes = [
+  {
+    name: 'Drawing Components',
+    index: 0,
+  },
+  {
+    name: 'Line Types',
+    index: 1,
+  },
+  {
+    name: 'Remaining Components',
+    index: 2,
+  },
+  {
+    name: 'Missing Components',
+    index: 3,
+  },
+]
 
 const PredictionTable = ({
   lineTypes,
@@ -53,18 +72,11 @@ const PredictionTable = ({
       </Space>
 
       <Space style={{ width: '100%', justifyContent: 'center' }}>
-        <Checkbox onChange={() => handleCheckbox(0)} checked={hidden[0]}>
-          Drawing Components
-        </Checkbox>
-        <Checkbox onChange={() => handleCheckbox(1)} checked={hidden[1]}>
-          Line Types
-        </Checkbox>
-        <Checkbox onChange={() => handleCheckbox(2)} checked={hidden[2]}>
-          Remaining Components
-        </Checkbox>
-        <Checkbox onChange={() => handleCheckbox(3)} checked={hidden[3]}>
-          Missing Components
-        </Checkbox>
+        {checkBoxes.map(({ name, index }) => (
+          <Checkbox key={index} onChange={() => handleCheckbox(index)} checked={hidden[index]}>
+            {name}
+          </Checkbox>
+        ))}
       </Space>
 
       <Space style={{ width: '100%', justifyContent: 'center' }}>
@@ -95,20 +107,6 @@ const PredictionTable = ({
           </Col>
         </Row>
       </Space>
-      {/* <Space direction="vertical" size={16}>
-        <Card title="Default size card" extra={<a href="#">More</a>} style={{ width: 300 }}>
-          <DrawingComponentTable drawingComponents={drawingComponents} />
-        </Card>
-        <Card title="Default size card" extra={<a href="#">More</a>} style={{ width: 300 }}>
-          <LineTypeTable lineTypes={lineTypes} />
-        </Card>
-        <Card title="Default size card" extra={<a href="#">More</a>} style={{ width: 300 }}>
-          <RemainingComponentTable remainingComponents={remainingComponents} />
-        </Card>
-        <Card title="Default size card" extra={<a href="#">More</a>} style={{ width: 300 }}>
-          <MissingComponentTable missingComponents={missingComponents} />
-        </Card>
-      </Space> */}
     </>
   )
 }

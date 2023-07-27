@@ -21,11 +21,15 @@
     "@trpc/react-query": "^10.26.0",
     "@trpc/server": "^10.26.0",
     "antd": "^5.7.1",
+    "canvas": "^2.11.2",
+    "konva": "^9.2.0",
     "next": "^13.4.2",
     "next-auth": "^4.22.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-konva": "^18.2.10",
     "superjson": "1.12.2",
+    "use-image": "^1.1.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {

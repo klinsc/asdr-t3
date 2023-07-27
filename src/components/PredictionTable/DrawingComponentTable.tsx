@@ -30,7 +30,7 @@ const DrawingComponentTable = (props: DrawingComponentTableProps) => {
           // remove the same line type
           .filter((value, index, self) => self.findIndex((v) => v.value === value.value) === index),
         // eslint-disable-next-line @typescript-eslint/prefer-string-starts-ends-with
-        onFilter: (value: string, record) => record.name.indexOf(value) === 0,
+        onFilter: (value: unknown, record) => record.name.indexOf(value as string) === 0,
         sorter: (a, b) => a.name.length - b.name.length,
         sortDirections: ['ascend', 'descend'],
       },

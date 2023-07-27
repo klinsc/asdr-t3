@@ -9,6 +9,7 @@ import Head from 'next/head'
 import { useCallback, useMemo, useState } from 'react'
 import Layout from '~/components/Layout'
 import PredictJPEG from '~/components/PredictJPEG'
+import PredictionImage from '~/components/PredictionImage'
 import PredictionTable from '~/components/PredictionTable'
 import UploadPDF from '~/components/UploadPDF'
 import type {
@@ -116,7 +117,7 @@ export default function Home() {
         ),
       },
       {
-        title: 'Display Results',
+        title: 'Table Results',
         icon: current === 2 && isLoading ? <LoadingOutlined /> : <TableOutlined />,
         content: (
           <>
@@ -134,6 +135,22 @@ export default function Home() {
                 csvUrl={csvUrl}
                 jsonUrl={jsonUrl}
               />
+            </Col>
+          </>
+        ),
+      },
+      {
+        title: 'Image Results',
+        icon: current === 3 && isLoading ? <LoadingOutlined /> : <TableOutlined />,
+        content: (
+          <>
+            {/* Display prediction with kanva*/}
+            <Col
+              span={24}
+              style={{
+                textAlign: 'center',
+              }}>
+              <PredictionImage imageFile={imageFile} />
             </Col>
           </>
         ),
