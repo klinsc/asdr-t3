@@ -4,6 +4,7 @@ import type { RcFile } from 'antd/es/upload'
 // import Image from 'next/image'
 import { useState } from 'react'
 import type {
+  BoundingBox,
   DrawingComponent,
   LineType,
   MissingComponent,
@@ -22,6 +23,7 @@ interface PredictJPEGProps {
   setCsvUrl: (csvUrl: string) => void
   setJsonUrl: (jsonUrl: string) => void
   next: () => void
+  setJsonResult: (jsonResult: BoundingBox[]) => void
 }
 
 const PredictJPEG = ({
@@ -35,6 +37,7 @@ const PredictJPEG = ({
   setCsvUrl,
   setJsonUrl,
   next,
+  setJsonResult,
 }: PredictJPEGProps) => {
   // hooks
   const [checkbox, setCheckbox] = useState(false)
@@ -111,6 +114,10 @@ const PredictJPEG = ({
       const jsonBlob = await jsonResponse.blob()
       const jsonUrl = URL.createObjectURL(jsonBlob)
       setJsonUrl(jsonUrl)
+
+      // parse json
+      const jsonResult = JSON.parse(await jsonResponse.text()) as BoundingBox[]
+      setJsonResult(jsonResult)
 
       void message.success('Prediction successfully!')
     } catch (error) {

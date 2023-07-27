@@ -13,6 +13,7 @@ import PredictionImage from '~/components/PredictionImage'
 import PredictionTable from '~/components/PredictionTable'
 import UploadPDF from '~/components/UploadPDF'
 import type {
+  BoundingBox,
   DrawingComponent,
   LineType,
   MissingComponent,
@@ -31,6 +32,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [csvUrl, setCsvUrl] = useState('')
   const [jsonUrl, setJsonUrl] = useState('')
+  const [jsonResult, setJsonResult] = useState<BoundingBox[]>([])
 
   // handlers
   const next = useCallback(() => {
@@ -111,6 +113,7 @@ export default function Home() {
                 setCsvUrl={setCsvUrl}
                 setJsonUrl={setJsonUrl}
                 next={next}
+                setJsonResult={setJsonResult}
               />
             </Col>
           </>
@@ -150,7 +153,7 @@ export default function Home() {
               style={{
                 textAlign: 'center',
               }}>
-              <PredictionImage imageFile={imageFile} />
+              <PredictionImage imageFile={imageFile} jsonResult={jsonResult} />
             </Col>
           </>
         ),
@@ -162,6 +165,7 @@ export default function Home() {
       drawingComponents,
       imageFile,
       isLoading,
+      jsonResult,
       jsonUrl,
       lineTypes,
       missingComponents,

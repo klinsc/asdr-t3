@@ -1,7 +1,8 @@
 import type Konva from 'konva'
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Image as KonvaImage, Layer, Rect, Stage, Transformer } from 'react-konva'
 import useImage from 'use-image'
+import { type BoundingBox } from '~/models/drawings.model'
 
 const Rectangle = ({
   shapeProps,
@@ -96,28 +97,28 @@ const Rectangle = ({
   )
 }
 
-const initialRectangles = [
-  {
-    x: 10,
-    y: 10,
-    width: 100,
-    height: 100,
-    // fill with red opacity .5
-    fill: 'rgba(255, 0, 0, 0.5)',
-    id: 'rect1',
-  },
-  {
-    x: 150,
-    y: 150,
-    width: 100,
-    height: 100,
-    fill: 'green',
-    id: 'rect2',
-  },
-]
+// const initialRectangles = [
+//   {
+//     x: 10,
+//     y: 10,
+//     width: 100,
+//     height: 100,
+//     // fill with red opacity .5
+//     fill: 'rgba(255, 0, 0, 0.5)',
+//     id: 'rect1',
+//   },
+//   {
+//     x: 150,
+//     y: 150,
+//     width: 100,
+//     height: 100,
+//     fill: 'green',
+//     id: 'rect2',
+//   },
+// ]
 
 // the first very simple and recommended way:
-const LionImage = ({ src }: { src: string }) => {
+const DrawingImage = ({ src }: { src: string }) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
   const [image] = useImage(src) as [HTMLImageElement | undefined, 'loading' | 'loaded' | 'failed']
   return <>{image && <KonvaImage image={image} alt="" />}</>
@@ -151,20 +152,28 @@ function touchEnabled() {
 
 interface PredictionImageProps {
   imageFile: File | null
+  jsonResult: BoundingBox[]
 }
 
-const PredictionImage = ({ imageFile }: PredictionImageProps) => {
-  const [rectangles, setRectangles] = useState(initialRectangles)
+const PredictionImage = ({ imageFile, jsonResult }: PredictionImageProps) => {
+  // hooks
   const [selectedId, selectShape] = useState<string | null>(null)
 
-  // this is for moving the labels (future feature)
-  // const checkDeselect = (e: { target: { getStage: () => unknown } }) => {
-  //   // deselect when clicked on empty area
-  //   const clickedOnEmpty = e.target === e.target.getStage()
-  //   if (clickedOnEmpty) {
-  //     selectShape(null)
-  //   }
-  // }
+  // update rectangles when jsonResult changes
+  const initialRectangles = useMemo(() => {
+    return jsonResult.map((result, i) => {
+      return {
+        x: result.xmin,
+        y: result.ymin,
+        width: result.xmax - result.xmin,
+        height: result.ymax - result.ymin,
+        // fill with green opacity .3
+        fill: 'rgba(0, 0, 255, 0.3)',
+        id: i.toString(),
+      }
+    })
+  }, [jsonResult])
+  const [rectangles, setRectangles] = useState(initialRectangles)
 
   // get image size from imageFile
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 })
@@ -177,10 +186,10 @@ const PredictionImage = ({ imageFile }: PredictionImageProps) => {
     img.src = URL.createObjectURL(imageFile)
   }, [imageFile])
 
+  // zooming & panning logics
   const stageRef = useRef<Konva.Stage>(null)
   let lastCenter: { x: number; y: number } | null = null
   let lastDist = 0
-
   function zoomStage(event: { evt: { preventDefault: () => void; deltaY: number } }) {
     event.evt.preventDefault()
     if (stageRef.current !== null) {
@@ -206,7 +215,6 @@ const PredictionImage = ({ imageFile }: PredictionImageProps) => {
       stage.batchDraw()
     }
   }
-
   function handleTouch(e: Konva.KonvaEventObject<TouchEvent>) {
     e.evt.preventDefault()
     const touch1 = e.evt.touches[0]
@@ -267,11 +275,19 @@ const PredictionImage = ({ imageFile }: PredictionImageProps) => {
       }
     }
   }
-
   function handleTouchEnd() {
     lastCenter = null
     lastDist = 0
   }
+
+  // this is for moving the labels (future feature)
+  // const checkDeselect = (e: { target: { getStage: () => unknown } }) => {
+  //   // deselect when clicked on empty area
+  //   const clickedOnEmpty = e.target === e.target.getStage()
+  //   if (clickedOnEmpty) {
+  //     selectShape(null)
+  //   }
+  // }
 
   return (
     <Stage
@@ -288,7 +304,7 @@ const PredictionImage = ({ imageFile }: PredictionImageProps) => {
       // onTouchStart={checkDeselect}
     >
       <Layer>
-        <LionImage
+        <DrawingImage
           src={
             imageFile
               ? URL.createObjectURL(imageFile)
