@@ -52,9 +52,7 @@ const Rectangle = ({
             y: e.target.y(),
           })
         }}>
-          <Text text={shapeProps.name} fill="black"
-           fontSize={26}
-          />
+        <Text text={shapeProps.name} fill="black" fontSize={26} />
       </Label>
       <Rect
         onClick={onSelect}
@@ -107,6 +105,21 @@ const Rectangle = ({
       )}
     </Fragment>
   )
+}
+
+// hex to rgb
+function hexToRgb(hex: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return result
+    ? // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      `rgb(${parseInt(result[1] ?? '', 16)},${parseInt(result[2] ?? '', 16)},${parseInt(
+        result[3] ?? '',
+        16,
+      )},0.3)`
+    : null
 }
 
 // the first very simple and recommended way:
@@ -164,13 +177,16 @@ const PredictionImage = ({ imageFile, jsonResult, predictedImageColRef }: Predic
   // update rectangles when jsonResult changes
   const initialRectangles = useMemo(() => {
     return jsonResult.map((result, i) => {
+      const rgb = hexToRgb(result.color)
+
       return {
         x: result.xmin,
         y: result.ymin,
         width: result.xmax - result.xmin,
         height: result.ymax - result.ymin,
         // fill with green opacity .3
-        fill: 'rgba(0, 0, 255, 0.3)',
+        // fill: 'rgba(0, 0, 255, 0.3)',
+        fill: rgb,
         id: i.toString(),
         name: result.name,
       }
@@ -234,7 +250,7 @@ const PredictionImage = ({ imageFile, jsonResult, predictedImageColRef }: Predic
       const imageWidth = image.width() ?? 0
       const colWidth = predictedImageColRef.current?.offsetWidth ?? 0
       const newScale = colWidth / imageWidth
-      debugger
+      // debugger
       stage.scale({ x: newScale, y: newScale })
       stage.position({ x: 0, y: 0 })
       stage.batchDraw()

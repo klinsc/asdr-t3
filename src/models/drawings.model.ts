@@ -28,4 +28,5 @@ export interface BoundingBox{
     confidence: number
     class: number
     name: string
+    color: string
 }
