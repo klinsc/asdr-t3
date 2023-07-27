@@ -6,7 +6,7 @@ import {
 } from '@ant-design/icons'
 import { Col, Row, Select, Steps, Typography, theme } from 'antd'
 import Head from 'next/head'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import Layout from '~/components/Layout'
 import PredictJPEG from '~/components/PredictJPEG'
 import PredictionImage from '~/components/PredictionImage'
@@ -33,6 +33,7 @@ export default function Home() {
   const [csvUrl, setCsvUrl] = useState('')
   const [jsonUrl, setJsonUrl] = useState('')
   const [jsonResult, setJsonResult] = useState<BoundingBox[]>([])
+  const predictedImageColRef = useRef<HTMLDivElement>(null)
 
   // handlers
   const next = useCallback(() => {
@@ -149,11 +150,16 @@ export default function Home() {
           <>
             {/* Display prediction with kanva*/}
             <Col
+              ref={predictedImageColRef}
               span={24}
               style={{
                 textAlign: 'center',
               }}>
-              <PredictionImage imageFile={imageFile} jsonResult={jsonResult} />
+              <PredictionImage
+                imageFile={imageFile}
+                jsonResult={jsonResult}
+                predictedImageColRef={predictedImageColRef}
+              />
             </Col>
           </>
         ),
@@ -209,104 +215,8 @@ export default function Home() {
             }}>
             {steps[current]?.content}
           </Row>
-
-          {/* <Row
-            justify="space-between"
-            align="middle"
-            gutter={[16, 16]}
-            style={{
-              padding: 16,
-              width: '100%',
-            }}>
-            <Col>
-              {current > 0 && (
-                <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
-                  Previous
-                </Button>
-              )}
-            </Col>
-
-            <Col>
-              {current === steps.length - 1 ? (
-                <Button type="primary" onClick={() => void message.success('Processing complete!')}>
-                  Done
-                </Button>
-              ) : (
-                <Button type="primary" onClick={() => next()}>
-                  Next
-                </Button>
-              )}
-            </Col>
-          </Row> */}
         </>
       </Row>
     </Layout>
   )
 }
-
-// <Row justify="center" align="middle" gutter={[16, 16]}>
-//   {/* Select the type of drawing */}
-//   <Col
-//     span={24}
-//     style={{
-//       textAlign: 'center',
-//     }}>
-//     <Typography.Title level={4}>Select the type of drawing</Typography.Title>
-//     <Select
-//       defaultValue="mt"
-//       onChange={handleChange}
-//       options={[
-//         { value: 'mt', label: 'Main & Transfer' },
-//         { value: 'h', label: 'H-config' },
-//         { value: 'bh', label: 'Breaker & a Half' },
-//         { value: 'dbsb', label: 'Double Bus Single Breaker' },
-//       ]}
-//     />
-//   </Col>
-
-//   {/* Upload a PDF file*/}
-//   <Col
-//     span={24}
-//     style={{
-//       textAlign: 'center',
-//     }}>
-//     <UploadPDF imageFile={imageFile} setImageFile={setImageFile} />
-//   </Col>
-
-//   {/* Send to prediction */}
-//   <Col
-//     span={6}
-//     style={{
-//       textAlign: 'center',
-//     }}>
-//     <PredictJPEG
-//       imageFile={imageFile}
-//       lineTypes={lineTypes}
-//       setLineTypes={setLineTypes}
-//       drawingComponents={drawingComponents}
-//       setDrawingComponents={setDrawingComponents}
-//       missingComponents={missingComponents}
-//       setMissingComponents={setMissingComponents}
-//       remainingComponents={remainingComponents}
-//       setRemainingComponents={setRemainingComponents}
-//     />
-//   </Col>
-
-//   {/* Display prediction */}
-//   <Col
-//     span={24}
-//     style={{
-//       textAlign: 'center',
-//     }}>
-//     <PredictionTable
-//       lineTypes={lineTypes}
-//       setLineTypes={setLineTypes}
-//       drawingComponents={drawingComponents}
-//       setDrawingComponents={setDrawingComponents}
-//       missingComponents={missingComponents}
-//       setMissingComponents={setMissingComponents}
-//       remainingComponents={remainingComponents}
-//       setRemainingComponents={setRemainingComponents}
-//     />
-//   </Col>
-// </Row>
