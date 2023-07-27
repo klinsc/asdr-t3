@@ -186,7 +186,7 @@ const PredictionImage = ({ imageFile, jsonResult, predictedImageColRef }: Predic
         height: result.ymax - result.ymin,
         // fill with green opacity .3
         // fill: 'rgba(0, 0, 255, 0.3)',
-        fill: rgb,
+        fill: rgb ?? 'rgba(0, 0, 0, 0.5)',
         id: i.toString(),
         name: result.name,
       }
