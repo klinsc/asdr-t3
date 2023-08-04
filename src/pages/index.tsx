@@ -33,7 +33,7 @@ export default function Home() {
   const [csvUrl, setCsvUrl] = useState('')
   const [jsonUrl, setJsonUrl] = useState('')
   const [jsonResult, setJsonResult] = useState<BoundingBox[]>([])
-  const predictedImageColRef = useRef<HTMLDivElement>(null)
+  // const predictedImageColRef = useRef<HTMLDivElement>(null)
 
   // handlers
   const next = useCallback(() => {
@@ -150,7 +150,7 @@ export default function Home() {
           <>
             {/* Display prediction with kanva*/}
             <Col
-              ref={predictedImageColRef}
+              // ref={predictedImageColRef}
               span={24}
               style={{
                 textAlign: 'center',
@@ -158,7 +158,7 @@ export default function Home() {
               <PredictionImage
                 imageFile={imageFile}
                 jsonResult={jsonResult}
-                predictedImageColRef={predictedImageColRef}
+                // predictedImageColRef={predictedImageColRef}
               />
             </Col>
           </>
