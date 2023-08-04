@@ -52,7 +52,14 @@ const Rectangle = ({
             y: e.target.y(),
           })
         }}>
-        <Text text={shapeProps.name} fill="black" fontSize={26} />
+        <Text
+          text={shapeProps.name}
+          fill="black"
+          fontSize={26}
+          stroke={shapeProps.fill}
+          strokeWidth={2}
+          padding={10}
+        />
       </Label>
       <Rect
         onClick={onSelect}
@@ -187,6 +194,8 @@ const PredictionImage = ({ imageFile, jsonResult, predictedImageColRef }: Predic
         // fill with green opacity .3
         // fill: 'rgba(0, 0, 255, 0.3)',
         fill: rgb ?? 'rgba(0, 0, 0, 0.5)',
+        stroke: result.color,
+        strokeWidth: 5,
         id: i.toString(),
         name: result.name,
       }
@@ -216,7 +225,7 @@ const PredictionImage = ({ imageFile, jsonResult, predictedImageColRef }: Predic
   let lastCenter: { x: number; y: number } | null = null
   let lastDist = 0
   function zoomStage(event: { evt: { preventDefault: () => void; deltaY: number } }) {
-    event.evt.preventDefault()
+    // event.evt.preventDefault()
     if (stageRef.current !== null) {
       const stage = stageRef.current
       const oldScale = stage.scaleX()
@@ -366,6 +375,8 @@ const PredictionImage = ({ imageFile, jsonResult, predictedImageColRef }: Predic
                   fill: string
                   id: string
                   name: string
+                  stroke: string
+                  strokeWidth: number
                 }) => {
                   const rects = rectangles.slice()
                   rects[i] = newAttrs
