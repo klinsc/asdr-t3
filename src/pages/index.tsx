@@ -6,7 +6,7 @@ import {
 } from '@ant-design/icons'
 import { Col, Row, Select, Steps, Typography, theme } from 'antd'
 import Head from 'next/head'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Layout from '~/components/Layout'
 import PredictJPEG from '~/components/PredictJPEG'
 import PredictionImage from '~/components/PredictionImage'
