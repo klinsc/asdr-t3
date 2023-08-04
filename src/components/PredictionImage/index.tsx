@@ -6,7 +6,8 @@ import useImage from 'use-image'
 import { type BoundingBox } from '~/models/drawings.model'
 import LabelTable from './LabelTable'
 
-interface RectangleProps {
+export interface RectangleProps {
+  key: string
   x: number
   y: number
   width: number
@@ -16,6 +17,7 @@ interface RectangleProps {
   name: string
   stroke: string
   strokeWidth: number
+  visible: boolean
 }
 
 const Rectangle = ({
@@ -49,6 +51,7 @@ const Rectangle = ({
         y={shapeProps.y - 20}
         opacity={isSelected ? 1 : 1}
         draggable
+        visible={shapeProps.visible}
         onDragEnd={(e) => {
           onChange({
             ...shapeProps,
@@ -193,9 +196,10 @@ PredictionImageProps) => {
   // update rectangles when jsonResult changes
   const initialRectangles = useMemo(() => {
     return jsonResult.map((result, i) => {
-      const rgb = hexToRgb(result.color)
+      const rgb = hexToRgb(result.color) ?? 'rgba(0, 0, 0, 0.5)'
 
       return {
+        key: i.toString(),
         x: result.xmin,
         y: result.ymin,
         width: result.xmax - result.xmin,
@@ -205,8 +209,9 @@ PredictionImageProps) => {
         fill: rgb ?? 'rgba(0, 0, 0, 0.5)',
         stroke: result.color,
         strokeWidth: 5,
-        id: i.toString(),
+        id: result.id,
         name: result.name,
+        visible: true,
       }
     })
   }, [jsonResult])
@@ -377,17 +382,7 @@ PredictionImageProps) => {
                     onSelect={() => {
                       selectShape(rect.id)
                     }}
-                    onChange={(newAttrs: {
-                      x: number
-                      y: number
-                      width: number
-                      height: number
-                      fill: string
-                      id: string
-                      name: string
-                      stroke: string
-                      strokeWidth: number
-                    }) => {
+                    onChange={(newAttrs: RectangleProps) => {
                       const rects = rectangles.slice()
                       rects[i] = newAttrs
                       setRectangles(rects)
@@ -401,7 +396,7 @@ PredictionImageProps) => {
         <Col span={4}>
           <Space direction="vertical">
             <Button onClick={fitImage}>Fit to screen</Button>
-            <LabelTable />
+            <LabelTable rectangles={rectangles} setRectangles={setRectangles} />
           </Space>
         </Col>
       </Row>

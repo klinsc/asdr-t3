@@ -118,6 +118,7 @@ const PredictJPEG = ({
       // convert blob to json
       const jsonText = await jsonBlob.text()
       const jsonResult = JSON.parse(jsonText) as BoundingBox[]
+      debugger
       setJsonResult(jsonResult)
 
       void message.success('Prediction successfully!')

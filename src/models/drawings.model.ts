@@ -21,6 +21,7 @@ export interface RemainingComponent {
 }
 
 export interface BoundingBox{
+    id: string
     xmin: number
     ymin: number
     xmax: number
