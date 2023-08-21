@@ -1,12 +1,12 @@
-import React from 'react';
-import { Table } from 'antd';
-import type { ColumnsType, TableProps } from 'antd/es/table';
+import React from 'react'
+import { Table } from 'antd'
+import type { ColumnsType, TableProps } from 'antd/es/table'
 
 interface DataType {
-  key: React.Key;
-  name: string;
-  age: number;
-  address: string;
+  key: React.Key
+  name: string
+  age: number
+  address: string
 }
 
 const columns: ColumnsType<DataType> = [
@@ -39,8 +39,7 @@ const columns: ColumnsType<DataType> = [
     ],
     // specify the condition of filtering result
     // here is that finding the name started with `value`
-    // eslint-disable-next-line @typescript-eslint/prefer-string-starts-ends-with
-    onFilter: (value: string, record) => record.name.indexOf(value) === 0,
+    onFilter: (value, record) => record.name.startsWith(String(value)),
     sorter: (a, b) => a.name.length - b.name.length,
     sortDirections: ['descend'],
   },
@@ -63,10 +62,9 @@ const columns: ColumnsType<DataType> = [
         value: 'New York',
       },
     ],
-    // eslint-disable-next-line @typescript-eslint/prefer-string-starts-ends-with
-    onFilter: (value: string, record) => record.address.indexOf(value) === 0,
+    onFilter: (value, record) => record.address.startsWith(String(value)),
   },
-];
+]
 
 const data = [
   {
@@ -93,12 +91,14 @@ const data = [
     age: 32,
     address: 'London No. 2 Lake Park',
   },
-];
+]
 
 const onChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter, extra) => {
-  console.log('params', pagination, filters, sorter, extra);
-};
+  console.log('params', pagination, filters, sorter, extra)
+}
 
-const ExampleTable: React.FC = () => <Table columns={columns} dataSource={data} onChange={onChange} />;
+const ExampleTable: React.FC = () => (
+  <Table columns={columns} dataSource={data} onChange={onChange} />
+)
 
-export default ExampleTable;
+export default ExampleTable
