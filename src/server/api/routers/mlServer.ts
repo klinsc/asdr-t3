@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import type { PresetStatusColorType } from 'antd/es/_util/colors'
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
 
@@ -22,12 +19,49 @@ export const mlServerRouter = createTRPCRouter({
       return server
     }),
 
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.mLServer.findMany({
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    const servers = await ctx.prisma.mLServer.findMany({
       orderBy: {
         createdAt: 'asc',
       },
     })
+
+    const checkLiveServers = await Promise.all(
+      servers.map(async (server) => {
+        const { url } = server
+        try {
+          const res = await fetch(`${url}health`, {
+            method: 'GET',
+          })
+          let status: PresetStatusColorType = 'default'
+          if (server.selected && res.status === 200) {
+            status = 'success'
+          } else if (server.selected && res.status !== 200) {
+            status = 'error'
+          }
+
+          return { status }
+        } catch (error) {
+          console.error(error)
+
+          let status: PresetStatusColorType = 'default'
+          if (server.selected) {
+            status = 'error'
+          }
+
+          return { status }
+        }
+      }),
+    )
+
+    const serversWithStatus = servers.map((server, index) => {
+      return {
+        ...server,
+        status: checkLiveServers?.[index]?.status ?? 'default',
+      }
+    })
+
+    return serversWithStatus
   }),
 
   getSelected: publicProcedure.query(({ ctx }) => {

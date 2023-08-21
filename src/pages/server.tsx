@@ -1,5 +1,5 @@
-import { type MLServer } from '@prisma/client'
 import {
+  Badge,
   Button,
   Card,
   Checkbox,
@@ -11,6 +11,7 @@ import {
   Typography,
   type InputRef,
 } from 'antd'
+import type { PresetStatusColorType } from 'antd/es/_util/colors'
 import Head from 'next/head'
 import { useRef } from 'react'
 import Layout from '~/components/Layout'
@@ -108,25 +109,32 @@ export default function Home() {
           <Typography.Title level={4}>List of servers</Typography.Title>
         </Col>
 
-        {serverGetAll?.data && serverGetAll?.data?.length > 0 ? (
-          serverGetAll.data.map((server: MLServer) => (
-            <Col span={6} key={server.id}>
-              <Card
-                style={{ width: 300 }}
-                title={server.name}
-                extra={
-                  <Checkbox checked={server.selected} onChange={() => void handleSelect(server.id)}>
-                    Select
-                  </Checkbox>
-                }>
-                <p>{server.url}</p>
-              </Card>
-            </Col>
-          ))
-        ) : (
-          <Col span={24}>
-            <Typography.Text>No servers</Typography.Text>
-          </Col>
+        {serverGetAll.isFetching && <Col span={24}>Loading...</Col>}
+        {!serverGetAll.isFetching && (
+          <>
+            {serverGetAll?.data && serverGetAll?.data?.length > 0 ? (
+              serverGetAll.data.map((server) => (
+                <Col span={6} key={server.id}>
+                  <Card
+                    style={{ width: 300 }}
+                    title={server.name}
+                    extra={
+                      <Checkbox
+                        checked={server.selected}
+                        onChange={() => void handleSelect(server.id)}>
+                        Select
+                      </Checkbox>
+                    }>
+                    <Badge status={server.status as PresetStatusColorType} text={server.url} />
+                  </Card>
+                </Col>
+              ))
+            ) : (
+              <Col span={24}>
+                <Typography.Text>No servers</Typography.Text>
+              </Col>
+            )}
+          </>
         )}
       </Row>
     </Layout>
