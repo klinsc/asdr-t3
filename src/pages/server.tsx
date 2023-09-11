@@ -5,13 +5,12 @@ import {
   Checkbox,
   Col,
   Input,
-  message,
   Row,
   Space,
   Typography,
+  message,
   type InputRef,
 } from 'antd'
-import type { PresetStatusColorType } from 'antd/es/_util/colors'
 import Head from 'next/head'
 import { useRef } from 'react'
 import Layout from '~/components/Layout'
@@ -23,7 +22,9 @@ export default function Home() {
   const nameRef = useRef<InputRef>(null)
 
   // trpcs
-  const serverGetAll = api.server.getAll.useQuery()
+  const serverGetAll = api.server.getAll.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  })
   const serverCreate = api.server.create.useMutation({
     onSuccess: () => {
       void serverGetAll.refetch()
@@ -135,10 +136,7 @@ export default function Home() {
                         Select
                       </Checkbox>
                     }>
-                    <Badge
-                      status={server.status as PresetStatusColorType}
-                      text={server.url}
-                    />
+                    <Badge status={server.status} text={server.url} />
                   </Card>
                 </Col>
               ))
