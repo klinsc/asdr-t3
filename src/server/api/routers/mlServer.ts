@@ -1,6 +1,7 @@
 import type { PresetStatusColorType } from 'antd/es/_util/colors'
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
+import { setTimeout } from 'node:timers/promises'
 
 export const mlServerRouter = createTRPCRouter({
   create: publicProcedure
@@ -29,28 +30,55 @@ export const mlServerRouter = createTRPCRouter({
     const checkLiveServers = await Promise.all(
       servers.map(async (server) => {
         const { url } = server
-        try {
-          const res = await fetch(`${url}health`, {
-            method: 'GET',
-          })
-          let status: PresetStatusColorType = 'default'
-          if (server.selected && res.status === 200) {
-            status = 'success'
-          } else if (server.selected && res.status !== 200) {
-            status = 'error'
+        let status: PresetStatusColorType = 'default'
+        const cancelRequest = new AbortController()
+        const cancelTimeout = new AbortController()
+
+        async function fetchTimeout() {
+          try {
+            const res = await fetch(`${url}health`, {
+              method: 'GET',
+            })
+            if (server.selected && res.status === 200) {
+              status = 'success'
+            } else if (server.selected && res.status !== 200) {
+              status = 'error'
+            }
+
+            return { status }
+          } catch (error) {
+            if (error instanceof TypeError) {
+              console.error(error.message)
+            } else {
+              console.error(error)
+            }
+
+            if (server.selected) {
+              status = 'error'
+            }
+
+            return { status }
           }
+        }
 
-          return { status }
-        } catch (error) {
-          console.error(error)
+        async function timeout() {
+          await setTimeout(1000)
+          cancelTimeout.abort()
+          cancelRequest.abort()
 
-          let status: PresetStatusColorType = 'default'
           if (server.selected) {
             status = 'error'
           }
 
           return { status }
         }
+
+        const { status: result } = await Promise.race([
+          fetchTimeout(),
+          timeout(),
+        ])
+
+        return { status: result }
       }),
     )
 
@@ -72,18 +100,20 @@ export const mlServerRouter = createTRPCRouter({
     })
   }),
 
-  delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
-    const { id } = input
-    const { prisma } = ctx
+  delete: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const { id } = input
+      const { prisma } = ctx
 
-    const server = await prisma.mLServer.delete({
-      where: {
-        id,
-      },
-    })
+      const server = await prisma.mLServer.delete({
+        where: {
+          id,
+        },
+      })
 
-    return server
-  }),
+      return server
+    }),
 
   select: publicProcedure
     .input(z.object({ id: z.string(), selected: z.boolean() }))
@@ -113,16 +143,18 @@ export const mlServerRouter = createTRPCRouter({
       return server
     }),
 
-  get: publicProcedure.input(z.object({ id: z.string() })).query(async ({ input, ctx }) => {
-    const { id } = input
-    const { prisma } = ctx
+  get: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const { id } = input
+      const { prisma } = ctx
 
-    const server = await prisma.mLServer.findUnique({
-      where: {
-        id,
-      },
-    })
+      const server = await prisma.mLServer.findUnique({
+        where: {
+          id,
+        },
+      })
 
-    return server
-  }),
+      return server
+    }),
 })
