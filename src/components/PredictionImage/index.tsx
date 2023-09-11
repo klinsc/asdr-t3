@@ -8,7 +8,6 @@ import {
   Rect,
   Stage,
   Text,
-  Transformer,
 } from 'react-konva'
 import useImage from 'use-image'
 import { type BoundingBox } from '~/models/drawings.model'
@@ -30,34 +29,34 @@ export interface RectangleProps {
 
 const Rectangle = ({
   shapeProps,
-  isSelected,
-}: // onSelect,
+}: // isSelected,
+// onSelect,
 // onChange,
 {
   shapeProps: RectangleProps
-  isSelected: boolean
+  // isSelected: boolean
   // onSelect: () => void
   // onChange: (newAttrs: RectangleProps) => void
 }) => {
   const shapeRef = useRef<Konva.Rect>(null)
-  const trRef = useRef<Konva.Transformer>(null)
+  // const trRef = useRef<Konva.Transformer>(null)
 
-  useEffect(() => {
-    if (isSelected) {
-      if (!trRef?.current || !shapeRef?.current) return
+  // useEffect(() => {
+  //   if (isSelected) {
+  //     if (!trRef?.current || !shapeRef?.current) return
 
-      // we need to attach transformer manually
-      trRef.current.nodes([shapeRef.current])
-      trRef.current.getLayer()?.batchDraw()
-    }
-  }, [isSelected])
+  //     // we need to attach transformer manually
+  //     trRef.current.nodes([shapeRef.current])
+  //     trRef.current.getLayer()?.batchDraw()
+  //   }
+  // }, [isSelected])
 
   return (
     <Fragment>
       <Label
         x={shapeProps.x}
         y={shapeProps.y - 20}
-        opacity={isSelected ? 1 : 1}
+        // opacity={isSelected ? 1 : 1}
         // draggable
         visible={shapeProps.visible}
         // onDragEnd={(e) => {
@@ -212,7 +211,7 @@ const PredictionImage = ({
 }: // predictedImageColRef
 PredictionImageProps) => {
   // hooks
-  const [selectedId, selectShape] = useState<string | null>(null)
+  // const [selectedId, selectShape] = useState<string | null>(null)
   const predictedImageColRef = useRef<HTMLDivElement>(null)
 
   // update rectangles when jsonResult changes
@@ -403,7 +402,7 @@ PredictionImageProps) => {
                   <Rectangle
                     key={i}
                     shapeProps={rect}
-                    isSelected={rect.id === selectedId}
+                    // isSelected={rect.id === selectedId}
                     // onSelect={() => {
                     //   selectShape(rect.id)
                     // }}
