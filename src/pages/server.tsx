@@ -84,7 +84,9 @@ export default function Home() {
           style={{
             textAlign: 'center',
           }}>
-          <Typography.Title level={4}>Add a new predicting server</Typography.Title>
+          <Typography.Title level={4}>
+            Add a new predicting server
+          </Typography.Title>
         </Col>
 
         {/* Input for a new server*/}
@@ -94,8 +96,16 @@ export default function Home() {
             textAlign: 'center',
           }}>
           <Space direction="vertical">
-            <Input placeholder="http://localhost:5000/" addonBefore="URL" ref={urlRef} />
-            <Input placeholder="Machine Learning" addonBefore="Name" ref={nameRef} />
+            <Input
+              placeholder="http://localhost:5000/"
+              addonBefore="URL"
+              ref={urlRef}
+            />
+            <Input
+              placeholder="Machine Learning"
+              addonBefore="Name"
+              ref={nameRef}
+            />
             <Button type="primary" onClick={() => void handleSubmit()}>
               Submit
             </Button>
@@ -125,7 +135,10 @@ export default function Home() {
                         Select
                       </Checkbox>
                     }>
-                    <Badge status={server.status as PresetStatusColorType} text={server.url} />
+                    <Badge
+                      status={server.status as PresetStatusColorType}
+                      text={server.url}
+                    />
                   </Card>
                 </Col>
               ))
