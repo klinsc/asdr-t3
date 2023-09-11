@@ -1,10 +1,11 @@
 import { Button, Col, Row, Space } from 'antd'
 import type Konva from 'konva'
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { Dispatch, Fragment, SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
 import { Image as KonvaImage, Label, Layer, Rect, Stage, Text, Transformer } from 'react-konva'
 import useImage from 'use-image'
 import { type BoundingBox } from '~/models/drawings.model'
 import LabelTable from './LabelTable'
+import { type KonvaEventObject } from 'konva/lib/Node'
 
 export interface RectangleProps {
   key: string
@@ -20,16 +21,25 @@ export interface RectangleProps {
   visible: boolean
 }
 
+export interface RectangleChangeProps extends RectangleProps {
+  show?: () => void
+  hide?: () => void
+}
+
 const Rectangle = ({
   shapeProps,
   isSelected,
-  onSelect,
-  onChange,
-}: {
+  rectanglesVisible,
+  setRectanglesVisible,
+}: // onSelect,
+// onChange,
+{
   shapeProps: RectangleProps
   isSelected: boolean
-  onSelect: () => void
-  onChange: (newAttrs: RectangleProps) => void
+  rectanglesVisible: RectangleChangeProps[]
+  setRectanglesVisible: Dispatch<SetStateAction<RectangleChangeProps[]>>
+  // onSelect: () => void
+  // onChange: (newAttrs: RectangleProps) => void
 }) => {
   const shapeRef = useRef<Konva.Rect>(null)
   const trRef = useRef<Konva.Transformer>(null)
@@ -44,21 +54,39 @@ const Rectangle = ({
     }
   }, [isSelected])
 
+  // effect for set show/hide for all rectangles
+  useEffect(() => {
+    if (!shapeRef?.current) return
+
+    const newRectanglesVisible = rectanglesVisible.map((rectangle) => {
+      if (rectangle.id === shapeProps.id) {
+        return {
+          ...rectangle,
+          show: () => shapeRef.current?.show(),
+          hide: () => shapeRef.current?.hide(),
+        }
+      }
+      return rectangle
+    })
+    setRectanglesVisible(newRectanglesVisible)
+  }, [rectanglesVisible, setRectanglesVisible, shapeProps.id])
+
   return (
     <Fragment>
       <Label
         x={shapeProps.x}
         y={shapeProps.y - 20}
         opacity={isSelected ? 1 : 1}
-        draggable
+        // draggable
         visible={shapeProps.visible}
-        onDragEnd={(e) => {
-          onChange({
-            ...shapeProps,
-            x: e.target.x(),
-            y: e.target.y(),
-          })
-        }}>
+        // onDragEnd={(e) => {
+        //   onChange({
+        //     ...shapeProps,
+        //     x: e.target.x(),
+        //     y: e.target.y(),
+        //   })
+        // }}
+      >
         <Text
           text={shapeProps.name}
           fill="black"
@@ -69,41 +97,43 @@ const Rectangle = ({
         />
       </Label>
       <Rect
-        onClick={onSelect}
-        onTap={onSelect}
+        onClick={(evt: KonvaEventObject<MouseEvent>) => {
+          evt.cancelBubble = true
+        }}
+        // onTap={onSelect}
         ref={shapeRef}
         {...shapeProps}
-        draggable
-        onDragEnd={(e) => {
-          onChange({
-            ...shapeProps,
-            x: e.target.x(),
-            y: e.target.y(),
-          })
-        }}
-        onTransformEnd={(_e) => {
-          // transformer is changing scale of the node
-          // and NOT its width or height
-          // but in the store we have only width and height
-          // to match the data better we will reset scale on transform end
-          const node = shapeRef.current
-          if (!node) return
+        // draggable
+        // onDragEnd={(e) => {
+        //   onChange({
+        //     ...shapeProps,
+        //     x: e.target.x(),
+        //     y: e.target.y(),
+        //   })
+        // }}
+        // onTransformEnd={(_e) => {
+        //   // transformer is changing scale of the node
+        //   // and NOT its width or height
+        //   // but in the store we have only width and height
+        //   // to match the data better we will reset scale on transform end
+        //   const node = shapeRef.current
+        //   if (!node) return
 
-          const scaleX = node.scaleX()
-          const scaleY = node.scaleY()
+        //   const scaleX = node.scaleX()
+        //   const scaleY = node.scaleY()
 
-          // we will reset it back
-          node.scaleX(1)
-          node.scaleY(1)
-          onChange({
-            ...shapeProps,
-            x: node.x(),
-            y: node.y(),
-            // set minimal value
-            width: Math.max(5, node.width() * scaleX),
-            height: Math.max(node.height() * scaleY),
-          })
-        }}
+        //   // we will reset it back
+        //   node.scaleX(1)
+        //   node.scaleY(1)
+        //   onChange({
+        //     ...shapeProps,
+        //     x: node.x(),
+        //     y: node.y(),
+        //     // set minimal value
+        //     width: Math.max(5, node.width() * scaleX),
+        //     height: Math.max(node.height() * scaleY),
+        //   })
+        // }}
       />
       {isSelected && (
         <Transformer
@@ -216,6 +246,7 @@ PredictionImageProps) => {
     })
   }, [jsonResult])
   const [rectangles, setRectangles] = useState(initialRectangles)
+  const [rectanglesVisible, setRectanglesVisible] = useState<RectangleChangeProps[]>([])
 
   // get image size from imageFile
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 })
@@ -344,6 +375,13 @@ PredictionImageProps) => {
     lastDist = 0
   }
 
+  // effects after rectangles change, set a new rectanglesVisible
+  useEffect(() => {
+    setRectanglesVisible(rectangles)
+  }, [rectangles])
+
+  // effects after rectanglesVisible change, update jsonResult
+
   return (
     <>
       <Row justify="center" align="top">
@@ -382,11 +420,13 @@ PredictionImageProps) => {
                     onSelect={() => {
                       selectShape(rect.id)
                     }}
-                    onChange={(newAttrs: RectangleProps) => {
-                      const rects = rectangles.slice()
-                      rects[i] = newAttrs
-                      setRectangles(rects)
-                    }}
+                    rectanglesVisible={rectanglesVisible}
+                    setRectanglesVisible={setRectanglesVisible}
+                    // onChange={(newAttrs: RectangleProps) => {
+                    //   const rects = rectangles.slice()
+                    //   rects[i] = newAttrs
+                    //   setRectangles(rects)
+                    // }}
                   />
                 )
               })}
