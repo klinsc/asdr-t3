@@ -1,7 +1,22 @@
 import { Button, Col, Row, Space } from 'antd'
 import type Konva from 'konva'
-import { Fragment, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react'
-import { Image as KonvaImage, Label, Layer, Rect, Stage, Text } from 'react-konva'
+import {
+  Fragment,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react'
+import {
+  Image as KonvaImage,
+  Label,
+  Layer,
+  Rect,
+  Stage,
+  Text,
+} from 'react-konva'
 import useImage from 'use-image'
 import { type BoundingBox } from '~/models/drawings.model'
 import LabelTable from './LabelTable'
@@ -156,15 +171,21 @@ function hexToRgb(hex: string) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return result
     ? // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      `rgb(${parseInt(result[1] ?? '', 16)},${parseInt(result[2] ?? '', 16)},${parseInt(
-        result[3] ?? '',
+      `rgb(${parseInt(result[1] ?? '', 16)},${parseInt(
+        result[2] ?? '',
         16,
-      )},0.3)`
+      )},${parseInt(result[3] ?? '', 16)},0.3)`
     : null
 }
 
 // the first very simple and recommended way:
-const DrawingImage = ({ src, fitImage }: { src: string; fitImage: () => void }) => {
+const DrawingImage = ({
+  src,
+  fitImage,
+}: {
+  src: string
+  fitImage: () => void
+}) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
   const [image, status] = useImage(src) as [
     HTMLImageElement | undefined,
@@ -181,7 +202,10 @@ const DrawingImage = ({ src, fitImage }: { src: string; fitImage: () => void }) 
 
 const scaleBy = 1.01
 
-function getDistance(p1: { x: number; y: number }, p2: { x: number; y: number }) {
+function getDistance(
+  p1: { x: number; y: number },
+  p2: { x: number; y: number },
+) {
   return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
 }
 
@@ -202,7 +226,11 @@ function getCenter(
 }
 
 function touchEnabled() {
-  return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.maxTouchPoints > 0
+  return (
+    'ontouchstart' in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.maxTouchPoints > 0
+  )
 }
 
 interface PredictionImageProps {
@@ -243,7 +271,9 @@ PredictionImageProps) => {
     })
   }, [jsonResult])
   const [rectangles, setRectangles] = useState(initialRectangles)
-  const [rectanglesVisible, setRectanglesVisible] = useState<RectangleChangeProps[]>([])
+  const [rectanglesVisible, setRectanglesVisible] = useState<
+    RectangleChangeProps[]
+  >([])
 
   // get image size from imageFile
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 })
@@ -266,7 +296,9 @@ PredictionImageProps) => {
   const stageRef = useRef<Konva.Stage>(null)
   let lastCenter: { x: number; y: number } | null = null
   let lastDist = 0
-  function zoomStage(event: { evt: { preventDefault: () => void; deltaY: number } }) {
+  function zoomStage(event: {
+    evt: { preventDefault: () => void; deltaY: number }
+  }) {
     event.evt.preventDefault()
     if (stageRef.current !== null) {
       const stage = stageRef.current
@@ -281,7 +313,8 @@ PredictionImageProps) => {
         x: (pointerX - stage.x()) / oldScale,
         y: (pointerY - stage.y()) / oldScale,
       }
-      const newScale = event.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy
+      const newScale =
+        event.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy
       stage.scale({ x: newScale, y: newScale })
       const newPos = {
         x: pointerX - mousePointTo.x * newScale,
