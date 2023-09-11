@@ -7,7 +7,7 @@ const App = () => {
   const urlRef = useRef<InputRef>(null)
   const nameRef = useRef<InputRef>(null)
 
-  const server = api.server.create.useMutation({
+  const server = api.mlServer.create.useMutation({
     onSuccess: () => {
       void message.success('Server created')
     },
@@ -30,7 +30,11 @@ const App = () => {
 
   return (
     <Space direction="vertical">
-      <Input placeholder="http://localhost:5000/" addonBefore="URL" ref={urlRef} />
+      <Input
+        placeholder="http://localhost:5000/"
+        addonBefore="URL"
+        ref={urlRef}
+      />
       <Input placeholder="Machine Learning" addonBefore="Name" ref={nameRef} />
       <Button type="primary" onClick={() => void handleSubmit()}>
         Submit

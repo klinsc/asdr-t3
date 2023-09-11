@@ -1,6 +1,7 @@
-import { exampleRouter } from "~/server/api/routers/example";
-import { createTRPCRouter } from "~/server/api/trpc";
-import { mlServerRouter } from "./routers/mlServer";
+import { exampleRouter } from '~/server/api/routers/example'
+import { createTRPCRouter } from '~/server/api/trpc'
+import { mlServerRouter } from './routers/mlServerRouter'
+import { healthRouter } from './routers/health'
 
 /**
  * This is the primary router for your server.
@@ -9,8 +10,9 @@ import { mlServerRouter } from "./routers/mlServer";
  */
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
-  server: mlServerRouter
-});
+  mlServer: mlServerRouter,
+  health: healthRouter,
+})
 
 // export type definition of API
-export type AppRouter = typeof appRouter;
+export type AppRouter = typeof appRouter

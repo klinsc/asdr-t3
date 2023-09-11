@@ -1,5 +1,12 @@
 import { UploadOutlined } from '@ant-design/icons'
-import { Button, message, Space, Upload, type UploadFile, type UploadProps } from 'antd'
+import {
+  Button,
+  message,
+  Space,
+  Upload,
+  type UploadFile,
+  type UploadProps,
+} from 'antd'
 import { type RcFile } from 'antd/es/upload'
 import { useState } from 'react'
 import { api } from '~/utils/api'
@@ -12,12 +19,18 @@ interface UploadPDFProps {
   setIsLoading: (isLoading: boolean) => void
 }
 
-const UploadPDF = ({ imageFile, setImageFile, next, isLoading, setIsLoading }: UploadPDFProps) => {
+const UploadPDF = ({
+  imageFile,
+  setImageFile,
+  next,
+  isLoading,
+  setIsLoading,
+}: UploadPDFProps) => {
   // hooks
   const [fileList, setFileList] = useState<UploadFile[]>([])
 
   // trpcs
-  const serverGetSelected = api.server.getSelected.useQuery()
+  const serverGetSelected = api.mlServer.getSelected.useQuery()
 
   // props
   const props: UploadProps = {
@@ -87,7 +100,11 @@ const UploadPDF = ({ imageFile, setImageFile, next, isLoading, setIsLoading }: U
         <Button
           icon={<UploadOutlined />}
           loading={isLoading}
-          type={fileList.length === 0 && imageFile?.length === 0 ? 'primary' : 'default'}>
+          type={
+            fileList.length === 0 && imageFile?.length === 0
+              ? 'primary'
+              : 'default'
+          }>
           Select File
         </Button>
       </Upload>

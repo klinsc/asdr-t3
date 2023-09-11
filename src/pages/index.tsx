@@ -5,7 +5,17 @@ import {
   UploadOutlined,
 } from '@ant-design/icons'
 import { Container } from '@mui/material'
-import { Card, Col, Row, Select, Steps, Typography, theme } from 'antd'
+import {
+  Badge,
+  Card,
+  Col,
+  Row,
+  Select,
+  Space,
+  Steps,
+  Typography,
+  theme,
+} from 'antd'
 import Head from 'next/head'
 import { useCallback, useMemo, useState } from 'react'
 import Layout from '~/components/Layout'
@@ -20,6 +30,7 @@ import type {
   MissingComponent,
   RemainingComponent,
 } from '~/models/drawings.model'
+import { api } from '~/utils/api'
 
 export default function Home() {
   // hooks
@@ -41,6 +52,9 @@ export default function Home() {
   const [jsonUrl, setJsonUrl] = useState('')
   const [jsonResult, setJsonResult] = useState<BoundingBox[]>([])
   // const predictedImageColRef = useRef<HTMLDivElement>(null)
+
+  // trpcs
+  const healthServer = api.health.getAll.useQuery()
 
   // handlers
   const next = useCallback(() => {
@@ -208,7 +222,20 @@ export default function Home() {
       <Container maxWidth="lg">
         <Card
           title={
-            <Typography.Title level={4}>Diagnose a Drawing</Typography.Title>
+            <>
+              <Typography.Title level={4}>Diagnose a Drawing</Typography.Title>
+
+              <Space>
+                <Badge
+                  status={healthServer?.data?.ml}
+                  text={'Machine Learning Server'}
+                />
+                <Badge
+                  status={healthServer?.data?.db}
+                  text={'Database Server'}
+                />
+              </Space>
+            </>
           }>
           <Row justify="center" align="middle" style={{ width: '100%' }}>
             {/* Steps */}

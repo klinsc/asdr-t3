@@ -43,7 +43,7 @@ const PredictJPEG = ({
   const [checkbox, setCheckbox] = useState(false)
 
   // trpcs
-  const serverGetSelected = api.server.getSelected.useQuery()
+  const serverGetSelected = api.mlServer.getSelected.useQuery()
 
   // handlers
   const handleCheckbox = () => {
@@ -57,7 +57,9 @@ const PredictJPEG = ({
       formData.append('files[]', imageFile as RcFile)
       // You can use any AJAX library you like
       const response = await fetch(
-        `${serverGetSelected?.data?.url}test-predict?test=${checkbox.toString()}`,
+        `${
+          serverGetSelected?.data?.url
+        }test-predict?test=${checkbox.toString()}`,
         {
           method: 'POST',
           headers: {
@@ -78,9 +80,15 @@ const PredictJPEG = ({
 
       // parse json
       const lineTypes = JSON.parse(json.line_types) as LineType[]
-      const drawingComponents = JSON.parse(json.drawing_components) as DrawingComponent[]
-      const missingComponents = JSON.parse(json.missing_components) as MissingComponent[]
-      const remainingComponents = JSON.parse(json.remaining_components) as RemainingComponent[]
+      const drawingComponents = JSON.parse(
+        json.drawing_components,
+      ) as DrawingComponent[]
+      const missingComponents = JSON.parse(
+        json.missing_components,
+      ) as MissingComponent[]
+      const remainingComponents = JSON.parse(
+        json.remaining_components,
+      ) as RemainingComponent[]
 
       setLineTypes(lineTypes)
       setDrawingComponents(drawingComponents)
@@ -88,28 +96,34 @@ const PredictJPEG = ({
       setRemainingComponents(remainingComponents)
 
       // CSV file
-      const csvResponse = await fetch(`${serverGetSelected?.data?.url}predict?type=csv`, {
-        method: 'POST',
-        headers: {
-          enctype: 'multipart/form-data',
-          responseType: 'text/csv',
+      const csvResponse = await fetch(
+        `${serverGetSelected?.data?.url}predict?type=csv`,
+        {
+          method: 'POST',
+          headers: {
+            enctype: 'multipart/form-data',
+            responseType: 'text/csv',
+          },
+          body: formData,
         },
-        body: formData,
-      })
+      )
       if (csvResponse.status !== 200) throw new Error('Prediction failed!')
       const csvBlob = await csvResponse.blob()
       const csvUrl = URL.createObjectURL(csvBlob)
       setCsvUrl(csvUrl)
 
       // JSON file
-      const jsonResponse = await fetch(`${serverGetSelected?.data?.url}predict?type=json`, {
-        method: 'POST',
-        headers: {
-          enctype: 'multipart/form-data',
-          responseType: 'application/json',
+      const jsonResponse = await fetch(
+        `${serverGetSelected?.data?.url}predict?type=json`,
+        {
+          method: 'POST',
+          headers: {
+            enctype: 'multipart/form-data',
+            responseType: 'application/json',
+          },
+          body: formData,
         },
-        body: formData,
-      })
+      )
       if (jsonResponse.status !== 200) throw new Error('Prediction failed!')
       const jsonBlob = await jsonResponse.blob()
       const jsonUrl = URL.createObjectURL(jsonBlob)

@@ -23,10 +23,10 @@ export default function Server() {
   const nameRef = useRef<InputRef>(null)
 
   // trpcs
-  const serverGetAll = api.server.getAll.useQuery(undefined, {
+  const serverGetAll = api.mlServer.getAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
-  const serverCreate = api.server.create.useMutation({
+  const serverCreate = api.mlServer.create.useMutation({
     onSuccess: () => {
       void serverGetAll.refetch()
       void message.success('Server created')
@@ -35,7 +35,7 @@ export default function Server() {
       void message.error('Server creation failed')
     },
   })
-  const serverSelect = api.server.select.useMutation({
+  const serverSelect = api.mlServer.select.useMutation({
     onSuccess: () => {
       void serverGetAll.refetch()
       void message.success('Server selected')
