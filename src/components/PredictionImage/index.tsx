@@ -1,11 +1,10 @@
 import { Button, Col, Row, Space } from 'antd'
 import type Konva from 'konva'
-import { Dispatch, Fragment, SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
-import { Image as KonvaImage, Label, Layer, Rect, Stage, Text, Transformer } from 'react-konva'
+import { Fragment, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react'
+import { Image as KonvaImage, Label, Layer, Rect, Stage, Text } from 'react-konva'
 import useImage from 'use-image'
 import { type BoundingBox } from '~/models/drawings.model'
 import LabelTable from './LabelTable'
-import { type KonvaEventObject } from 'konva/lib/Node'
 
 export interface RectangleProps {
   key: string
@@ -75,7 +74,7 @@ const Rectangle = ({
     <Fragment>
       <Label
         x={shapeProps.x}
-        y={shapeProps.y - 20}
+        y={shapeProps.y - 40}
         opacity={isSelected ? 1 : 1}
         // draggable
         visible={shapeProps.visible}
@@ -97,9 +96,7 @@ const Rectangle = ({
         />
       </Label>
       <Rect
-        onClick={(evt: KonvaEventObject<MouseEvent>) => {
-          evt.cancelBubble = true
-        }}
+        // onClick={onSelect}
         // onTap={onSelect}
         ref={shapeRef}
         {...shapeProps}
@@ -135,7 +132,7 @@ const Rectangle = ({
         //   })
         // }}
       />
-      {isSelected && (
+      {/* {isSelected && (
         <Transformer
           ref={trRef}
           boundBoxFunc={(oldBox, newBox) => {
@@ -146,7 +143,7 @@ const Rectangle = ({
             return newBox
           }}
         />
-      )}
+      )} */}
     </Fragment>
   )
 }
@@ -417,9 +414,6 @@ PredictionImageProps) => {
                     key={i}
                     shapeProps={rect}
                     isSelected={rect.id === selectedId}
-                    onSelect={() => {
-                      selectShape(rect.id)
-                    }}
                     rectanglesVisible={rectanglesVisible}
                     setRectanglesVisible={setRectanglesVisible}
                     // onChange={(newAttrs: RectangleProps) => {
