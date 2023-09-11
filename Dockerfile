@@ -1,9 +1,17 @@
 # create a docker image for the application of t3 nextjs stack
 
-FROM node:lts-alpine3.14
+FROM node:16-alpine
 
-RUN apk update && \
-    apk add --no-cache libc6-compat autoconf automake libtool make tiff jpeg zlib zlib-dev pkgconf nasm file gcc musl-dev
+RUN apk add --update --no-cache \
+    make \
+    g++ \
+    jpeg-dev \
+    cairo-dev \
+    giflib-dev \
+    pango-dev \
+    libtool \
+    autoconf \
+    automake
 
 # Create app directory
 WORKDIR /usr/src/asdr-t3
@@ -26,12 +34,12 @@ RUN npm run postinstall
 EXPOSE 3000
 
 # Environment variables
-ENV NODE_ENV="production"
+ENV NODE_ENV="development"
 
 # Build the app
-RUN npm run build
+# RUN npm run build
 
 # Run the app
-CMD [ "npm", "start" ]
+CMD [ "npm", "run", "dev" ]
 
 # docker build -t asdr-t3 .

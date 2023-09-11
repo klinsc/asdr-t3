@@ -45,8 +45,8 @@ services:
     build: .
     image: klinsc/asdr-flask:latest
     restart: unless-stopped
-    expose:
-      - 5000
+    ports:
+      - "5000:5000"
     depends_on:
       - app
     volumes:
