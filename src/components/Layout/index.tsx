@@ -57,7 +57,10 @@ const App = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <Layout>
-      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={(value) => setCollapsed(value)}>
         <div
           className="demo-logo-vertical"
           style={{
@@ -65,7 +68,12 @@ const App = ({ children }: { children: React.ReactNode }) => {
             width: '100%',
           }}
         />
-        <Menu defaultSelectedKeys={['1']} mode="inline" items={items} style={{ height: '100%' }} />
+        <Menu
+          defaultSelectedKeys={['1']}
+          mode="inline"
+          items={items}
+          style={{ height: '100%' }}
+        />
       </Sider>
 
       <Layout style={{ background: colorBgContainer, minHeight: 1024 }}>
@@ -89,7 +97,8 @@ const App = ({ children }: { children: React.ReactNode }) => {
                   margin: 0,
                   marginLeft: 16,
                 }}>
-                ASDR: Automatic System to Diagnose and Recognize Electrical Drawings
+                ASDR: Automatic System to Diagnose and Recognize Electrical
+                Drawings
               </Typography.Title>
             </Col>
             <Col
@@ -110,9 +119,17 @@ const App = ({ children }: { children: React.ReactNode }) => {
           </Row>
         </Header>
 
-        <Content style={{ padding: '0 24px', minHeight: 280 }}>{children}</Content>
+        <Content
+          style={{
+            padding: '24px 24px',
+            minHeight: 280,
+          }}>
+          {children}
+        </Content>
 
-        <Footer style={{ textAlign: 'center' }}>ASDR ©2023 Created by Chatbordin Klinsrisuk</Footer>
+        <Footer style={{ textAlign: 'center' }}>
+          ASDR ©2023 Created by Chatbordin Klinsrisuk
+        </Footer>
       </Layout>
     </Layout>
   )
