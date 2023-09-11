@@ -55,8 +55,6 @@ const LabelTable = ({ rectangles, setRectangles }: LabelTableProps) => {
               return group
             })
             setRectangleGroups(newRectangleGroups)
-
-            debugger
           }}
         //   checked={value}
         />
