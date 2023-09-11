@@ -1,14 +1,6 @@
 import { Button, Col, Row, Space } from 'antd'
 import type Konva from 'konva'
-import {
-  Fragment,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Image as KonvaImage,
   Label,
@@ -16,6 +8,7 @@ import {
   Rect,
   Stage,
   Text,
+  Transformer,
 } from 'react-konva'
 import useImage from 'use-image'
 import { type BoundingBox } from '~/models/drawings.model'
@@ -35,23 +28,14 @@ export interface RectangleProps {
   visible: boolean
 }
 
-export interface RectangleChangeProps extends RectangleProps {
-  show?: () => void
-  hide?: () => void
-}
-
 const Rectangle = ({
   shapeProps,
   isSelected,
-  rectanglesVisible,
-  setRectanglesVisible,
 }: // onSelect,
 // onChange,
 {
   shapeProps: RectangleProps
   isSelected: boolean
-  rectanglesVisible: RectangleChangeProps[]
-  setRectanglesVisible: Dispatch<SetStateAction<RectangleChangeProps[]>>
   // onSelect: () => void
   // onChange: (newAttrs: RectangleProps) => void
 }) => {
@@ -68,28 +52,11 @@ const Rectangle = ({
     }
   }, [isSelected])
 
-  // effect for set show/hide for all rectangles
-  useEffect(() => {
-    if (!shapeRef?.current) return
-
-    const newRectanglesVisible = rectanglesVisible.map((rectangle) => {
-      if (rectangle.id === shapeProps.id) {
-        return {
-          ...rectangle,
-          show: () => shapeRef.current?.show(),
-          hide: () => shapeRef.current?.hide(),
-        }
-      }
-      return rectangle
-    })
-    setRectanglesVisible(newRectanglesVisible)
-  }, [rectanglesVisible, setRectanglesVisible, shapeProps.id])
-
   return (
     <Fragment>
       <Label
         x={shapeProps.x}
-        y={shapeProps.y - 40}
+        y={shapeProps.y - 20}
         opacity={isSelected ? 1 : 1}
         // draggable
         visible={shapeProps.visible}
@@ -271,9 +238,6 @@ PredictionImageProps) => {
     })
   }, [jsonResult])
   const [rectangles, setRectangles] = useState(initialRectangles)
-  const [rectanglesVisible, setRectanglesVisible] = useState<
-    RectangleChangeProps[]
-  >([])
 
   // get image size from imageFile
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 })
@@ -405,13 +369,6 @@ PredictionImageProps) => {
     lastDist = 0
   }
 
-  // effects after rectangles change, set a new rectanglesVisible
-  useEffect(() => {
-    setRectanglesVisible(rectangles)
-  }, [rectangles])
-
-  // effects after rectanglesVisible change, update jsonResult
-
   return (
     <>
       <Row justify="center" align="top">
@@ -447,8 +404,9 @@ PredictionImageProps) => {
                     key={i}
                     shapeProps={rect}
                     isSelected={rect.id === selectedId}
-                    rectanglesVisible={rectanglesVisible}
-                    setRectanglesVisible={setRectanglesVisible}
+                    // onSelect={() => {
+                    //   selectShape(rect.id)
+                    // }}
                     // onChange={(newAttrs: RectangleProps) => {
                     //   const rects = rectangles.slice()
                     //   rects[i] = newAttrs
