@@ -1,7 +1,6 @@
-import type { PresetStatusColorType } from 'antd/es/_util/colors'
 import { z } from 'zod'
+import { fetchTimeout, timeout } from '~/libs/server/fetctTimeout'
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
-import { setTimeout } from 'node:timers/promises'
 
 export const mlServerRouter = createTRPCRouter({
   create: publicProcedure
@@ -30,52 +29,9 @@ export const mlServerRouter = createTRPCRouter({
     const checkLiveServers = await Promise.all(
       servers.map(async (server) => {
         const { url } = server
-        let status: PresetStatusColorType = 'default'
-        const cancelRequest = new AbortController()
-        const cancelTimeout = new AbortController()
-
-        async function fetchTimeout() {
-          try {
-            const res = await fetch(`${url}health`, {
-              method: 'GET',
-            })
-            if (server.selected && res.status === 200) {
-              status = 'success'
-            } else if (server.selected && res.status !== 200) {
-              status = 'error'
-            }
-
-            return { status }
-          } catch (error) {
-            if (error instanceof TypeError) {
-              console.error(error.message)
-            } else {
-              console.error(error)
-            }
-
-            if (server.selected) {
-              status = 'error'
-            }
-
-            return { status }
-          }
-        }
-
-        async function timeout() {
-          await setTimeout(1000)
-          cancelTimeout.abort()
-          cancelRequest.abort()
-
-          if (server.selected) {
-            status = 'error'
-          }
-
-          return { status }
-        }
-
         const { status: result } = await Promise.race([
-          fetchTimeout(),
-          timeout(),
+          fetchTimeout({ url, server }),
+          timeout({ server }),
         ])
 
         return { status: result }
