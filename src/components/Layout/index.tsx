@@ -44,6 +44,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
         key: React.Key,
         icon?: React.ReactNode,
         children?: MenuItem[],
+        query?: Record<string, string | string[] | undefined>,
       ): MenuItem => {
         return {
           key,
@@ -51,7 +52,10 @@ const App = ({ children }: { children: React.ReactNode }) => {
           children,
           label,
           onClick: () => {
-            void router.push(`/${key}`)
+            void router.push({
+              pathname: `/${key}`,
+              query,
+            })
           },
         } as MenuItem
       },
@@ -62,7 +66,9 @@ const App = ({ children }: { children: React.ReactNode }) => {
     () => [
       getItem('Diagnose a Drawing', '/', <FileSearchOutlined />),
       getItem('Machine Learning Server', 'server', <DesktopOutlined />),
-      getItem('Drawing Type Map', 'map', <ClusterOutlined />),
+      getItem('Drawing Type Map', 'map', <ClusterOutlined />, undefined, {
+        tab: '1',
+      }),
     ],
     [getItem],
   )

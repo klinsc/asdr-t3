@@ -1,0 +1,232 @@
+import {
+  Button,
+  Card,
+  Col,
+  Input,
+  Modal,
+  Row,
+  Space,
+  Typography,
+  message,
+  type InputRef,
+  Select,
+} from 'antd'
+import { useRouter } from 'next/router'
+import { useEffect, useRef } from 'react'
+import { api } from '~/utils/api'
+
+export const LineType = () => {
+  // router
+  const router = useRouter()
+  const { tab, edit, id, drawingTypeId } = router.query
+
+  // hooks
+  const nameRef = useRef<InputRef>(null)
+  const descriptionRef = useRef<InputRef>(null)
+  const editNameRef = useRef<InputRef>(null)
+  const editDescriptionRef = useRef<InputRef>(null)
+
+  // messageAPI
+  const [messageApi, contextHolder] = message.useMessage()
+
+  // trpcs
+  const drawingTypeGetAll = api.drawingType.getAll.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  })
+
+  // handlers
+  const handleSubmit = () => {
+    if (!nameRef.current?.input?.value) {
+      void messageApi.error('Name is required')
+      return
+    }
+
+    // create a line type
+  }
+
+  useEffect(() => {
+    const storageDrawingTypeId = localStorage.getItem('drawingTypeId')
+    if (storageDrawingTypeId) {
+      void router.push({
+        pathname: '/map',
+        query: {
+          tab,
+          drawingTypeId: storageDrawingTypeId,
+        },
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
+
+  return (
+    <>
+      {contextHolder}
+      <Row justify="center" align="middle" gutter={[16, 16]}>
+        {/* Add a new line type */}
+        <Col
+          span={24}
+          style={{
+            textAlign: 'center',
+          }}>
+          <Typography.Title level={4}>Manage Line Type Map</Typography.Title>
+        </Col>
+
+        {/* Input for a new line type */}
+        <Col
+          span={24}
+          style={{
+            textAlign: 'center',
+          }}>
+          <Space direction="vertical">
+            {/* Select list for drawing type */}
+            <Select
+              loading={drawingTypeGetAll.isFetching}
+              value={
+                drawingTypeId ?? drawingTypeGetAll?.data?.[0]?.id ?? undefined
+              }
+              style={{ width: 240 }}
+              onChange={(value) => {
+                localStorage.setItem('drawingTypeId', value as string)
+
+                void router.push({
+                  pathname: '/map',
+                  query: {
+                    tab,
+                    drawingTypeId: value,
+                  },
+                })
+              }}>
+              {drawingTypeGetAll?.data?.map((drawingType) => (
+                <Select.Option value={drawingType.id} key={drawingType.id}>
+                  {drawingType.name}
+                </Select.Option>
+              ))}
+            </Select>
+
+            <Input placeholder="115kV" addonBefore="Name" ref={nameRef} />
+            <Input
+              placeholder="The main line type for every 115/22kV substation"
+              addonBefore="Description"
+              ref={descriptionRef}
+            />
+            <Button type="primary" onClick={() => void handleSubmit()}>
+              Add
+            </Button>
+          </Space>
+        </Col>
+      </Row>
+
+      <Row gutter={[16, 16]}>
+        {/* List of drawing types */}
+        <Col span={24}>
+          <Typography.Title level={4}>List of line types</Typography.Title>
+        </Col>
+
+        {/* {drawingTypeGetAll.isFetching && <Col span={24}>Loading...</Col>} */}
+        {/* {!drawingTypeGetAll.isFetching && (
+          <>
+            {drawingTypeGetAll?.data && drawingTypeGetAll?.data?.length > 0 ? (
+              drawingTypeGetAll.data.map((drawingType) => (
+                <Col span={6} key={drawingType.id}>
+                  <Card
+                    title={drawingType.name}
+                    extra={
+                      <Button
+                        type="text"
+                        onClick={() => {
+                          void router.push({
+                            pathname: '/map',
+                            query: {
+                              tab,
+                              edit: 'true',
+                              id: drawingType.id,
+                            },
+                          })
+                        }}>
+                        Edit
+                      </Button>
+                    }>
+                    <Typography.Text>{drawingType.description}</Typography.Text>
+                  </Card>
+                  <Modal
+                    title="Edit drawing type"
+                    open={edit === 'true' && id === drawingType.id}
+                    destroyOnClose
+                    onCancel={() => {
+                      void router.push({
+                        pathname: '/map',
+                        query: {
+                          tab,
+                        },
+                      })
+                    }}
+                    footer={[
+                      <Button
+                        key="delete"
+                        danger
+                        type="text"
+                        onClick={() => {
+                          window.confirm(
+                            'Are you sure you want to delete this drawing type?',
+                          ) &&
+                            void drawingTypeDelete.mutate({
+                              id: drawingType.id,
+                            })
+                        }}>
+                        Delete
+                      </Button>,
+                      <Button
+                        key="cancel"
+                        onClick={() => {
+                          void router.push({
+                            pathname: '/map',
+                            query: {
+                              tab,
+                            },
+                          })
+                        }}>
+                        Cancel
+                      </Button>,
+                      <Button
+                        key="submit"
+                        type="primary"
+                        onClick={() => {
+                          drawingTypeUpdate.mutate({
+                            id: drawingType.id,
+                            name: editNameRef.current?.input?.value,
+                            description:
+                              editDescriptionRef.current?.input?.value,
+                          })
+                        }}>
+                        Update
+                      </Button>,
+                    ]}>
+                    <Space direction="vertical">
+                      <Input
+                        placeholder="Main & Transfer"
+                        addonBefore="Name"
+                        defaultValue={drawingType.name}
+                        ref={editNameRef}
+                      />
+                      <Input
+                        placeholder="The most popular drawing type map of electrical power substation"
+                        addonBefore="Description"
+                        defaultValue={drawingType.description ?? ''}
+                        ref={editDescriptionRef}
+                      />
+                    </Space>
+                    <Space direction="vertical"></Space>
+                  </Modal>
+                </Col>
+              ))
+            ) : (
+              <Col span={24}>
+                <Typography.Text>No servers</Typography.Text>
+              </Col>
+            )}
+          </>
+        )} */}
+      </Row>
+    </>
+  )
+}
