@@ -158,10 +158,7 @@ const LineTypeTree = () => {
     },
   })
 
-  // handlers: onSelect
-  const onSelect = (selectedKeys: React.Key[], info: unknown) => {
-    console.log('selected', selectedKeys, info)
-  }
+  // handlers: handleAdd
   const handleAdd = async () => {
     const count = editCountRef.current?.value
     await createLineTypeComponent.mutateAsync({
@@ -386,7 +383,6 @@ const LineTypeTree = () => {
           selectable={false}
           showLine
           defaultExpandAll
-          onSelect={onSelect}
           treeData={treeData}
         />
       </Space>
