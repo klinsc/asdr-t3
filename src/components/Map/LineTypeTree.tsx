@@ -1,0 +1,397 @@
+import { CloseOutlined, DeleteOutlined } from '@ant-design/icons'
+import { Button, InputNumber, Select, Space, Tree, message } from 'antd'
+import type { DataNode } from 'antd/es/tree'
+import { useRouter } from 'next/router'
+import React, { useMemo } from 'react'
+import { api } from '~/utils/api'
+
+// const treeData: DataNode[] = [
+//   {
+//     title: 'parent 1',
+//     key: '0-0',
+//     icon: <CarryOutOutlined />,
+//     children: [
+//       {
+//         title: 'parent 1-0',
+//         key: '0-0-0',
+//         icon: <CarryOutOutlined />,
+//         children: [
+//           { title: 'leaf', key: '0-0-0-0', icon: <CarryOutOutlined /> },
+//           {
+//             title: (
+//               <>
+//                 <div>multiple line title</div>
+//                 <div>multiple line title</div>
+//               </>
+//             ),
+//             key: '0-0-0-1',
+//             icon: <CarryOutOutlined />,
+//           },
+//           { title: 'leaf', key: '0-0-0-2', icon: <CarryOutOutlined /> },
+//         ],
+//       },
+//       {
+//         title: 'parent 1-1',
+//         key: '0-0-1',
+//         icon: <CarryOutOutlined />,
+//         children: [
+//           { title: 'leaf', key: '0-0-1-0', icon: <CarryOutOutlined /> },
+//         ],
+//       },
+//       {
+//         title: 'parent 1-2',
+//         key: '0-0-2',
+//         icon: <CarryOutOutlined />,
+//         children: [
+//           { title: 'leaf', key: '0-0-2-0', icon: <CarryOutOutlined /> },
+//           {
+//             title: 'leaf',
+//             key: '0-0-2-1',
+//             icon: <CarryOutOutlined />,
+//             switcherIcon: <FormOutlined />,
+//           },
+//         ],
+//       },
+//     ],
+//   },
+//   {
+//     title: 'parent 2',
+//     key: '0-1',
+//     icon: <CarryOutOutlined />,
+//     children: [
+//       {
+//         title: 'parent 2-0',
+//         key: '0-1-0',
+//         icon: <CarryOutOutlined />,
+//         children: [
+//           { title: 'leaf', key: '0-1-0-0', icon: <CarryOutOutlined /> },
+//           { title: 'leaf', key: '0-1-0-1', icon: <CarryOutOutlined /> },
+//         ],
+//       },
+//     ],
+//   },
+// ]f
+
+// const treeData: DataNode[] = [
+//   {
+//     title: 'Mandatory',
+//     key: '0',
+//     children: [
+//       {
+//         title: '11522_tx_dyn1',
+//         key: '0-0',
+//       },
+//       {
+//         title: '115_3ways_ds_w_motor',
+//         key: '0-1',
+//       },
+//     ],
+//   },
+//   {
+//     title: 'Optional',
+//     key: '1',
+//     children: [
+//       {
+//         title: 'MU',
+//         key: '1-0',
+//       },
+//       {
+//         title: 'DPM',
+//         key: '1-1',
+//       },
+//     ],
+//   },
+// ]
+
+const onSearch = (value: string) => {
+  console.log('search:', value)
+}
+
+enum ComponentType {
+  MANDATORY = 'mandatory',
+  OPTIONAL = 'optional',
+}
+
+// Filter `option.label` match the user type `input`
+const filterOption = (
+  input: string,
+  option: { label: string; value: string } | undefined,
+) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+
+const LineTypeTree = () => {
+  // routers
+  const router = useRouter()
+  const { tab, edit, id, drawingTypeId, componentType, componentId } =
+    router.query
+
+  // messages
+  const [messageApi, contextHolder] = message.useMessage()
+
+  // hooks
+  const editCountRef = React.useRef<HTMLInputElement>(null)
+
+  // trpcs: getAllComponents
+  const getAllComponents = api.component.getAll.useQuery()
+  // trpcs: getLineTypeComponents
+  const getLineTypeComponents = api.lineTypeComponent.getAll.useQuery({
+    lineTypeId: id as string,
+  })
+  // trpcs: createLineTypeComponent
+  const createLineTypeComponent = api.lineTypeComponent.create.useMutation({
+    onSuccess: () => {
+      void messageApi.success('Create line type component successfully')
+      // void getAllComponents.refetch()
+    },
+    onError: (error) => {
+      void messageApi.error(error.message)
+    },
+  })
+  // trpcs: deleteLineTypeComponent
+  const deleteLineTypeComponent = api.lineTypeComponent.delete.useMutation({
+    onSuccess: () => {
+      void messageApi.success('Delete line type component successfully')
+      void getAllComponents.refetch()
+      void getLineTypeComponents.refetch()
+    },
+    onError: (error) => {
+      void messageApi.error(error.message)
+    },
+  })
+
+  // handlers: onSelect
+  const onSelect = (selectedKeys: React.Key[], info: unknown) => {
+    console.log('selected', selectedKeys, info)
+  }
+  const handleAdd = async () => {
+    const count = editCountRef.current?.value
+    await createLineTypeComponent.mutateAsync({
+      lineTypeId: id as string,
+      componentId: componentId as string,
+      componentType: componentType as ComponentType,
+      count: count ? parseInt(count) : 1,
+    })
+
+    void router.push({
+      pathname: '/map',
+      query: {
+        tab,
+        id,
+        edit,
+        drawingTypeId,
+        componentType,
+        componentId,
+      },
+    })
+
+    void getLineTypeComponents.refetch()
+  }
+
+  // consts: options
+  const options = useMemo(() => {
+    // create a group of components by part
+    const componentsByPart = getAllComponents.data?.reduce<
+      Record<string, typeof getAllComponents.data>
+    >((acc, component) => {
+      const part = component.part
+      if (!acc[part]) {
+        acc[part] = []
+      }
+      acc?.[part]?.push(component)
+      return acc
+    }, {})
+
+    // create options
+    const options = Object.entries(componentsByPart ?? {}).map(
+      ([part, components]) => ({
+        label: part,
+        value: part,
+        options: components.map((component) => ({
+          value: component.id,
+          label: component.name,
+        })),
+      }),
+    )
+
+    return options
+  }, [getAllComponents])
+
+  // consts: treeData
+  const treeData = useMemo(() => {
+    const mandatoryComponents = getLineTypeComponents.data?.filter(
+      (component) => component.componentType === ComponentType.MANDATORY,
+    )
+    const optionalComponents = getLineTypeComponents.data?.filter(
+      (component) => component.componentType === ComponentType.OPTIONAL,
+    )
+
+    // const mandatoryComponentIds = mandatoryComponents?.map(
+    //   (component) => component.componentId,
+    // )
+    // const optionalComponentIds = optionalComponents?.map(
+    //   (component) => component.componentId,
+    // )
+
+    const mandatoryComponentsTreeData = mandatoryComponents?.map(
+      (component) => ({
+        title: (
+          <Space>
+            {component.Component.name}
+            <Button
+              type="text"
+              shape="circle"
+              icon={
+                <CloseOutlined
+                  style={{
+                    color: 'red',
+                  }}
+                />
+              }
+              onClick={() => {
+                window.confirm(
+                  'Are you sure you want to delete this line type component?',
+                ) &&
+                  void deleteLineTypeComponent.mutate({
+                    lineTypeComponentId: component.id,
+                  })
+              }}></Button>
+          </Space>
+        ),
+        key: component.id,
+      }),
+    )
+    const optionalComponentsTreeData = optionalComponents?.map((component) => ({
+      title: (
+        <Space>
+          {component.Component.name}
+          <Button
+            type="text"
+            shape="circle"
+            icon={
+              <CloseOutlined
+                style={{
+                  color: 'red',
+                }}
+              />
+            }
+            onClick={() => {
+              window.confirm(
+                'Are you sure you want to delete this line type component?',
+              ) &&
+                void deleteLineTypeComponent.mutate({
+                  lineTypeComponentId: component.id,
+                })
+            }}></Button>
+        </Space>
+      ),
+
+      key: component.id,
+    }))
+    const treeData: DataNode[] = [
+      {
+        title: 'Mandatory',
+        key: '0',
+        children: mandatoryComponentsTreeData,
+      },
+      {
+        title: 'Optional',
+        key: '1',
+        children: optionalComponentsTreeData,
+      },
+    ]
+
+    return treeData
+  }, [deleteLineTypeComponent, getLineTypeComponents.data])
+
+  // effects: default query
+  React.useEffect(() => {
+    void router.push({
+      pathname: '/map',
+      query: {
+        tab,
+        edit,
+        id,
+        drawingTypeId: drawingTypeId as string,
+        componentType: ComponentType.MANDATORY,
+      },
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return (
+    <>
+      {contextHolder}
+      <Space direction="vertical">
+        <Space>
+          <Select
+            showSearch
+            placeholder="Select a component"
+            optionFilterProp="children"
+            onSearch={onSearch}
+            filterOption={filterOption}
+            options={options}
+            value={componentId as string}
+            onChange={(value) => {
+              void router.push({
+                pathname: '/map',
+                query: {
+                  tab,
+                  edit,
+                  id,
+                  drawingTypeId,
+                  componentType,
+                  componentId: value,
+                },
+              })
+            }}
+          />
+
+          <Select
+            defaultValue="mandatory"
+            options={[
+              { value: 'mandatory', label: 'Mandatory' },
+              { value: 'optional', label: 'Optional' },
+            ]}
+            value={componentType as string}
+            onChange={(value) => {
+              void router.push({
+                pathname: '/map',
+                query: {
+                  tab,
+                  edit,
+                  id,
+                  drawingTypeId,
+                  componentType: value,
+                  componentId,
+                },
+              })
+            }}
+          />
+
+          <InputNumber
+            min={1}
+            max={10}
+            defaultValue={1}
+            style={{
+              width: '8ch',
+            }}
+            ref={editCountRef}
+          />
+
+          <Button type="primary" onClick={() => void handleAdd()}>
+            Add
+          </Button>
+        </Space>
+
+        <Tree
+          selectable={false}
+          showLine
+          defaultExpandAll
+          onSelect={onSelect}
+          treeData={treeData}
+        />
+      </Space>
+    </>
+  )
+}
+
+export default LineTypeTree

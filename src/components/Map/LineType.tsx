@@ -5,15 +5,16 @@ import {
   Input,
   Modal,
   Row,
+  Select,
   Space,
   Typography,
   message,
   type InputRef,
-  Select,
 } from 'antd'
 import { useRouter } from 'next/router'
 import { useEffect, useRef } from 'react'
 import { api } from '~/utils/api'
+import LineTypeTree from './LineTypeTree'
 
 export const LineType = () => {
   // routers
@@ -255,20 +256,30 @@ export const LineType = () => {
                         Update
                       </Button>,
                     ]}>
-                    <Space direction="vertical">
-                      <Input
-                        placeholder="Main & Transfer"
-                        addonBefore="Name"
-                        defaultValue={drawingType.name}
-                        ref={editNameRef}
-                      />
-                      <Input
-                        placeholder="The most popular drawing type map of electrical power substation"
-                        addonBefore="Description"
-                        defaultValue={drawingType.description ?? ''}
-                        ref={editDescriptionRef}
-                      />
-                    </Space>
+                    <Row justify="center" align="middle" gutter={[16, 16]}>
+                      <Col span={24}>
+                        <Space direction="vertical">
+                          <Input
+                            placeholder="Main & Transfer"
+                            addonBefore="Name"
+                            defaultValue={drawingType.name}
+                            ref={editNameRef}
+                          />
+                          <Input
+                            placeholder="The most popular drawing type map of electrical power substation"
+                            addonBefore="Description"
+                            defaultValue={drawingType.description ?? ''}
+                            ref={editDescriptionRef}
+                          />
+                        </Space>
+                      </Col>
+
+                      <Col span={24}></Col>
+
+                      <Col span={24}>
+                        <LineTypeTree />
+                      </Col>
+                    </Row>
                   </Modal>
                 </Col>
               ))
