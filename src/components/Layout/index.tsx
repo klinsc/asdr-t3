@@ -3,20 +3,27 @@ import {
   DesktopOutlined,
   FileSearchOutlined,
 } from '@ant-design/icons'
+import { css, cx } from '@emotion/css'
 import {
   Badge,
   Col,
   Layout,
   Menu,
   Row,
+  Space,
   Typography,
   theme,
   type MenuProps,
-  Space,
 } from 'antd'
 import { useRouter } from 'next/router'
 import React, { useMemo, useState } from 'react'
 import { api } from '~/utils/api'
+
+const hover = css`
+  &:hover {
+    text-decoration: underline;
+  }
+`
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -104,10 +111,15 @@ const App = ({ children }: { children: React.ReactNode }) => {
             }}>
             <Col span={4} style={{ textAlign: 'center' }}>
               <Typography.Paragraph
+                className={cx(hover)}
                 style={{
                   color: 'white',
                   margin: 0,
-                }}>
+                  cursor: 'pointer',
+                }}
+                onClick={() =>
+                  window.open('https://chatbordin.com/', '_blank', 'noopener')
+                }>
                 Chatbordin Klinsrisuk
               </Typography.Paragraph>
             </Col>
@@ -120,7 +132,9 @@ const App = ({ children }: { children: React.ReactNode }) => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-              }}>
+                cursor: 'pointer',
+              }}
+              onClick={() => void router.push('/')}>
               <Typography.Title
                 level={3}
                 style={{

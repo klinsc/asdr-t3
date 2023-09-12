@@ -163,6 +163,7 @@ const PredictJPEG = ({
       </Checkbox>
 
       {/* <Image
+        unoptimized
         src={imageFile ? URL.createObjectURL(imageFile) : '/android-chrome-512x512.png'}
         alt="Image to be predicted"
         width={0}
