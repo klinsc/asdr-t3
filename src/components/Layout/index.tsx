@@ -1,7 +1,18 @@
 import { DesktopOutlined, FileSearchOutlined } from '@ant-design/icons'
-import { Col, Layout, Menu, Row, theme, Typography, type MenuProps } from 'antd'
+import {
+  Badge,
+  Col,
+  Layout,
+  Menu,
+  Row,
+  Typography,
+  theme,
+  type MenuProps,
+  Space,
+} from 'antd'
 import { useRouter } from 'next/router'
 import React, { useMemo, useState } from 'react'
+import { api } from '~/utils/api'
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -10,6 +21,11 @@ type MenuItem = Required<MenuProps>['items'][number]
 const App = ({ children }: { children: React.ReactNode }) => {
   // routers
   const router = useRouter()
+
+  // trpcs
+  const healthServer = api.health.getAll.useQuery(undefined, {
+    staleTime: 1000,
+  })
 
   const {
     token: { colorBgContainer },
@@ -42,15 +58,6 @@ const App = ({ children }: { children: React.ReactNode }) => {
     () => [
       getItem('Diagnose a Drawing', '/', <FileSearchOutlined />),
       getItem('Machine Learning Server', 'server', <DesktopOutlined />),
-
-      // getItem('User', 'sub1', <UserOutlined />, [
-      //   getItem('Tom', '3'),
-      //   getItem('Bill', '4'),
-      //   getItem('Alex', '5'),
-      // ]),
-
-      // getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
-      // getItem('Files', '9', <FileOutlined />),
     ],
     [getItem],
   )
@@ -84,37 +91,69 @@ const App = ({ children }: { children: React.ReactNode }) => {
             style={{
               width: '100%',
             }}>
+            <Col span={4} style={{ textAlign: 'center' }}>
+              <Typography.Paragraph
+                style={{
+                  color: 'white',
+                  margin: 0,
+                }}>
+                Chatbordin Klinsrisuk
+              </Typography.Paragraph>
+            </Col>
+
             {/* Logo */}
             <Col
-              span={24}
+              span={14}
               style={{
                 textAlign: 'center',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}>
               <Typography.Title
                 level={3}
                 style={{
                   color: 'white',
                   margin: 0,
-                  marginLeft: 16,
                 }}>
-                ASDR: Automatic System to Diagnose and Recognize Electrical
-                Drawings
+                ASDR&nbsp;
               </Typography.Title>
-            </Col>
-            <Col
-              span={24}
-              style={{
-                textAlign: 'center',
-              }}>
+              <FileSearchOutlined
+                style={{
+                  color: 'white',
+                }}
+              />
               <Typography.Title
                 level={5}
                 style={{
                   color: 'white',
                   margin: 0,
-                  marginLeft: 16,
                 }}>
-                Chatbordin Klinsrisuk
+                Automatic System to Diagnose and Recognize Electrical Drawings
               </Typography.Title>
+            </Col>
+
+            <Col
+              span={4}
+              style={{
+                textAlign: 'center',
+              }}>
+              <Space>
+                <Badge
+                  status={healthServer?.data?.ml ?? 'error'}
+                  text={'ML'}
+                  style={{
+                    color: 'white',
+                  }}
+                />
+                <Badge
+                  status={healthServer?.data?.db ?? 'error'}
+                  text={'DB'}
+                  style={{
+                    color: 'white',
+                  }}
+                />
+              </Space>
             </Col>
           </Row>
         </Header>

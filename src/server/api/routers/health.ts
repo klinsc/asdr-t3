@@ -14,6 +14,27 @@ export const healthRouter = createTRPCRouter({
       db: PresetStatusColorType
     }
 
+    // database server
+    const dbUrl = process.env.DATABASE_URL
+    console.log(dbUrl)
+    if (!dbUrl) {
+      health.db = 'error'
+    } else {
+      // check if prisma is connected
+      const prisma = new PrismaClient()
+      try {
+        await prisma.$connect()
+        health.db = 'success'
+      } catch (error) {
+        await prisma.$disconnect()
+
+        health.db = 'error'
+        health.ml = 'error'
+
+        return health
+      }
+    }
+
     // machine learning server
     const server = await ctx.prisma.mLServer.findFirst({
       where: {
@@ -31,24 +52,6 @@ export const healthRouter = createTRPCRouter({
       ])
 
       health.ml = status
-    }
-
-    // database server
-    const dbUrl = process.env.DATABASE_URL
-    console.log(dbUrl)
-    if (!dbUrl) {
-      health.db = 'error'
-    } else {
-      // check if prisma is connected
-      const prisma = new PrismaClient()
-      try {
-        await prisma.$connect()
-        health.db = 'success'
-      } catch (error) {
-        health.db = 'error'
-      } finally {
-        await prisma.$disconnect()
-      }
     }
 
     return health

@@ -5,6 +5,11 @@ const theme: ThemeConfig = {
   token: {
     fontSize: 16,
   },
+  components: {
+    Layout: {
+      colorBgHeader: '#1677ff',
+    },
+  },
 }
 
 export default theme
