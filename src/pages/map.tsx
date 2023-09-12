@@ -22,11 +22,6 @@ export default function Map() {
       key: '2',
       children: <LineType />,
     },
-    {
-      label: 'Line Type Component',
-      key: '3',
-      children: 'Content of Tab Pane 3',
-    },
   ]
 
   // handlers

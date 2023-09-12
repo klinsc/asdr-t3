@@ -68,15 +68,16 @@ model MLServer {
 }
 
 model Component {
-  id               String             @id
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime
-  index            Int                @unique
-  name             String             @unique
-  description      String?
-  color            String
-  part             Part
-  DrawingComponent DrawingComponent[]
+  id                String              @id
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  index             Int                 @unique
+  name              String              @unique
+  description       String?
+  color             String
+  part              Part
+  DrawingComponent  DrawingComponent[]
+  LineTypeComponent LineTypeComponent[]
 }
 
 model Drawing {
@@ -112,17 +113,34 @@ model DrawingType {
 }
 
 model LineType {
-  id            String      @id @default(cuid())
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  name          String
-  description   String?
-  drawingTypeId String
-  DrawingType   DrawingType @relation(fields: [drawingTypeId], references: [id])
+  id                String              @id @default(cuid())
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  name              String
+  description       String?
+  drawingTypeId     String
+  DrawingType       DrawingType         @relation(fields: [drawingTypeId], references: [id])
+  LineTypeComponent LineTypeComponent[]
+}
+
+model LineTypeComponent {
+  id            String        @id @default(cuid())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  componentType ComponentType
+  lineTypeId    String
+  componentId   String
+  LineType      LineType      @relation(fields: [lineTypeId], references: [id])
+  Component     Component     @relation(fields: [componentId], references: [id])
 }
 
 enum Part {
   kv115
   kv22
   universal
+}
+
+enum ComponentType {
+  mandatory
+  optional
 }

@@ -206,6 +206,7 @@ export const LineType = () => {
                         pathname: '/map',
                         query: {
                           tab,
+                          drawingTypeId: drawingTypeId as string,
                         },
                       })
                     }}
