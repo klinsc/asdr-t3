@@ -15,6 +15,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useRef } from 'react'
 import { api } from '~/utils/api'
 import LineTypeTree from './LineTypeTree'
+import LineTypeComponentTree from './LineTypeComponentTree'
 
 export const LineType = () => {
   // routers
@@ -179,10 +180,10 @@ export const LineType = () => {
         {!lineTypeGetAll.isFetching && (
           <>
             {lineTypeGetAll?.data && lineTypeGetAll?.data?.length > 0 ? (
-              lineTypeGetAll.data.map((drawingType) => (
-                <Col span={6} key={drawingType.id}>
+              lineTypeGetAll.data.map((lineType) => (
+                <Col span={6} key={lineType.id}>
                   <Card
-                    title={drawingType.name}
+                    title={lineType.name}
                     extra={
                       <Button
                         type="text"
@@ -192,7 +193,7 @@ export const LineType = () => {
                             query: {
                               tab,
                               edit: 'true',
-                              id: drawingType.id,
+                              id: lineType.id,
                               drawingTypeId: drawingTypeId as string,
                             },
                           })
@@ -200,11 +201,14 @@ export const LineType = () => {
                         Edit
                       </Button>
                     }>
-                    <Typography.Text>{drawingType.description}</Typography.Text>
+                    <Typography.Text>{lineType.description}</Typography.Text>
+
+                    {/* LineTypeComponentTree */}
+                    <LineTypeComponentTree lineTypeId={lineType.id} />
                   </Card>
                   <Modal
                     title="Edit drawing type"
-                    open={edit === 'true' && id === drawingType.id}
+                    open={edit === 'true' && id === lineType.id}
                     destroyOnClose
                     onCancel={() => {
                       void router.push({
@@ -225,7 +229,7 @@ export const LineType = () => {
                             'Are you sure you want to delete this line type?',
                           ) &&
                             void lineTypeDelete.mutate({
-                              id: drawingType.id,
+                              id: lineType.id,
                             })
                         }}>
                         Delete
@@ -247,7 +251,7 @@ export const LineType = () => {
                         type="primary"
                         onClick={() => {
                           lineTypeUpdate.mutate({
-                            id: drawingType.id,
+                            id: lineType.id,
                             name: editNameRef.current?.input?.value,
                             description:
                               editDescriptionRef.current?.input?.value,
@@ -262,13 +266,13 @@ export const LineType = () => {
                           <Input
                             placeholder="Main & Transfer"
                             addonBefore="Name"
-                            defaultValue={drawingType.name}
+                            defaultValue={lineType.name}
                             ref={editNameRef}
                           />
                           <Input
                             placeholder="The most popular drawing type map of electrical power substation"
                             addonBefore="Description"
-                            defaultValue={drawingType.description ?? ''}
+                            defaultValue={lineType.description ?? ''}
                             ref={editDescriptionRef}
                           />
                         </Space>
