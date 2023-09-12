@@ -13,6 +13,7 @@ import {
 import { useRouter } from 'next/router'
 import { useRef } from 'react'
 import { api } from '~/utils/api'
+import DrawingLineTypeTree from './DrawingLineTypeTree'
 
 export const DrawingType = () => {
   // router
@@ -154,7 +155,9 @@ export const DrawingType = () => {
               drawingTypeGetAll.data.map((drawingType) => (
                 <Col span={6} key={drawingType.id}>
                   <Card
+                    // Title
                     title={drawingType.name}
+                    // Edit button
                     extra={
                       <Button
                         type="text"
@@ -171,8 +174,14 @@ export const DrawingType = () => {
                         Edit
                       </Button>
                     }>
+                    {/* Description */}
                     <Typography.Text>{drawingType.description}</Typography.Text>
+
+                    {/* A line type tree of this drawing type */}
+                    <DrawingLineTypeTree drawingTypeId={drawingType.id} />
                   </Card>
+
+                  {/* Edit modal */}
                   <Modal
                     title="Edit drawing type"
                     open={edit === 'true' && id === drawingType.id}
@@ -185,6 +194,7 @@ export const DrawingType = () => {
                         },
                       })
                     }}
+                    // Footer buttons
                     footer={[
                       <Button
                         key="delete"
@@ -226,6 +236,7 @@ export const DrawingType = () => {
                         Update
                       </Button>,
                     ]}>
+                    {/* Edit modal content */}
                     <Space direction="vertical">
                       <Input
                         placeholder="Main & Transfer"
@@ -240,13 +251,12 @@ export const DrawingType = () => {
                         ref={editDescriptionRef}
                       />
                     </Space>
-                    <Space direction="vertical"></Space>
                   </Modal>
                 </Col>
               ))
             ) : (
               <Col span={24}>
-                <Typography.Text>No servers</Typography.Text>
+                <Typography.Text>No drawing types</Typography.Text>
               </Col>
             )}
           </>
