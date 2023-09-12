@@ -165,14 +165,22 @@ const App = ({ children }: { children: React.ReactNode }) => {
               }}>
               <Space>
                 <Badge
-                  status={healthServer?.data?.ml ?? 'error'}
+                  status={
+                    healthServer.isFetching
+                      ? 'processing'
+                      : healthServer?.data?.ml ?? 'error'
+                  }
                   text={'ML'}
                   style={{
                     color: 'white',
                   }}
                 />
                 <Badge
-                  status={healthServer?.data?.db ?? 'error'}
+                  status={
+                    healthServer.isFetching
+                      ? 'processing'
+                      : healthServer?.data?.db ?? 'error'
+                  }
                   text={'DB'}
                   style={{
                     color: 'white',
