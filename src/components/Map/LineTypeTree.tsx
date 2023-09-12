@@ -319,6 +319,7 @@ const LineTypeTree = () => {
       {contextHolder}
       <Space direction="vertical">
         <Space>
+          {/* Select a component */}
           <Select
             showSearch
             placeholder="Select a component"
@@ -342,6 +343,7 @@ const LineTypeTree = () => {
             }}
           />
 
+          {/* Select a component type */}
           <Select
             defaultValue="mandatory"
             options={[
@@ -364,6 +366,7 @@ const LineTypeTree = () => {
             }}
           />
 
+          {/* Input for count */}
           <InputNumber
             min={1}
             max={10}
@@ -374,11 +377,13 @@ const LineTypeTree = () => {
             ref={editCountRef}
           />
 
+          {/* Add button */}
           <Button type="primary" onClick={() => void handleAdd()}>
             Add
           </Button>
         </Space>
 
+        {/* Tree */}
         <Tree
           selectable={false}
           showLine
