@@ -16,7 +16,7 @@ import { useEffect, useRef } from 'react'
 import { api } from '~/utils/api'
 
 export const LineType = () => {
-  // router
+  // routers
   const router = useRouter()
   const { tab, edit, id, drawingTypeId } = router.query
 
@@ -26,10 +26,10 @@ export const LineType = () => {
   const editNameRef = useRef<InputRef>(null)
   const editDescriptionRef = useRef<InputRef>(null)
 
-  // messageAPI
+  // messages
   const [messageApi, contextHolder] = message.useMessage()
 
-  // trpcs
+  // trpcs: get
   const drawingTypeGetAll = api.drawingType.getAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
@@ -42,6 +42,7 @@ export const LineType = () => {
       refetchOnWindowFocus: false,
     },
   )
+  // trpcs: create
   const lineTypeCreate = api.lineType.create.useMutation({
     onSuccess: () => {
       void messageApi.success('Create line type successfully')
@@ -51,6 +52,7 @@ export const LineType = () => {
       void messageApi.error(error.message)
     },
   })
+  // trpcs: update
   const lineTypeUpdate = api.lineType.update.useMutation({
     onSuccess: () => {
       void messageApi.success('Update line type successfully')
@@ -68,6 +70,7 @@ export const LineType = () => {
       void messageApi.error(error.message)
     },
   })
+  // trpcs: delete
   const lineTypeDelete = api.lineType.delete.useMutation({
     onSuccess: () => {
       void messageApi.success('Delete line type successfully')
@@ -78,7 +81,7 @@ export const LineType = () => {
     },
   })
 
-  // handlers
+  // handlers: submit
   const handleSubmit = () => {
     if (!nameRef.current?.input?.value) {
       void messageApi.error('Name is required')
@@ -92,6 +95,7 @@ export const LineType = () => {
     })
   }
 
+  // effects: redirect
   useEffect(() => {
     const storageDrawingTypeId = localStorage.getItem('drawingTypeId')
     if (storageDrawingTypeId) {
