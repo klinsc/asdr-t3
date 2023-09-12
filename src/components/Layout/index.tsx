@@ -1,4 +1,8 @@
-import { DesktopOutlined, FileSearchOutlined } from '@ant-design/icons'
+import {
+  ClusterOutlined,
+  DesktopOutlined,
+  FileSearchOutlined,
+} from '@ant-design/icons'
 import {
   Badge,
   Col,
@@ -58,6 +62,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
     () => [
       getItem('Diagnose a Drawing', '/', <FileSearchOutlined />),
       getItem('Machine Learning Server', 'server', <DesktopOutlined />),
+      getItem('Drawing Type Map', 'map', <ClusterOutlined />),
     ],
     [getItem],
   )
