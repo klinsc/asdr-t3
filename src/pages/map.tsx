@@ -1,9 +1,14 @@
 import { Container } from '@mui/material'
 import { Tabs } from 'antd'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 import { DrawingType } from '~/components/Map/DrawingType'
 
 export default function Map() {
+  // router
+  const router = useRouter()
+
   // const
   const items = [
     {
@@ -23,6 +28,23 @@ export default function Map() {
     },
   ]
 
+  // handlers
+  const onTabClick = (key: string) => {
+    void router.push({
+      pathname: '/map',
+      query: { tab: key },
+    })
+  }
+
+  // effects: redirect to tab 1 when first load
+  useEffect(() => {
+    void router.push({
+      pathname: '/map',
+      query: { tab: '1' },
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <>
       <Head>
@@ -31,7 +53,7 @@ export default function Map() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Container maxWidth="lg">
-        <Tabs type="card" items={items} />
+        <Tabs type="card" items={items} onChange={onTabClick} />
       </Container>
     </>
   )

@@ -17,7 +17,7 @@ import { api } from '~/utils/api'
 export const DrawingType = () => {
   // router
   const router = useRouter()
-  const { edit, id } = router.query
+  const { tab, edit, id } = router.query
 
   // hooks
   const nameRef = useRef<InputRef>(null)
@@ -64,7 +64,9 @@ export const DrawingType = () => {
       // redirect
       void router.push({
         pathname: '/map',
-        query: {},
+        query: {
+          tab,
+        },
       })
     },
     onError: (error) => {
@@ -81,7 +83,7 @@ export const DrawingType = () => {
       // redirect
       void router.push({
         pathname: '/map',
-        query: {},
+        query: { tab },
       })
     },
     onError: (error) => {
@@ -160,6 +162,7 @@ export const DrawingType = () => {
                           void router.push({
                             pathname: '/map',
                             query: {
+                              tab,
                               edit: 'true',
                               id: drawingType.id,
                             },
@@ -177,7 +180,9 @@ export const DrawingType = () => {
                     onCancel={() => {
                       void router.push({
                         pathname: '/map',
-                        query: {},
+                        query: {
+                          tab,
+                        },
                       })
                     }}
                     footer={[
@@ -200,7 +205,9 @@ export const DrawingType = () => {
                         onClick={() => {
                           void router.push({
                             pathname: '/map',
-                            query: {},
+                            query: {
+                              tab,
+                            },
                           })
                         }}>
                         Cancel
