@@ -38,6 +38,7 @@ export const LineType = () => {
       drawingTypeId: drawingTypeId as string,
     },
     {
+      enabled: !!drawingTypeId,
       refetchOnWindowFocus: false,
     },
   )
