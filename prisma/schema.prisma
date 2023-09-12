@@ -112,9 +112,9 @@ model DrawingType {
 }
 
 model LineType {
-  id            String      @id
+  id            String      @id @default(cuid())
   createdAt     DateTime    @default(now())
-  updatedAt     DateTime
+  updatedAt     DateTime    @updatedAt
   name          String
   description   String?
   drawingTypeId String

@@ -3,6 +3,7 @@ import { createTRPCRouter } from '~/server/api/trpc'
 import { mlServerRouter } from './routers/mlServerRouter'
 import { healthRouter } from './routers/health'
 import { drawingTypeRouter } from './routers/drawingType'
+import { lineTypeRouter } from './routers/lineType'
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   mlServer: mlServerRouter,
   health: healthRouter,
   drawingType: drawingTypeRouter,
+  lineType: lineTypeRouter,
 })
 
 // export type definition of API

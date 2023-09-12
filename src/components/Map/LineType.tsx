@@ -33,6 +33,49 @@ export const LineType = () => {
   const drawingTypeGetAll = api.drawingType.getAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
+  const lineTypeGetAll = api.lineType.getAll.useQuery(
+    {
+      drawingTypeId: drawingTypeId as string,
+    },
+    {
+      refetchOnWindowFocus: false,
+    },
+  )
+  const lineTypeCreate = api.lineType.create.useMutation({
+    onSuccess: () => {
+      void messageApi.success('Create line type successfully')
+      void lineTypeGetAll.refetch()
+    },
+    onError: (error) => {
+      void messageApi.error(error.message)
+    },
+  })
+  const lineTypeUpdate = api.lineType.update.useMutation({
+    onSuccess: () => {
+      void messageApi.success('Update line type successfully')
+      void lineTypeGetAll.refetch()
+
+      void router.push({
+        pathname: '/map',
+        query: {
+          tab,
+          drawingTypeId: drawingTypeId as string,
+        },
+      })
+    },
+    onError: (error) => {
+      void messageApi.error(error.message)
+    },
+  })
+  const lineTypeDelete = api.lineType.delete.useMutation({
+    onSuccess: () => {
+      void messageApi.success('Delete line type successfully')
+      void lineTypeGetAll.refetch()
+    },
+    onError: (error) => {
+      void messageApi.error(error.message)
+    },
+  })
 
   // handlers
   const handleSubmit = () => {
@@ -41,7 +84,11 @@ export const LineType = () => {
       return
     }
 
-    // create a line type
+    void lineTypeCreate.mutate({
+      name: nameRef.current?.input?.value,
+      description: descriptionRef.current?.input?.value,
+      drawingTypeId: drawingTypeId as string,
+    })
   }
 
   useEffect(() => {
@@ -122,11 +169,11 @@ export const LineType = () => {
           <Typography.Title level={4}>List of line types</Typography.Title>
         </Col>
 
-        {/* {drawingTypeGetAll.isFetching && <Col span={24}>Loading...</Col>} */}
-        {/* {!drawingTypeGetAll.isFetching && (
+        {lineTypeGetAll.isFetching && <Col span={24}>Loading...</Col>}
+        {!lineTypeGetAll.isFetching && (
           <>
-            {drawingTypeGetAll?.data && drawingTypeGetAll?.data?.length > 0 ? (
-              drawingTypeGetAll.data.map((drawingType) => (
+            {lineTypeGetAll?.data && lineTypeGetAll?.data?.length > 0 ? (
+              lineTypeGetAll.data.map((drawingType) => (
                 <Col span={6} key={drawingType.id}>
                   <Card
                     title={drawingType.name}
@@ -140,6 +187,7 @@ export const LineType = () => {
                               tab,
                               edit: 'true',
                               id: drawingType.id,
+                              drawingTypeId: drawingTypeId as string,
                             },
                           })
                         }}>
@@ -167,9 +215,9 @@ export const LineType = () => {
                         type="text"
                         onClick={() => {
                           window.confirm(
-                            'Are you sure you want to delete this drawing type?',
+                            'Are you sure you want to delete this line type?',
                           ) &&
-                            void drawingTypeDelete.mutate({
+                            void lineTypeDelete.mutate({
                               id: drawingType.id,
                             })
                         }}>
@@ -191,7 +239,7 @@ export const LineType = () => {
                         key="submit"
                         type="primary"
                         onClick={() => {
-                          drawingTypeUpdate.mutate({
+                          lineTypeUpdate.mutate({
                             id: drawingType.id,
                             name: editNameRef.current?.input?.value,
                             description:
@@ -215,17 +263,16 @@ export const LineType = () => {
                         ref={editDescriptionRef}
                       />
                     </Space>
-                    <Space direction="vertical"></Space>
                   </Modal>
                 </Col>
               ))
             ) : (
               <Col span={24}>
-                <Typography.Text>No servers</Typography.Text>
+                <Typography.Text>None</Typography.Text>
               </Col>
             )}
           </>
-        )} */}
+        )}
       </Row>
     </>
   )
