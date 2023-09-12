@@ -102,12 +102,23 @@ model DrawingComponent {
 }
 
 model DrawingType {
-  id          String    @id
-  createdAt   DateTime  @default(now())
+  id          String     @id
+  createdAt   DateTime   @default(now())
   updatedAt   DateTime
-  name        String    @unique
+  name        String     @unique
   description String?
   Drawing     Drawing[]
+  LineType    LineType[]
+}
+
+model LineType {
+  id            String      @id
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime
+  name          String
+  description   String?
+  drawingTypeId String
+  DrawingType   DrawingType @relation(fields: [drawingTypeId], references: [id])
 }
 
 enum Part {
