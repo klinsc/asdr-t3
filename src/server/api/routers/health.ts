@@ -3,6 +3,7 @@ import { fetchTimeout, timeout } from '~/libs/server/fetctTimeout'
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
 // import prisma client to check if prisma is connected
 import { PrismaClient } from '@prisma/client'
+import { env } from '~/env.mjs'
 
 export const healthRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -15,7 +16,7 @@ export const healthRouter = createTRPCRouter({
     }
 
     // database server
-    const dbUrl = process.env.DATABASE_URL
+    const dbUrl = env.DATABASE_URL
     console.log(dbUrl)
     if (!dbUrl) {
       health.db = 'error'
