@@ -127,7 +127,8 @@ model LineTypeComponent {
   id            String        @id @default(cuid())
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  componentType ComponentType
+  componentType ComponentType @default(mandatory)
+  count         Int           @default(1)
   lineTypeId    String
   componentId   String
   LineType      LineType      @relation(fields: [lineTypeId], references: [id])
