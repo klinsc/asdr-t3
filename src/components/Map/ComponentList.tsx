@@ -239,7 +239,7 @@ export default function ComponentList() {
           style={{
             textAlign: 'center',
           }}>
-          <Typography.Title level={4}>Update Components</Typography.Title>
+          <Typography.Title level={4}>Manage Components</Typography.Title>
         </Col>
       </Row>
 
