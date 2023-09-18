@@ -8,6 +8,8 @@ const theme: ThemeConfig = {
   components: {
     Layout: {
       headerBg: '#1677ff',
+      siderBg: '#1677ff',
+      triggerBg: '#1677ff',
     },
   },
 }

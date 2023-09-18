@@ -142,7 +142,7 @@ export default function MLServer() {
       <Row gutter={[16, 16]}>
         {/* List of servers */}
         <Col span={24}>
-          <Typography.Title level={4}>
+          <Typography.Title level={5}>
             Machine leaning servers:
           </Typography.Title>
         </Col>
