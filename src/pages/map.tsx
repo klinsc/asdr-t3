@@ -2,6 +2,7 @@ import { Container } from '@mui/material'
 import { Tabs } from 'antd'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import ComponentList from '~/components/Map/ComponentList'
 import { DrawingType } from '~/components/Map/DrawingType'
 import { LineType } from '~/components/Map/LineType'
 
@@ -13,14 +14,19 @@ export default function Map() {
   // const
   const items = [
     {
-      label: 'Drawing Type',
+      label: 'Drawing Types',
       key: '1',
       children: <DrawingType />,
     },
     {
-      label: 'Line Type',
+      label: 'Line Types',
       key: '2',
       children: <LineType />,
+    },
+    {
+      label: 'Components',
+      key: '3',
+      children: <ComponentList />,
     },
   ]
 
@@ -42,6 +48,7 @@ export default function Map() {
       <Container maxWidth="lg">
         <Tabs
           type="card"
+          size={'large'}
           items={items}
           onChange={onTabClick}
           activeKey={(tab as string) ?? '1'}

@@ -5,9 +5,60 @@ export const componentRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.component.findMany({
       orderBy: {
-        createdAt: 'asc',
+        index: 'asc',
       },
     })
+  }),
+
+  updateAll: publicProcedure
+    .input(
+      z.array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          description: z.string().nullish(),
+          color: z.string(),
+          partId: z.string(),
+          createdAt: z.date(),
+          updatedAt: z.date(),
+        }),
+      ),
+    )
+    .mutation(async ({ input, ctx }) => {
+      await Promise.all(
+        input.map(async (component) => {
+          const componentToUpdate = await ctx.prisma.component.findUnique({
+            where: {
+              id: component.id,
+            },
+          })
+          if (componentToUpdate) {
+            return ctx.prisma.component.update({
+              where: {
+                id: component.id,
+              },
+              data: {
+                name: component.name,
+                description: component.description,
+                color: component.color,
+                partId: component.partId,
+                createdAt: component.createdAt,
+                updatedAt: component.updatedAt,
+              },
+            })
+          }
+        }),
+      )
+    }),
+
+  getAllPartx: publicProcedure.query(async ({ ctx }) => {
+    const parts = await ctx.prisma.part.findMany({
+      orderBy: {
+        name: 'asc',
+      },
+    })
+
+    return parts
   }),
 
   // getOne: publicProcedure
@@ -50,25 +101,30 @@ export const componentRouter = createTRPCRouter({
   //     })
   //   }),
 
-  // update: publicProcedure
-  //   .input(
-  //     z.object({
-  //       id: z.string(),
-  //       name: z.string().optional(),
-  //       description: z.string().optional(),
-  //     }),
-  //   )
-  //   .mutation(({ input, ctx }) => {
-  //     return ctx.prisma.lineType.update({
-  //       where: {
-  //         id: input.id,
-  //       },
-  //       data: {
-  //         name: input.name,
-  //         description: input.description,
-  //       },
-  //     })
-  //   }),
+  updateOneComponent: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string().optional(),
+        description: z.string().optional(),
+        color: z.string().optional(),
+        partId: z.string().optional(),
+      }),
+    )
+    .mutation(({ input, ctx }) => {
+      return ctx.prisma.component.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          description: input.description,
+          color: input.color,
+          partId: input.partId,
+          updatedAt: new Date(),
+        },
+      })
+    }),
 
   // delete: publicProcedure
   //   .input(z.object({ id: z.string() }))

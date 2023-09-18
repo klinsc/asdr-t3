@@ -75,9 +75,10 @@ model Component {
   name              String              @unique
   description       String?
   color             String
-  part              Part
   DrawingComponent  DrawingComponent[]
   LineTypeComponent LineTypeComponent[]
+  partId            String
+  Part              Part                @relation(fields: [partId], references: [id])
 }
 
 model Drawing {
@@ -135,10 +136,12 @@ model LineTypeComponent {
   Component     Component     @relation(fields: [componentId], references: [id])
 }
 
-enum Part {
-  kv115
-  kv22
-  universal
+model Part {
+  id        String      @id @default(cuid())
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  name      String
+  Component Component[]
 }
 
 enum ComponentType {
