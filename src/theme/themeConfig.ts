@@ -7,7 +7,7 @@ const theme: ThemeConfig = {
   },
   components: {
     Layout: {
-      colorBgHeader: '#1677ff',
+      headerBg: '#1677ff',
     },
   },
 }

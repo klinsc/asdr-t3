@@ -17,7 +17,6 @@ export const healthRouter = createTRPCRouter({
 
     // database server
     const dbUrl = env.DATABASE_URL
-    console.log(dbUrl)
     if (!dbUrl) {
       health.db = 'error'
     } else {
@@ -42,7 +41,7 @@ export const healthRouter = createTRPCRouter({
         selected: true,
       },
     })
-    if (!server || !server.url) {
+    if (!server?.url) {
       health.ml = 'error'
     } else {
       const { url } = server

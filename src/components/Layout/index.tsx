@@ -72,10 +72,10 @@ const App = ({ children }: { children: React.ReactNode }) => {
   const items = useMemo(
     () => [
       getItem('Diagnose a Drawing', '/', <FileSearchOutlined />),
-      getItem('Machine Learning Server', 'server', <DesktopOutlined />),
       getItem('Drawing Type Map', 'map', <ClusterOutlined />, undefined, {
         tab: '1',
       }),
+      getItem('Machine Learning Server', 'server', <DesktopOutlined />),
     ],
     [getItem],
   )
