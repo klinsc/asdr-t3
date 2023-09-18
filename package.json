@@ -26,6 +26,7 @@
     "@trpc/react-query": "^10.26.0",
     "@trpc/server": "^10.26.0",
     "antd": "^5.7.1",
+    "dayjs": "^1.11.9",
     "konva": "^9.2.0",
     "next": "^13.4.2",
     "next-auth": "^4.22.1",
