@@ -1,68 +1,8 @@
 import { Container } from '@mui/material'
-import {
-  Badge,
-  Button,
-  Card,
-  Checkbox,
-  Col,
-  Input,
-  Row,
-  Space,
-  Typography,
-  message,
-  type InputRef,
-} from 'antd'
 import Head from 'next/head'
-import { useRef } from 'react'
-import { api } from '~/utils/api'
+import MLServer from '~/components/MLServer'
 
 export default function Server() {
-  // hooks
-  const urlRef = useRef<InputRef>(null)
-  const nameRef = useRef<InputRef>(null)
-
-  // trpcs
-  const serverGetAll = api.mlServer.getAll.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  })
-  const serverCreate = api.mlServer.create.useMutation({
-    onSuccess: () => {
-      void serverGetAll.refetch()
-      void message.success('Server created')
-    },
-    onError: () => {
-      void message.error('Server creation failed')
-    },
-  })
-  const serverSelect = api.mlServer.select.useMutation({
-    onSuccess: () => {
-      void serverGetAll.refetch()
-      void message.success('Server selected')
-    },
-    onError: () => {
-      void message.error('Server update failed')
-    },
-  })
-
-  // handlers
-  const handleSubmit = () => {
-    if (!urlRef?.current?.input?.value || !nameRef?.current?.input?.value)
-      return message.error('Please fill in all fields')
-    const url = urlRef?.current?.input.value
-    const name = nameRef?.current?.input.value
-
-    serverCreate.mutate({
-      url,
-      name,
-    })
-  }
-  const handleSelect = (id: string) => {
-    void serverSelect.mutate({
-      id,
-      selected: true,
-    })
-  }
-
   return (
     <>
       <Head>
@@ -71,82 +11,7 @@ export default function Server() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Container maxWidth="lg">
-        <Card
-          title={
-            <Typography.Title level={4}>
-              Machine Learning Server
-            </Typography.Title>
-          }>
-          <Row justify="center" align="middle" gutter={[16, 16]}>
-            {/* Add a new predicting server */}
-            <Col
-              span={24}
-              style={{
-                textAlign: 'center',
-              }}>
-              <Typography.Title level={4}>
-                Add a new predicting server
-              </Typography.Title>
-            </Col>
-
-            {/* Input for a new server*/}
-            <Col
-              span={24}
-              style={{
-                textAlign: 'center',
-              }}>
-              <Space direction="vertical">
-                <Input
-                  placeholder="http://localhost:5000/"
-                  addonBefore="URL"
-                  ref={urlRef}
-                />
-                <Input
-                  placeholder="Machine Learning"
-                  addonBefore="Name"
-                  ref={nameRef}
-                />
-                <Button type="primary" onClick={() => void handleSubmit()}>
-                  Add
-                </Button>
-              </Space>
-            </Col>
-          </Row>
-
-          <Row gutter={[16, 16]}>
-            {/* List of servers */}
-            <Col span={24}>
-              <Typography.Title level={4}>List of servers</Typography.Title>
-            </Col>
-
-            {serverGetAll.isFetching && <Col span={24}>Loading...</Col>}
-            {!serverGetAll.isFetching && (
-              <>
-                {serverGetAll?.data && serverGetAll?.data?.length > 0 ? (
-                  serverGetAll.data.map((server) => (
-                    <Col span={6} key={server.id}>
-                      <Card
-                        title={server.name}
-                        extra={
-                          <Checkbox
-                            checked={server.selected}
-                            onChange={() => void handleSelect(server.id)}>
-                            Select
-                          </Checkbox>
-                        }>
-                        <Badge status={server.status} text={server.url} />
-                      </Card>
-                    </Col>
-                  ))
-                ) : (
-                  <Col span={24}>
-                    <Typography.Text>No servers</Typography.Text>
-                  </Col>
-                )}
-              </>
-            )}
-          </Row>
-        </Card>
+        <MLServer />
       </Container>
     </>
   )

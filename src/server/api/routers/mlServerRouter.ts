@@ -19,6 +19,33 @@ export const mlServerRouter = createTRPCRouter({
       return server
     }),
 
+  update: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string().optional(),
+        description: z.string().optional(),
+        url: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { id, url, name, description } = input
+      const { prisma } = ctx
+
+      const server = await prisma.mLServer.update({
+        where: {
+          id,
+        },
+        data: {
+          name,
+          description,
+          url,
+        },
+      })
+
+      return server
+    }),
+
   getAll: publicProcedure.query(async ({ ctx }) => {
     const servers = await ctx.prisma.mLServer.findMany({
       orderBy: {
