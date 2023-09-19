@@ -106,7 +106,7 @@ export const componentRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         name: z.string().optional(),
-        description: z.string().optional(),
+        description: z.string().nullish(),
         color: z.string().optional(),
         partId: z.string().optional(),
       }),

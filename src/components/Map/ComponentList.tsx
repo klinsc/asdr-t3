@@ -30,6 +30,7 @@ import { someRandomEmoji } from '~/utils/emoji/someRandomEmoji'
 export default function ComponentList() {
   // router
   const router = useRouter()
+  const { edit, componentId } = router.query
 
   // messageAPI
   const [messageApi, contextHolder] = message.useMessage()
@@ -46,33 +47,10 @@ export default function ComponentList() {
   // refs: descriptionRef
   const descriptionRef = useRef<InputRef>(null)
 
-  // effects: prevent route change
-  useEffect(() => {
-    const handleRouteChange = () => {
-      if (isChanging) {
-        // Show a confirmation dialog
-        const userHasConfirmed = window.confirm(
-          'You have unsaved changes, are you sure you want to leave?',
-        )
-        if (!userHasConfirmed) {
-          // Prevent the route change
-          router.events.emit('routeChangeError')
-          throw 'Route change aborted.'
-        }
-      }
-    }
-
-    // Listen to route changes
-    router.events.on('routeChangeStart', handleRouteChange)
-
-    // Clean up the listener when the component is unmounted
-    return () => {
-      router.events.off('routeChangeStart', handleRouteChange)
-    }
-  }, [isChanging, router.events])
-
   // trpcs: get all components
-  const componentGetAll = api.component.getAll.useQuery(undefined, {})
+  const componentGetAll = api.component.getAll.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  })
   // trpcs: update all components
   const componentUpdateAll = api.component.updateAll.useMutation({
     onSuccess: () => {
@@ -167,6 +145,7 @@ export default function ComponentList() {
   useEffect(() => {
     if (componentGetAll.data) {
       setComponents(componentGetAll.data)
+      setIsChanging(false)
     }
   }, [componentGetAll.data])
 
@@ -178,28 +157,29 @@ export default function ComponentList() {
   }, [])
 
   // convert to useMemo
-  const columns = useMemo<ColumnsType<Component>>(
-    () => [
-      {
-        key: 'index',
-        title: '#',
-        dataIndex: 'index',
-        align: 'center',
-        width: 50,
-      },
-      {
-        key: 'name',
-        title: 'Name',
-        dataIndex: 'name',
-        render: (text, record, index) => (
-          <Row>
-            <Col span={24}>
-              <Typography.Title
-                level={5}
-                style={{
-                  margin: 0,
-                }}
-                editable={{
+  const columns: ColumnsType<Component> = [
+    {
+      key: 'index',
+      title: '#',
+      dataIndex: 'index',
+      align: 'center',
+      width: 50,
+    },
+    {
+      key: 'name',
+      title: 'Name',
+      dataIndex: 'name',
+      render: (text, record, index) => (
+        <Row>
+          <Col span={24}>
+            <Typography.Title
+              level={5}
+              style={{
+                margin: 0,
+              }}
+              editable={
+                edit === 'true' &&
+                componentId === record.id && {
                   onChange: (name) => {
                     const newComponents = [...components]
 
@@ -217,38 +197,41 @@ export default function ComponentList() {
                     setComponents(newComponents)
                     setIsChanging(true)
                   },
-                }}>
-                {record.name}
-              </Typography.Title>
-            </Col>
+                }
+              }>
+              {record.name}
+            </Typography.Title>
+          </Col>
 
-            {/* Created at */}
-            <Col span={12}>
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                {`created at: ${dayjs(record.createdAt).format(
-                  'YYYY.MM.DD HH:mm:ss',
-                )}`}
-              </Typography.Text>
-            </Col>
+          {/* Created at */}
+          <Col span={12}>
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              {`created at: ${dayjs(record.createdAt).format(
+                'YYYY.MM.DD HH:mm:ss',
+              )}`}
+            </Typography.Text>
+          </Col>
 
-            {/* Updated at */}
-            <Col span={12} style={{ textAlign: 'right' }}>
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                {`created at: ${dayjs(record.updatedAt).format(
-                  'YYYY.MM.DD HH:mm:ss',
-                )}`}
-              </Typography.Text>
-            </Col>
-          </Row>
-        ),
-      },
-      {
-        key: 'description',
-        title: 'Description',
-        dataIndex: 'description',
-        render: (text, record, index) => (
-          <Typography.Text
-            editable={{
+          {/* Updated at */}
+          <Col span={12} style={{ textAlign: 'right' }}>
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              {`created at: ${dayjs(record.updatedAt).format(
+                'YYYY.MM.DD HH:mm:ss',
+              )}`}
+            </Typography.Text>
+          </Col>
+        </Row>
+      ),
+    },
+    {
+      key: 'description',
+      title: 'Description',
+      dataIndex: 'description',
+      render: (text, record, index) => (
+        <Typography.Text
+          editable={
+            edit === 'true' &&
+            componentId === record.id && {
               onChange: (description) => {
                 const newComponents = [...components]
 
@@ -266,76 +249,177 @@ export default function ComponentList() {
                 setComponents(newComponents)
                 setIsChanging(true)
               },
-            }}>
-            {record.description}
-          </Typography.Text>
-        ),
-      },
-      {
-        key: 'color',
-        title: 'Color',
-        dataIndex: 'color',
-        width: 130,
-        render: (text, record, index) => (
-          <ColorPicker
-            showText
-            value={record.color}
-            onChangeComplete={(color: Color) => {
-              if (record.color !== color.toHexString())
-                void onColorChange(index, color.toHexString())
-            }}
-          />
-        ),
-      },
-      {
-        key: 'partId',
-        title: 'PartId',
-        dataIndex: 'partId',
-        width: 120,
-        render: (text, record) => (
-          <>
-            {partGetAll?.data && partGetAll?.data?.length > 0 && (
-              <Select
-                defaultValue={record.partId}
-                onChange={(partId) => {
-                  componentUpdateOne.mutate({
-                    id: record.id,
-                    partId: partId,
-                  })
-                }}>
-                <Select.Option value={null}>None</Select.Option>
-                {partGetAll.data?.map((part) => (
-                  <Select.Option key={part.id} value={part.id}>
-                    {part.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            )}
-          </>
-        ),
-      },
+            }
+          }>
+          {record.description}
+        </Typography.Text>
+      ),
+    },
+    {
+      key: 'color',
+      title: 'Color',
+      dataIndex: 'color',
+      width: 130,
+      render: (text, record, index) => (
+        <ColorPicker
+          disabled={edit !== 'true' || componentId !== record.id}
+          showText
+          value={record.color}
+          onChangeComplete={(color: Color) => {
+            if (record.color !== color.toHexString())
+              void onColorChange(index, color.toHexString())
+          }}
+        />
+      ),
+    },
+    {
+      key: 'partId',
+      title: 'PartId',
+      dataIndex: 'partId',
+      width: 120,
+      render: (text, record) => (
+        <>
+          {partGetAll?.data && partGetAll?.data?.length > 0 && (
+            <Select
+              disabled={edit !== 'true' || componentId !== record.id}
+              defaultValue={record.partId}
+              onChange={(partId) => {
+                componentUpdateOne.mutate({
+                  id: record.id,
+                  partId: partId,
+                })
+              }}>
+              <Select.Option value={null}>None</Select.Option>
+              {partGetAll.data?.map((part) => (
+                <Select.Option key={part.id} value={part.id}>
+                  {part.name}
+                </Select.Option>
+              ))}
+            </Select>
+          )}
+        </>
+      ),
+    },
 
-      // {
-      //   key: 'createdAt',
-      //   title: 'Created At',
-      //   dataIndex: 'createdAt',
-      //   render: (text, record) => (
-      //     // typography for date time
-      //     <Typography.Text>
-      //       {dayjs(record.createdAt).format('YYYY.MM.DD HH:mm:ss')}
-      //     </Typography.Text>
-      //   ),
-      // },
-      // {
-      //   key: 'updatedAt',
-      //   title: 'Updated At',
-      //   dataIndex: 'updatedAt',
-      //   render: (text, record) =>
-      //     dayjs(record.updatedAt).format('YYYY.MM.DD HH:mm:ss'),
-      // },
-    ],
-    [components, componentUpdateOne, onColorChange, partGetAll.data],
-  )
+    {
+      key: 'actions',
+      title: 'Actions',
+      dataIndex: 'actions',
+      width: 200,
+      // width:
+      //   edit === 'true' && componentId && componentId?.length > 0 ? 200 : 100,
+      align: 'center',
+      render: (text, record, index) => (
+        <Space.Compact>
+          {/* Edit button */}
+          {componentId !== record.id && (
+            <Button
+              type="default"
+              onClick={() => {
+                const handleEdit = async () => {
+                  // alert if there are unsaved changes
+                  if (isChanging) {
+                    // Show a confirmation dialog
+                    const userHasConfirmed = window.confirm(
+                      'You have unsaved changes, are you sure you want to leave?',
+                    )
+                    if (!userHasConfirmed) {
+                      return
+                    }
+                  }
+
+                  // discard changes
+                  await componentGetAll.refetch()
+
+                  await router.push(
+                    {
+                      pathname: '/map',
+                      query: {
+                        ...router.query,
+                        edit: 'true',
+                        componentId: record.id,
+                      },
+                    },
+                    undefined,
+                    {
+                      scroll: false,
+                    },
+                  )
+                }
+                void handleEdit()
+              }}>
+              Edit
+            </Button>
+          )}
+
+          {/* Cancel button */}
+          {edit === 'true' && componentId === record.id && (
+            <Button
+              type="default"
+              onClick={() => {
+                // discard changes
+                void componentGetAll.refetch()
+
+                // clear edit mode
+                void router.push(
+                  {
+                    pathname: '/map',
+                    query: {
+                      ...router.query,
+                      edit: 'false',
+                      componentId: undefined,
+                    },
+                  },
+                  undefined,
+                  {
+                    scroll: false,
+                  },
+                )
+              }}>
+              Cancel
+            </Button>
+          )}
+
+          {/* Save button */}
+          {edit === 'true' && componentId === record.id && (
+            <Button
+              disabled={!isChanging}
+              type="primary"
+              onClick={() => {
+                const component = components.find(
+                  (component) => component.index === index,
+                )
+                if (!component) return
+
+                void componentUpdateOne.mutate({
+                  id: component.id,
+                  name: component.name,
+                  description: component.description,
+                  color: component.color,
+                  partId: component.partId,
+                })
+                void router.push(
+                  {
+                    pathname: '/map',
+                    query: {
+                      ...router.query,
+                      edit: 'false',
+                      componentId: undefined,
+                    },
+                  },
+                  undefined,
+                  {
+                    scroll: false,
+                  },
+                )
+              }}>
+              Save
+            </Button>
+          )}
+        </Space.Compact>
+      ),
+    },
+  ]
 
   return (
     <>
@@ -482,7 +566,6 @@ export default function ComponentList() {
               type="default"
               onClick={() => {
                 void componentGetAll.refetch()
-                setIsChanging(false)
               }}>
               Refresh
             </Button>
@@ -504,7 +587,7 @@ export default function ComponentList() {
             size="small"
             columns={columns}
             dataSource={components}
-            pagination={{ pageSize: 50 }}
+            pagination={{ pageSize: 20 }}
           />
         </Col>
       </Row>
