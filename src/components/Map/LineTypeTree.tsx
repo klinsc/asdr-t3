@@ -91,7 +91,7 @@ const LineTypeTree = () => {
     const componentsByPart = getAllComponents.data?.reduce<
       Record<string, typeof getAllComponents.data>
     >((acc, component) => {
-      const part = component.part
+      const part = component.partId
       if (!acc[part]) {
         acc[part] = []
       }

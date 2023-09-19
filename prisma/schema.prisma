@@ -67,20 +67,6 @@ model MLServer {
   selected    Boolean  @default(false)
 }
 
-model Component {
-  id                String              @id
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime
-  index             Int                 @unique
-  name              String              @unique
-  description       String?
-  color             String
-  DrawingComponent  DrawingComponent[]
-  LineTypeComponent LineTypeComponent[]
-  partId            String
-  Part              Part                @relation(fields: [partId], references: [id])
-}
-
 model Drawing {
   id               String             @id
   createdAt        DateTime           @default(now())
@@ -124,6 +110,22 @@ model LineType {
   LineTypeComponent LineTypeComponent[]
 }
 
+model Component {
+  id                 String              @id
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime
+  index              Int                 @unique
+  name               String              @unique
+  description        String?
+  color              String
+  DrawingComponent   DrawingComponent[]
+  LineTypeComponent  LineTypeComponent[]
+  partId             String
+  Part               Part                @relation(fields: [partId], references: [id])
+  ComponentVersion   ComponentVersion?   @relation(fields: [componentVersionId], references: [id])
+  componentVersionId String?
+}
+
 model LineTypeComponent {
   id            String        @id @default(cuid())
   createdAt     DateTime      @default(now())
@@ -142,6 +144,17 @@ model Part {
   updatedAt DateTime    @updatedAt
   name      String
   Component Component[]
+}
+
+model ComponentVersion {
+  id          String      @id @default(cuid())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  name        String
+  emoji       String?
+  description String?
+  selected    Boolean     @default(false)
+  Component   Component[]
 }
 
 enum ComponentType {
