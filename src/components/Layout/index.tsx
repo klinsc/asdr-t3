@@ -16,7 +16,7 @@ import {
   type MenuProps,
 } from 'antd'
 import { useRouter } from 'next/router'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { api } from '~/utils/api'
 
 const hover = css`
@@ -43,6 +43,12 @@ const App = ({ children }: { children: React.ReactNode }) => {
   } = theme.useToken()
 
   const [collapsed, setCollapsed] = useState(true)
+
+  // effects: set collapsed as value from local storage
+  useEffect(() => {
+    const collapsed = localStorage.getItem('asdr-sider-collapsed') === 'true'
+    setCollapsed(collapsed)
+  }, [])
 
   const getItem = useMemo(
     () =>
@@ -85,7 +91,10 @@ const App = ({ children }: { children: React.ReactNode }) => {
       <Sider
         collapsible
         collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}>
+        onCollapse={(value) => {
+          setCollapsed(value)
+          localStorage.setItem('asdr-sider-collapsed', value.toString())
+        }}>
         <div
           className="demo-logo-vertical"
           style={{
