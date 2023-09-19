@@ -18,19 +18,20 @@ import {
   Typography,
   message,
   type InputRef,
+  Modal,
 } from 'antd'
 import { type Color } from 'antd/es/color-picker'
 import { type ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '~/utils/api'
 import { someRandomEmoji } from '~/utils/emoji/someRandomEmoji'
 
 export default function ComponentList() {
   // router
   const router = useRouter()
-  const { edit, componentId } = router.query
+  const { edit, componentVersionId, componentId } = router.query
 
   // messageAPI
   const [messageApi, contextHolder] = message.useMessage()
@@ -47,11 +48,18 @@ export default function ComponentList() {
   // refs: descriptionRef
   const descriptionRef = useRef<InputRef>(null)
 
-  // trpcs: get all components
+  // refs: editNameRef
+  const editNameRef = useRef<InputRef>(null)
+  // refs: editEmojiRef
+  const editEmojiRef = useRef<InputRef>(null)
+  // refs: editDescriptionRef
+  const editDescriptionRef = useRef<InputRef>(null)
+
+  // trpcs: components, get all
   const componentGetAll = api.component.getAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
-  // trpcs: update all components
+  // trpcs: components, update all
   const componentUpdateAll = api.component.updateAll.useMutation({
     onSuccess: () => {
       void componentGetAll.refetch()
@@ -61,9 +69,9 @@ export default function ComponentList() {
       void messageApi.error('Components update failed')
     },
   })
-  // trpcs: get all partx
+  // trpcs: components, get all part
   const partGetAll = api.component.getAllPartx.useQuery(undefined, {})
-  // trpcs: update one component
+  // trpcs: component, update one
   const componentUpdateOne = api.component.updateOneComponent.useMutation({
     onSuccess: () => {
       void componentGetAll.refetch()
@@ -73,7 +81,7 @@ export default function ComponentList() {
       void messageApi.error('Component update failed')
     },
   })
-  // trpcs: create one component version
+  // trpcs: version, create one
   const componentCreateVersion = api.componentVersion.createOne.useMutation({
     onSuccess: () => {
       void componentGetAll.refetch()
@@ -84,12 +92,12 @@ export default function ComponentList() {
       void messageApi.error('Component version creation failed')
     },
   })
-  // trpcs: get all component versions
+  // trpcs: version, get all
   const componentVersionGetAll = api.componentVersion.getAll.useQuery(
     undefined,
     {},
   )
-  // trpcs: update one component version
+  // trpcs: version, update one
   const componentVersionUpdateOne = api.componentVersion.updateOne.useMutation({
     onSuccess: () => {
       void componentVersionGetAll.refetch()
@@ -97,6 +105,16 @@ export default function ComponentList() {
     },
     onError: () => {
       void messageApi.error('Component version update failed')
+    },
+  })
+  // trpcs: version, delete one
+  const componentVersionDeleteOne = api.componentVersion.deleteOne.useMutation({
+    onSuccess: () => {
+      void componentVersionGetAll.refetch()
+      void messageApi.success('Component version deleted')
+    },
+    onError: () => {
+      void messageApi.error('Component version deletion failed')
     },
   })
 
@@ -366,7 +384,7 @@ export default function ComponentList() {
                     pathname: '/map',
                     query: {
                       ...router.query,
-                      edit: 'false',
+                      edit: undefined,
                       componentId: undefined,
                     },
                   },
@@ -398,12 +416,13 @@ export default function ComponentList() {
                   color: component.color,
                   partId: component.partId,
                 })
+
                 void router.push(
                   {
                     pathname: '/map',
                     query: {
                       ...router.query,
-                      edit: 'false',
+                      edit: undefined,
                       componentId: undefined,
                     },
                   },
@@ -488,64 +507,182 @@ export default function ComponentList() {
         {/* List of versions */}
         <Col span={24}>
           {componentVersionGetAll.data?.map((componentVersion) => (
-            <Card
-              key={componentVersion.id}
-              cover={
-                <Row justify="center" align="middle">
-                  <Col span={24} style={{ textAlign: 'center' }}>
-                    <Typography.Title
-                      level={1}
-                      style={{
-                        marginBottom: 0,
-                      }}>
-                      {componentVersion.emoji}
-                    </Typography.Title>
-                  </Col>
-                </Row>
-              }
-              actions={[
-                // <SettingOutlined key="setting" />,
-                <Checkbox
-                  key="checkbox"
-                  checked={componentVersion.selected}
-                  onChange={(e) => {
-                    void componentVersionUpdateOne.mutate({
-                      id: componentVersion.id,
-                      selected: e.target.checked,
-                    })
-                  }}>
-                  {componentVersion.selected ? '' : 'Select'}
-                </Checkbox>,
-                <EditOutlined
-                  key="edit"
-                  onClick={() => {
-                    void router.push({
-                      pathname: '/map',
-                      query: {
-                        tab: '3',
-                        componentVersionId: componentVersion.id,
-                      },
-                    })
-                  }}
-                />,
-                <EllipsisOutlined key="ellipsis" />,
-              ]}
-              style={{ width: 300 }}>
-              <Card.Meta
-                title={componentVersion.name}
-                description={
-                  <>
-                    {componentVersion.description}
-                    <br />
-                    <br />
-                    <ClockCircleOutlined /> &nbsp;
-                    {dayjs(componentVersion.createdAt).format(
-                      'YYYY.MM.DD HH:mm:ss',
-                    )}
-                  </>
+            <>
+              <Card
+                key={componentVersion.id}
+                cover={
+                  <Row justify="center" align="middle">
+                    <Col span={24} style={{ textAlign: 'center' }}>
+                      <Typography.Title
+                        level={1}
+                        style={{
+                          marginBottom: 0,
+                        }}>
+                        {componentVersion.emoji}
+                      </Typography.Title>
+                    </Col>
+                  </Row>
                 }
-              />
-            </Card>
+                actions={[
+                  // <SettingOutlined key="setting" />,
+                  <Checkbox
+                    key="checkbox"
+                    checked={componentVersion.selected}
+                    onChange={(e) => {
+                      void componentVersionUpdateOne.mutate({
+                        id: componentVersion.id,
+                        selected: e.target.checked,
+                      })
+                    }}>
+                    {componentVersion.selected ? '' : 'Select'}
+                  </Checkbox>,
+                  <EditOutlined
+                    key="edit"
+                    onClick={() => {
+                      void router.push({
+                        pathname: '/map',
+                        query: {
+                          tab: '3',
+                          edit: 'true',
+                          componentVersionId: componentVersion.id,
+                        },
+                      })
+                    }}
+                  />,
+                  <EllipsisOutlined key="ellipsis" />,
+                ]}
+                style={{ width: 300 }}>
+                <Card.Meta
+                  title={componentVersion.name}
+                  description={
+                    <>
+                      {componentVersion.description}
+                      <br />
+                      <br />
+                      <ClockCircleOutlined /> &nbsp;
+                      {dayjs(componentVersion.createdAt).format(
+                        'YYYY.MM.DD HH:mm:ss',
+                      )}
+                    </>
+                  }
+                />
+              </Card>
+
+              {/* Edit modal */}
+              <Modal
+                title="Edit drawing type"
+                open={
+                  edit === 'true' && componentVersionId === componentVersion.id
+                }
+                destroyOnClose
+                onCancel={() => {
+                  void router.push({
+                    pathname: '/map',
+                    query: {
+                      ...router.query,
+                      edit: undefined,
+                      componentVersionId: undefined,
+                    },
+                  })
+                }}
+                // Footer buttons
+                footer={[
+                  <Button
+                    key="delete"
+                    danger
+                    type="text"
+                    onClick={() => {
+                      window.confirm(
+                        'Are you sure you want to delete this drawing type?',
+                      ) &&
+                        void componentVersionDeleteOne.mutate({
+                          id: componentVersion.id,
+                        })
+                    }}>
+                    Delete
+                  </Button>,
+                  <Button
+                    key="cancel"
+                    onClick={() => {
+                      void router.push({
+                        pathname: '/map',
+                        query: {
+                          ...router.query,
+                          edit: undefined,
+                          componentVersionId: undefined,
+                        },
+                      })
+                    }}>
+                    Cancel
+                  </Button>,
+                  <Button
+                    key="submit"
+                    type="primary"
+                    onClick={() => {
+                      void componentVersionUpdateOne.mutate({
+                        id: componentVersion.id,
+                        name: editNameRef.current?.input?.value,
+                        emoji: editEmojiRef.current?.input?.value,
+                        description: editDescriptionRef.current?.input?.value,
+                      })
+
+                      void router.push({
+                        pathname: '/map',
+                        query: {
+                          ...router.query,
+                          edit: undefined,
+                          componentVersionId: undefined,
+                        },
+                      })
+
+                      // discard edit refs
+                      if (editNameRef.current?.input)
+                        editNameRef.current.input.value = ''
+                      if (editEmojiRef.current?.input)
+                        editEmojiRef.current.input.value = ''
+                      if (editDescriptionRef.current?.input)
+                        editDescriptionRef.current.input.value = ''
+                    }}>
+                    Update
+                  </Button>,
+                ]}>
+                {/* Edit modal content */}
+                <Space direction="vertical">
+                  <Input
+                    placeholder="Main & Transfer"
+                    addonBefore="Name"
+                    defaultValue={componentVersion.name}
+                    ref={editNameRef}
+                  />
+                  <Space.Compact
+                    style={{
+                      width: '100%',
+                    }}>
+                    <Input
+                      placeholder="Some cool emojis for easy recognition"
+                      addonBefore="Emoji"
+                      defaultValue={componentVersion.emoji}
+                      ref={editEmojiRef}
+                    />
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        const emoji = someRandomEmoji().join('')
+                        if (editEmojiRef.current?.input)
+                          editEmojiRef.current.input.value = emoji
+                      }}>
+                      Refresh
+                    </Button>
+                  </Space.Compact>
+                  <Input
+                    placeholder="The most popular drawing type map of electrical power substation"
+                    addonBefore="Description"
+                    defaultValue={componentVersion.description ?? ''}
+                    ref={editDescriptionRef}
+                  />
+                </Space>
+              </Modal>
+            </>
           ))}
         </Col>
       </Row>

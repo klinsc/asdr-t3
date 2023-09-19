@@ -151,7 +151,7 @@ model ComponentVersion {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   name        String
-  emoji       String?
+  emoji       String
   description String?
   selected    Boolean     @default(false)
   Component   Component[]
