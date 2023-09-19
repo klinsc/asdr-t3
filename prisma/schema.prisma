@@ -68,9 +68,9 @@ model MLServer {
 }
 
 model Drawing {
-  id               String             @id
+  id               String             @id @default(cuid())
   createdAt        DateTime           @default(now())
-  updatedAt        DateTime
+  updatedAt        DateTime           @updatedAt
   name             String             @unique
   description      String?
   drawingTypeId    String
@@ -79,9 +79,9 @@ model Drawing {
 }
 
 model DrawingComponent {
-  id          String    @id
+  id          String    @id @default(cuid())
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime  @updatedAt
   componentId String
   drawingId   String
   count       Int
@@ -111,11 +111,11 @@ model LineType {
 }
 
 model Component {
-  id                 String              @id
+  id                 String              @id @default(cuid())
   createdAt          DateTime            @default(now())
-  updatedAt          DateTime
-  index              Int                 @unique
-  name               String              @unique
+  updatedAt          DateTime            @updatedAt
+  index              Int
+  name               String
   description        String?
   color              String
   DrawingComponent   DrawingComponent[]
@@ -123,7 +123,7 @@ model Component {
   partId             String
   Part               Part                @relation(fields: [partId], references: [id])
   ComponentVersion   ComponentVersion?   @relation(fields: [componentVersionId], references: [id])
-  componentVersionId String?
+  componentVersionId String
 }
 
 model LineTypeComponent {

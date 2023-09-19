@@ -10,15 +10,19 @@ import {
   Checkbox,
   Col,
   ColorPicker,
+  Dropdown,
+  Form,
   Input,
+  type MenuProps,
+  Modal,
   Row,
   Select,
   Space,
   Table,
   Typography,
   message,
+  type FormInstance,
   type InputRef,
-  Modal,
 } from 'antd'
 import { type Color } from 'antd/es/color-picker'
 import { type ColumnsType } from 'antd/es/table'
@@ -28,10 +32,16 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '~/utils/api'
 import { someRandomEmoji } from '~/utils/emoji/someRandomEmoji'
 
+export interface Label {
+  index: number
+  label: string
+  color: string
+}
+
 export default function ComponentList() {
   // router
   const router = useRouter()
-  const { edit, componentVersionId, componentId } = router.query
+  const { edit, componentVersionId, componentId, remove } = router.query
 
   // messageAPI
   const [messageApi, contextHolder] = message.useMessage()
@@ -40,7 +50,13 @@ export default function ComponentList() {
   const [components, setComponents] = useState<Component[]>([])
   // states: isChanging
   const [isChanging, setIsChanging] = useState<boolean>(false)
+  // states: file
+  const [file, setFile] = useState<File>()
+  // states: labels
+  const [labels, setLabels] = useState<Label[]>([])
 
+  // refs: formRef
+  const formRef = useRef<FormInstance>(null)
   // refs: nameRef
   const nameRef = useRef<InputRef>(null)
   // refs: emojiRef
@@ -82,11 +98,18 @@ export default function ComponentList() {
     },
   })
   // trpcs: version, create one
-  const componentCreateVersion = api.componentVersion.createOne.useMutation({
-    onSuccess: () => {
-      void componentGetAll.refetch()
-      void componentVersionGetAll.refetch()
-      void messageApi.success('Component version created')
+  const componentVersionCreateOne = api.componentVersion.createOne.useMutation({
+    onSuccess: async () => {
+      await componentGetAll.refetch()
+      await componentVersionGetAll.refetch()
+      await messageApi.success('Component version created')
+
+      // discard refs & file
+      if (nameRef.current?.input) nameRef.current.input.value = ''
+      if (emojiRef.current?.input) emojiRef.current.input.value = ''
+      if (descriptionRef.current?.input) descriptionRef.current.input.value = ''
+      setFile(undefined)
+      setLabels([])
     },
     onError: () => {
       void messageApi.error('Component version creation failed')
@@ -120,6 +143,7 @@ export default function ComponentList() {
 
   // handlers: submit
   const handleCreateVersion = () => {
+    debugger
     const name = nameRef.current?.input?.value
     const emoji = emojiRef.current?.input?.value
     const description = descriptionRef.current?.input?.value
@@ -130,10 +154,11 @@ export default function ComponentList() {
     }
 
     // create a new component version
-    void componentCreateVersion.mutate({
+    void componentVersionCreateOne.mutate({
       name,
       emoji,
       description,
+      labels,
     })
   }
 
@@ -167,12 +192,12 @@ export default function ComponentList() {
     }
   }, [componentGetAll.data])
 
-  // effects: random emojis
-  useEffect(() => {
-    if (emojiRef.current?.input) {
-      emojiRef.current.input.value = someRandomEmoji().join('')
-    }
-  }, [])
+  // // effects: random emojis
+  // useEffect(() => {
+  //   if (emojiRef.current?.input) {
+  //     emojiRef.current.input.value = someRandomEmoji().join('')
+  //   }
+  // }, [])
 
   // convert to useMemo
   const columns: ColumnsType<Component> = [
@@ -440,6 +465,56 @@ export default function ComponentList() {
     },
   ]
 
+  // const: preview columns
+  const previewColumns: ColumnsType<Label> = [
+    {
+      key: 'index',
+      title: '#',
+      dataIndex: 'index',
+      align: 'center',
+      width: 50,
+    },
+    {
+      key: 'label',
+      title: 'Label',
+      dataIndex: 'label',
+      render: (text, record) => (
+        <Typography.Text>{record.label}</Typography.Text>
+      ),
+    },
+    {
+      key: 'color',
+      title: 'Color',
+      dataIndex: 'color',
+      render: (text, record) => <ColorPicker value={record.color} showText />,
+    },
+  ]
+
+  // const: menu items
+  const items: MenuProps['items'] = [
+    {
+      label: (
+        <a
+          onClick={(e) => {
+            e.preventDefault()
+
+            if (
+              window.confirm(
+                'Are you sure you want to delete this drawing type?',
+              ) &&
+              remove === 'true'
+            )
+              void componentVersionDeleteOne.mutate({
+                id: componentVersionId as string,
+              })
+          }}>
+          Delete
+        </a>
+      ),
+      key: '0',
+    },
+  ]
+
   return (
     <>
       {contextHolder}
@@ -459,42 +534,107 @@ export default function ComponentList() {
           style={{
             textAlign: 'center',
           }}>
-          <Space direction="vertical">
-            <Input
-              required
-              placeholder="Version 1.0"
-              addonBefore="Name"
-              ref={nameRef}
-            />
-            <Space.Compact
-              style={{
-                width: '100%',
-              }}>
+          <Form ref={formRef}>
+            <Space direction="vertical">
               <Input
                 required
-                placeholder="Some cool emojis for easy recognition"
-                addonBefore="Emoji"
-                ref={emojiRef}
+                placeholder="Version 1.0"
+                addonBefore="Name"
+                ref={nameRef}
               />
-              <Button
-                type="primary"
-                onClick={() => {
-                  const emoji = someRandomEmoji().join('')
-                  if (emojiRef.current?.input)
-                    emojiRef.current.input.value = emoji
+              <Space.Compact
+                style={{
+                  width: '100%',
                 }}>
-                Refresh
+                <Input
+                  required
+                  placeholder="Some cool emojis for easy recognition"
+                  addonBefore="Emoji"
+                  ref={emojiRef}
+                  defaultValue={someRandomEmoji().join('')}
+                />
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    const emoji = someRandomEmoji().join('')
+                    if (emojiRef.current?.input)
+                      emojiRef.current.input.value = emoji
+                  }}>
+                  Generate
+                </Button>
+              </Space.Compact>
+              <Input
+                placeholder="The effectivest model"
+                addonBefore="Description"
+                ref={descriptionRef}
+              />
+
+              {/* File input */}
+              <Input
+                type="file"
+                accept=".xml"
+                onChange={(e) => {
+                  debugger
+                  const file = e.target?.files?.[0]
+                  if (!file) return
+
+                  const reader = new FileReader()
+                  reader.onload = (e) => {
+                    debugger
+                    const xml = e.target?.result as string
+                    console.log(xml)
+
+                    const lines = e.target?.result?.toString().split('\n')
+                    if (!lines) return
+
+                    const newLabels: Label[] = []
+                    for (let i = 0; i < lines.length; i++) {
+                      const line = lines[i]
+                      if (!line) continue
+
+                      const label = line.match(/value="(.+?)"/)?.[1]
+                      const color = line.match(/background="(.+?)"/)?.[1]
+
+                      if (!label || !color) continue
+
+                      newLabels.push({
+                        index: i,
+                        label,
+                        color,
+                      })
+                    }
+
+                    setLabels(newLabels)
+                  }
+
+                  reader.readAsText(file)
+
+                  setFile(file)
+                }}
+              />
+
+              {/* File preview */}
+              {file && (
+                <Typography.Text>
+                  {file.name} ({file.size} bytes)
+                </Typography.Text>
+              )}
+
+              {/* Labels preview */}
+              {labels.length > 0 && (
+                <Table
+                  size="small"
+                  columns={previewColumns}
+                  dataSource={labels}
+                  pagination={{ pageSize: 20 }}
+                />
+              )}
+
+              <Button type="primary" onClick={() => void handleCreateVersion()}>
+                Add
               </Button>
-            </Space.Compact>
-            <Input
-              placeholder="The effectivest model"
-              addonBefore="Description"
-              ref={descriptionRef}
-            />
-            <Button type="primary" onClick={() => void handleCreateVersion()}>
-              Add
-            </Button>
-          </Space>
+            </Space>
+          </Form>
         </Col>
       </Row>
 
@@ -554,7 +694,31 @@ export default function ComponentList() {
                       })
                     }}
                   />,
-                  <EllipsisOutlined key="ellipsis" />,
+                  <Dropdown
+                    key={`${componentVersion.id}`}
+                    menu={{ items }}
+                    onOpenChange={(open) => {
+                      if (!open) return
+
+                      // set query delete=true and componentVersionId
+                      void router.push(
+                        {
+                          pathname: '/map',
+                          query: {
+                            ...router.query,
+                            remove: 'true',
+                            componentVersionId: componentVersion.id,
+                          },
+                        },
+                        undefined,
+                        { scroll: false },
+                      )
+                    }}
+                    trigger={['click']}>
+                    <Space>
+                      <EllipsisOutlined />
+                    </Space>
+                  </Dropdown>,
                 ]}
                 style={{ width: 300 }}>
                 <Card.Meta
@@ -676,7 +840,7 @@ export default function ComponentList() {
                         if (editEmojiRef.current?.input)
                           editEmojiRef.current.input.value = emoji
                       }}>
-                      Refresh
+                      Generate
                     </Button>
                   </Space.Compact>
                   <Input

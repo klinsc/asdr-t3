@@ -8,14 +8,75 @@ export const componentVersionRouter = createTRPCRouter({
         name: z.string(),
         emoji: z.string(),
         description: z.string().optional(),
+        labels: z
+          .array(
+            z.object({
+              index: z.number(),
+              label: z.string(),
+              color: z.string(),
+            }),
+          )
+          .optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      return ctx.prisma.componentVersion.create({
+      const newVersion = await ctx.prisma.componentVersion.create({
         data: {
           name: input.name,
           emoji: input.emoji,
           description: input.description,
+        },
+      })
+
+      await ctx.prisma.componentVersion.updateMany({
+        where: {
+          selected: true,
+        },
+        data: {
+          selected: false,
+        },
+      })
+
+      // get partId
+      const defaulPart = await ctx.prisma.part.findFirst({
+        where: {
+          name: 'universal',
+        },
+      })
+      if (!defaulPart) {
+        throw new Error('Part not found')
+      }
+
+      // create labels
+      if (input.labels) {
+        await Promise.all(
+          input.labels.map(async (label) => {
+            // get a component with similar name
+            const similarPart = await ctx.prisma.part.findFirst({
+              where: {
+                name: label.label,
+              },
+            })
+
+            await ctx.prisma.component.create({
+              data: {
+                index: label.index,
+                name: label.label,
+                color: label.color,
+                partId: similarPart?.id ?? defaulPart.id,
+                componentVersionId: newVersion.id,
+              },
+            })
+          }),
+        )
+      }
+
+      return ctx.prisma.componentVersion.updateMany({
+        where: {
+          id: newVersion.id,
+        },
+        data: {
+          selected: true,
         },
       })
     }),
@@ -82,6 +143,29 @@ export const componentVersionRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      // check if componentVersion exists
+      const componentVersionToDelete =
+        await ctx.prisma.componentVersion.findUnique({
+          where: {
+            id: input.id,
+          },
+        })
+      if (!componentVersionToDelete) {
+        throw new Error('Component Version not found')
+      }
+
+      // check if selected is true
+      if (componentVersionToDelete.selected) {
+        throw new Error('Cannot delete selected component version')
+      }
+
+      // delete related components
+      await ctx.prisma.component.deleteMany({
+        where: {
+          componentVersionId: input.id,
+        },
+      })
+
       return ctx.prisma.componentVersion.delete({
         where: {
           id: input.id,
