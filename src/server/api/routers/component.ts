@@ -2,12 +2,30 @@ import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
 
 export const componentRouter = createTRPCRouter({
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.component.findMany({
-      orderBy: {
-        index: 'asc',
-      },
-    })
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    // find selected componentVersion
+    const selectedComponentVersion =
+      await ctx.prisma.componentVersion.findFirst({
+        where: {
+          selected: true,
+        },
+      })
+
+    // check if selected componentVersion exists
+    if (!selectedComponentVersion) {
+      throw new Error('No selected component version found')
+    }
+
+    return (
+      (await ctx.prisma.component.findMany({
+        where: {
+          componentVersionId: selectedComponentVersion.id,
+        },
+        orderBy: {
+          index: 'asc',
+        },
+      })) || []
+    )
   }),
 
   updateAll: publicProcedure

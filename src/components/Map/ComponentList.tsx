@@ -505,11 +505,10 @@ export default function ComponentList() {
         </Col>
 
         {/* List of versions */}
-        <Col span={24}>
+        <>
           {componentVersionGetAll.data?.map((componentVersion) => (
-            <>
+            <Col span={8} key={componentVersion.id}>
               <Card
-                key={componentVersion.id}
                 cover={
                   <Row justify="center" align="middle">
                     <Col span={24} style={{ textAlign: 'center' }}>
@@ -529,10 +528,16 @@ export default function ComponentList() {
                     key="checkbox"
                     checked={componentVersion.selected}
                     onChange={(e) => {
-                      void componentVersionUpdateOne.mutate({
-                        id: componentVersion.id,
-                        selected: e.target.checked,
-                      })
+                      const handleSelect = async () => {
+                        await componentVersionUpdateOne.mutateAsync({
+                          id: componentVersion.id,
+                          selected: e.target.checked,
+                        })
+
+                        // refetch components
+                        await componentGetAll.refetch()
+                      }
+                      void handleSelect()
                     }}>
                     {componentVersion.selected ? '' : 'Select'}
                   </Checkbox>,
@@ -682,9 +687,9 @@ export default function ComponentList() {
                   />
                 </Space>
               </Modal>
-            </>
+            </Col>
           ))}
-        </Col>
+        </>
       </Row>
 
       <Row gutter={[16, 16]}>

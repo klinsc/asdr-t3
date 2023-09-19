@@ -23,7 +23,7 @@ export const componentVersionRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.componentVersion.findMany({
       orderBy: {
-        name: 'asc',
+        createdAt: 'asc',
       },
     })
   }),
@@ -38,25 +38,41 @@ export const componentVersionRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      // check if componentVersion exists
       const componentVersionToUpdate =
         await ctx.prisma.componentVersion.findUnique({
           where: {
             id: input.id,
           },
         })
-      if (componentVersionToUpdate) {
-        return ctx.prisma.componentVersion.update({
+      if (!componentVersionToUpdate) {
+        throw new Error('Component Version not found')
+      }
+
+      // check if selected is true
+      if (input.selected) {
+        // if true, set all other componentVersion to false
+        await ctx.prisma.componentVersion.updateMany({
           where: {
-            id: input.id,
+            selected: true,
           },
           data: {
-            name: input.name,
-            emoji: input.emoji,
-            description: input.description,
-            selected: input.selected,
+            selected: false,
           },
         })
       }
+
+      return ctx.prisma.componentVersion.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          emoji: input.emoji,
+          description: input.description,
+          selected: input.selected,
+        },
+      })
     }),
 
   deleteOne: publicProcedure
