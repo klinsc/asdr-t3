@@ -9,7 +9,8 @@ const theme: ThemeConfig = {
     Layout: {
       headerBg: '#1677ff',
       siderBg: '#1677ff',
-      triggerBg: '#1677ff',
+      triggerBg: '#fff',
+      triggerColor: '#1677ff',
     },
   },
 }

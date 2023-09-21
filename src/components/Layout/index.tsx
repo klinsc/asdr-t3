@@ -89,6 +89,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
   return (
     <Layout>
       <Sider
+        width={256}
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => {
