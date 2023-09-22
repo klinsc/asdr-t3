@@ -1,12 +1,15 @@
 import {
   ClusterOutlined,
   DesktopOutlined,
+  DownOutlined,
   FileSearchOutlined,
 } from '@ant-design/icons'
-import { css, cx } from '@emotion/css'
+import { Container } from '@mui/material'
 import {
   Badge,
+  Button,
   Col,
+  Dropdown,
   Layout,
   Menu,
   Row,
@@ -14,16 +17,12 @@ import {
   Typography,
   theme,
   type MenuProps,
+  Avatar,
 } from 'antd'
+import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { useEffect, useMemo, useState } from 'react'
 import { api } from '~/utils/api'
-
-const hover = css`
-  &:hover {
-    text-decoration: underline;
-  }
-`
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -32,6 +31,9 @@ type MenuItem = Required<MenuProps>['items'][number]
 const App = ({ children }: { children: React.ReactNode }) => {
   // routers
   const router = useRouter()
+
+  // session
+  const { data: session } = useSession()
 
   // trpcs
   const healthServer = api.health.getAll.useQuery(undefined, {
@@ -58,6 +60,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
         icon?: React.ReactNode,
         children?: MenuItem[],
         query?: Record<string, string | string[] | undefined>,
+        disabled?: boolean,
       ): MenuItem => {
         return {
           key,
@@ -70,21 +73,39 @@ const App = ({ children }: { children: React.ReactNode }) => {
               query,
             })
           },
+          disabled: disabled ?? false,
         } as MenuItem
       },
     [router],
   )
 
-  const items = useMemo(
+  const siderItems = useMemo(
     () => [
       getItem('Diagnose a Drawing', '/', <FileSearchOutlined />),
       getItem('Drawing Type Map', 'map', <ClusterOutlined />, undefined, {
         tab: '1',
       }),
-      getItem('Machine Learning Server', 'server', <DesktopOutlined />),
+      getItem(
+        session?.user?.role !== 'admin'
+          ? 'Admin only '
+          : 'Machine Learning Server',
+        'server',
+        <DesktopOutlined />,
+        undefined,
+        undefined,
+        session?.user?.role !== 'admin',
+      ),
     ],
-    [getItem],
+    [getItem, session?.user?.role],
   )
+
+  // const authItems: MenuProps['items'] = [
+  //   {
+  //     label: 'Sign out',
+  //     key: '3',
+  //     onClick: () => void signOut(),
+  //   },
+  // ]
 
   return (
     <Layout>
@@ -106,99 +127,115 @@ const App = ({ children }: { children: React.ReactNode }) => {
         <Menu
           defaultSelectedKeys={['1']}
           mode="inline"
-          items={items}
+          items={siderItems}
           style={{ height: '100%' }}
         />
       </Sider>
 
       <Layout style={{ background: colorBgContainer, minHeight: 1024 }}>
         <Header style={{ display: 'flex', alignItems: 'center' }}>
-          <Row
-            justify="center"
-            align="middle"
-            style={{
-              width: '100%',
-            }}>
-            <Col span={4} style={{ textAlign: 'center' }}>
-              <Typography.Paragraph
-                className={cx(hover)}
+          <Container maxWidth="lg">
+            <Row
+              justify="center"
+              align="middle"
+              style={{
+                width: '100%',
+              }}>
+              {/* Logo */}
+              <Col
+                span={8}
                 style={{
-                  color: 'white',
-                  margin: 0,
                   cursor: 'pointer',
                 }}
-                onClick={() =>
-                  window.open('https://chatbordin.com/', '_blank', 'noopener')
-                }>
-                Chatbordin Klinsrisuk
-              </Typography.Paragraph>
-            </Col>
+                onClick={() => void router.push('/')}>
+                <Avatar
+                  shape="square"
+                  size="large"
+                  src="/images/logo_asdr.webp"
+                />
 
-            {/* Logo */}
-            <Col
-              span={14}
-              style={{
-                textAlign: 'center',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                cursor: 'pointer',
-              }}
-              onClick={() => void router.push('/')}>
-              <Typography.Title
-                level={3}
+                {/* <Typography.Title
+                  level={3}
+                  style={{
+                    color: 'white',
+                    margin: 0,
+                  }}>
+                  ASDR&nbsp;
+                </Typography.Title> */}
+              </Col>
+
+              {/* Center */}
+              <Col
+                span={8}
                 style={{
-                  color: 'white',
-                  margin: 0,
-                }}>
-                ASDR&nbsp;
-              </Typography.Title>
-              <FileSearchOutlined
-                style={{
-                  color: 'white',
+                  textAlign: 'center',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  cursor: 'pointer',
                 }}
-              />
-              <Typography.Title
-                level={5}
-                style={{
-                  color: 'white',
-                  margin: 0,
-                }}>
-                Automatic System to Diagnose and Recognize Electrical Drawings
-              </Typography.Title>
-            </Col>
+                onClick={() => void router.push('/')}>
+                <Typography.Title
+                  level={3}
+                  style={{
+                    color: 'white',
+                    margin: 0,
+                  }}></Typography.Title>
+              </Col>
 
-            <Col
-              span={4}
-              style={{
-                textAlign: 'center',
-              }}>
-              <Space>
-                <Badge
-                  status={
-                    healthServer.isFetching || healthServer.isLoading
-                      ? 'processing'
-                      : healthServer?.data?.ml ?? 'error'
-                  }
-                  text={'ML'}
-                  style={{
-                    color: 'white',
-                  }}
-                />
-                <Badge
-                  status={
-                    healthServer.isFetching || healthServer.isLoading
-                      ? 'processing'
-                      : healthServer?.data?.db ?? 'error'
-                  }
-                  text={'DB'}
-                  style={{
-                    color: 'white',
-                  }}
-                />
-              </Space>
-            </Col>
-          </Row>
+              {/* Auth Menu */}
+              <Col
+                span={8}
+                style={{
+                  textAlign: 'right',
+                }}>
+                <Space>
+                  <Badge
+                    status={
+                      healthServer.isFetching || healthServer.isLoading
+                        ? 'processing'
+                        : healthServer?.data?.ml ?? 'error'
+                    }
+                    text={'ML'}
+                    style={{
+                      color: 'white',
+                    }}
+                  />
+                  <Badge
+                    status={
+                      healthServer.isFetching || healthServer.isLoading
+                        ? 'processing'
+                        : healthServer?.data?.db ?? 'error'
+                    }
+                    text={'DB'}
+                    style={{
+                      color: 'white',
+                    }}
+                  />
+                  {/* {session?.user ? (
+                    <Dropdown menu={{ items: authItems }} trigger={['click']}>
+                      <a
+                        onClick={(e) => e.preventDefault()}
+                        style={{
+                          color: 'white',
+                        }}>
+                        <Space>
+                          {session?.user?.email ?? 'Guest'}
+                          <DownOutlined />
+                        </Space>
+                      </a>
+                    </Dropdown>
+                  ) : (
+                    <Button
+                      type="default"
+                      onClick={() => void router.push('/auth/login')}>
+                      Login
+                    </Button>
+                  )} */}
+                </Space>
+              </Col>
+            </Row>
+          </Container>
         </Header>
 
         <Content

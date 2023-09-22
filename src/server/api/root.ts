@@ -7,6 +7,7 @@ import { lineTypeRouter } from './routers/lineType'
 import { componentRouter } from './routers/component'
 import { lineTypeComponentRouter } from './routers/lineTypeComponent'
 import { componentVersionRouter } from './routers/componentVersion'
+import { userRouter } from './routers/user'
 
 /**
  * This is the primary router for your server.
@@ -22,6 +23,7 @@ export const appRouter = createTRPCRouter({
   component: componentRouter,
   lineTypeComponent: lineTypeComponentRouter,
   componentVersion: componentVersionRouter,
+  user: userRouter,
 })
 
 // export type definition of API

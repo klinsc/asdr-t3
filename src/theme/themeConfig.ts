@@ -7,10 +7,10 @@ const theme: ThemeConfig = {
   },
   components: {
     Layout: {
-      headerBg: '#1677ff',
-      siderBg: '#1677ff',
+      headerBg: '#0A72EF',
+      siderBg: '#0A72EF',
       triggerBg: '#fff',
-      triggerColor: '#1677ff',
+      triggerColor: '#0A72EF',
     },
   },
 }
