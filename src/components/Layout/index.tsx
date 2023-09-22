@@ -176,7 +176,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
               <Space>
                 <Badge
                   status={
-                    healthServer.isFetching
+                    healthServer.isFetching || healthServer.isLoading
                       ? 'processing'
                       : healthServer?.data?.ml ?? 'error'
                   }
@@ -187,7 +187,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
                 />
                 <Badge
                   status={
-                    healthServer.isFetching
+                    healthServer.isFetching || healthServer.isLoading
                       ? 'processing'
                       : healthServer?.data?.db ?? 'error'
                   }

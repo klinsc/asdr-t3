@@ -30,12 +30,36 @@ export default function MLServer() {
   const editUrlRef = useRef<InputRef>(null)
 
   // trpcs: get all servers
-  const serverGetAll = api.mlServer.getAll.useQuery(undefined, {})
+  const serverGetAll = api.mlServer.getAll.useQuery(undefined, {
+    // refetchOnWindowFocus: false,
+  })
   // trpcs: create a new server
   const serverCreate = api.mlServer.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
       void serverGetAll.refetch()
       void message.success('Server created')
+
+      // reset fields
+      if (nameRef.current?.input?.value) nameRef.current.input.value = ''
+      if (descriptionRef.current?.input?.value)
+        descriptionRef.current.input.value = ''
+      if (urlRef.current?.input?.value) urlRef.current.input.value = ''
+
+      // reset query
+      void router.push(
+        {
+          pathname: '/server',
+          query: {},
+        },
+        undefined,
+        { shallow: true },
+      )
+
+      // select the new server
+      void serverSelect.mutate({
+        id: data.id,
+        selected: true,
+      })
     },
     onError: () => {
       void message.error('Server creation failed')
@@ -147,151 +171,147 @@ export default function MLServer() {
           </Typography.Title>
         </Col>
 
-        {serverGetAll.isFetching && <Col span={24}>Loading...</Col>}
-        {!serverGetAll.isFetching && (
-          <>
-            {serverGetAll?.data && serverGetAll?.data?.length > 0 ? (
-              serverGetAll.data.map((server) => (
-                <Col span={6} key={server.id}>
-                  <Card
-                    title={
-                      server.selected ? (
-                        <Badge dot status={server.status} offset={[0, 5]}>
-                          {server.name}
-                        </Badge>
-                      ) : (
-                        <>server.name</>
-                      )
-                    }
-                    extra={
-                      <Button
-                        type="default"
-                        onClick={() => {
-                          void router.push({
-                            pathname: '/server',
-                            query: {
-                              edit: 'true',
-                              id: server.id,
-                            },
-                          })
-                        }}>
-                        Edit
-                      </Button>
-                    }>
-                    <Row gutter={[16, 16]}>
-                      <Col span={24}>
-                        <Typography.Text>{server.url}</Typography.Text>
-                      </Col>
-
-                      <Col span={24}>
-                        <Typography.Paragraph>
-                          {server.description}
-                        </Typography.Paragraph>
-                      </Col>
-                      <Col
-                        span={24}
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'end',
-                        }}>
-                        <Checkbox
-                          checked={server.selected}
-                          onChange={() => void handleSelect(server.id)}>
-                          {server.selected ? 'Selected' : 'Select'}
-                        </Checkbox>
-                      </Col>
-                    </Row>
-                  </Card>
-
-                  {/* Edit modal */}
-                  <Modal
-                    title="Edit drawing type"
-                    open={edit === 'true' && id === server.id}
-                    destroyOnClose
-                    onCancel={() => {
-                      void router.push({
-                        pathname: '/server',
-                        query: {},
-                      })
-                    }}
-                    // Footer buttons
-                    footer={[
-                      <Button
-                        key="delete"
-                        danger
-                        type="text"
-                        onClick={() => {
-                          window.confirm(
-                            'Are you sure you want to delete this drawing type?',
-                          ) &&
-                            void serverDelete.mutate({
-                              id: server.id,
-                            })
-                        }}>
-                        Delete
-                      </Button>,
-                      <Button
-                        key="cancel"
-                        onClick={() => {
-                          void router.push({
-                            pathname: '/server',
-                            query: {},
-                          })
-                        }}>
-                        Cancel
-                      </Button>,
-                      <Button
-                        key="submit"
-                        type="primary"
-                        onClick={() => {
-                          void serverUpdate.mutate({
+        <>
+          {serverGetAll?.data && serverGetAll?.data?.length > 0 ? (
+            serverGetAll.data.map((server) => (
+              <Col span={6} key={server.id}>
+                <Card
+                  title={
+                    server.selected ? (
+                      <Badge dot status={server.status} offset={[0, 5]}>
+                        {server.name}
+                      </Badge>
+                    ) : (
+                      <>{server.name}</>
+                    )
+                  }
+                  extra={
+                    <Button
+                      type="default"
+                      onClick={() => {
+                        void router.push({
+                          pathname: '/server',
+                          query: {
+                            edit: 'true',
                             id: server.id,
-                            name: editNameRef.current?.input?.value,
-                            description:
-                              editDescriptionRef.current?.input?.value,
-                            url: editUrlRef.current?.input?.value,
+                          },
+                        })
+                      }}>
+                      Edit
+                    </Button>
+                  }>
+                  <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                      <Typography.Text>{server.url}</Typography.Text>
+                    </Col>
+
+                    <Col span={24}>
+                      <Typography.Paragraph>
+                        {server.description}
+                      </Typography.Paragraph>
+                    </Col>
+                    <Col
+                      span={24}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'end',
+                      }}>
+                      <Checkbox
+                        checked={server.selected}
+                        onChange={() => void handleSelect(server.id)}>
+                        {server.selected ? 'Selected' : 'Select'}
+                      </Checkbox>
+                    </Col>
+                  </Row>
+                </Card>
+
+                {/* Edit modal */}
+                <Modal
+                  title="Edit drawing type"
+                  open={edit === 'true' && id === server.id}
+                  destroyOnClose
+                  onCancel={() => {
+                    void router.push({
+                      pathname: '/server',
+                      query: {},
+                    })
+                  }}
+                  // Footer buttons
+                  footer={[
+                    <Button
+                      key="delete"
+                      danger
+                      type="text"
+                      onClick={() => {
+                        window.confirm(
+                          'Are you sure you want to delete this drawing type?',
+                        ) &&
+                          void serverDelete.mutate({
+                            id: server.id,
                           })
-                        }}>
-                        Update
-                      </Button>,
-                    ]}>
-                    {/* Edit modal content */}
-                    <Row gutter={[16, 16]}>
-                      <Col span={12}>
-                        <Input
-                          placeholder="Digitalocean server"
-                          addonBefore="Name"
-                          defaultValue={server.name}
-                          ref={editNameRef}
-                        />
-                      </Col>
-                      <Col span={24}>
-                        <Input
-                          placeholder="The most popular vms in the world"
-                          addonBefore="Description"
-                          defaultValue={server.description ?? ''}
-                          ref={editDescriptionRef}
-                        />
-                      </Col>
-                      <Col span={24}>
-                        <Input
-                          placeholder="A server for digitalocean"
-                          addonBefore="URL"
-                          defaultValue={server.url ?? ''}
-                          ref={editUrlRef}
-                        />
-                      </Col>
-                    </Row>
-                  </Modal>
-                </Col>
-              ))
-            ) : (
-              <Col span={24}>
-                <Typography.Text>No servers</Typography.Text>
+                      }}>
+                      Delete
+                    </Button>,
+                    <Button
+                      key="cancel"
+                      onClick={() => {
+                        void router.push({
+                          pathname: '/server',
+                          query: {},
+                        })
+                      }}>
+                      Cancel
+                    </Button>,
+                    <Button
+                      key="submit"
+                      type="primary"
+                      onClick={() => {
+                        void serverUpdate.mutate({
+                          id: server.id,
+                          name: editNameRef.current?.input?.value,
+                          description: editDescriptionRef.current?.input?.value,
+                          url: editUrlRef.current?.input?.value,
+                        })
+                      }}>
+                      Update
+                    </Button>,
+                  ]}>
+                  {/* Edit modal content */}
+                  <Row gutter={[16, 16]}>
+                    <Col span={12}>
+                      <Input
+                        placeholder="Digitalocean server"
+                        addonBefore="Name"
+                        defaultValue={server.name}
+                        ref={editNameRef}
+                      />
+                    </Col>
+                    <Col span={24}>
+                      <Input
+                        placeholder="The most popular vms in the world"
+                        addonBefore="Description"
+                        defaultValue={server.description ?? ''}
+                        ref={editDescriptionRef}
+                      />
+                    </Col>
+                    <Col span={24}>
+                      <Input
+                        placeholder="A server for digitalocean"
+                        addonBefore="URL"
+                        defaultValue={server.url ?? ''}
+                        ref={editUrlRef}
+                      />
+                    </Col>
+                  </Row>
+                </Modal>
               </Col>
-            )}
-          </>
-        )}
+            ))
+          ) : (
+            <Col span={24}>
+              <Typography.Text>No servers</Typography.Text>
+            </Col>
+          )}
+        </>
       </Row>
     </Card>
   )
