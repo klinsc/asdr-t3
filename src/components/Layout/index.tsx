@@ -1,15 +1,13 @@
 import {
   ClusterOutlined,
   DesktopOutlined,
-  DownOutlined,
   FileSearchOutlined,
 } from '@ant-design/icons'
 import { Container } from '@mui/material'
 import {
+  Avatar,
   Badge,
-  Button,
   Col,
-  Dropdown,
   Layout,
   Menu,
   Row,
@@ -17,9 +15,8 @@ import {
   Typography,
   theme,
   type MenuProps,
-  Avatar,
 } from 'antd'
-import { signOut, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { useEffect, useMemo, useState } from 'react'
 import { api } from '~/utils/api'
