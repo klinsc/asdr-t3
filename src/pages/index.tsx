@@ -1,241 +1,143 @@
-import {
-  FileSearchOutlined,
-  LoadingOutlined,
-  TableOutlined,
-  UploadOutlined,
-} from '@ant-design/icons'
 import { Container } from '@mui/material'
-import { Card, Col, Row, Select, Steps, Typography, theme } from 'antd'
-import Head from 'next/head'
-import { useCallback, useMemo, useState } from 'react'
-import PredictJPEG from '~/components/PredictJPEG'
-import PredictionImage from '~/components/PredictionImage'
-import PredictionTable from '~/components/PredictionTable'
-import UploadPDF from '~/components/UploadPDF'
-import type {
-  BoundingBox,
-  DrawingComponent,
-  LineType,
-  MissingComponent,
-  RemainingComponent,
-} from '~/models/drawings.model'
+import { Col, Row, Typography } from 'antd'
+import Image from 'next/image'
+
+// use theme
+import theme from '~/theme/themeConfig'
 
 export default function Home() {
-  // hooks
-  const [imageFile, setImageFile] = useState<File | null>(null)
-  const [lineTypes, setLineTypes] = useState<LineType[]>([])
-  const [drawingComponents, setDrawingComponents] = useState<
-    DrawingComponent[]
-  >([])
-  const [missingComponents, setMissingComponents] = useState<
-    MissingComponent[]
-  >([])
-  const [remainingComponents, setRemainingComponents] = useState<
-    RemainingComponent[]
-  >([])
-  const { token } = theme.useToken()
-  const [current, setCurrent] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
-  const [csvUrl, setCsvUrl] = useState('')
-  const [jsonUrl, setJsonUrl] = useState('')
-  const [jsonResult, setJsonResult] = useState<BoundingBox[]>([])
-  // const predictedImageColRef = useRef<HTMLDivElement>(null)
-
-  // handlers
-  const next = useCallback(() => {
-    setCurrent(current + 1)
-  }, [current])
-  // const prev = () => {
-  //   setCurrent(current - 1)
-  // }
-  const handleChange = (value: string) => {
-    console.log(`selected ${value}`)
-  }
-  const handleChangeStep = (current: number) => {
-    setCurrent(current)
-  }
-
-  const steps = useMemo(
-    () => [
-      {
-        title: 'Upload Drawing',
-        icon:
-          current === 0 && isLoading ? <LoadingOutlined /> : <UploadOutlined />,
-        content: (
-          <>
-            {/* Select the type of drawing */}
-            <Col
-              span={24}
-              style={{
-                textAlign: 'center',
-              }}>
-              <Typography.Title level={4}>
-                Select the type of drawing
-              </Typography.Title>
-              <Select
-                defaultValue="mt"
-                onChange={handleChange}
-                options={[
-                  { value: 'mt', label: 'Main & Transfer' },
-                  { value: 'h', label: 'H-config' },
-                  { value: 'bh', label: 'Breaker & a Half' },
-                  { value: 'dbsb', label: 'Double Bus Single Breaker' },
-                ]}
-              />
-            </Col>
-
-            {/* Upload a PDF file*/}
-            <Col
-              span={24}
-              style={{
-                textAlign: 'center',
-              }}>
-              <UploadPDF
-                imageFile={imageFile}
-                setImageFile={setImageFile}
-                next={next}
-                isLoading={isLoading}
-                setIsLoading={setIsLoading}
-              />
-            </Col>
-          </>
-        ),
-      },
-      {
-        title: 'Predict & Diagnose',
-        icon:
-          current === 1 && isLoading ? (
-            <LoadingOutlined />
-          ) : (
-            <FileSearchOutlined />
-          ),
-        content: (
-          <>
-            {/* Send to prediction */}
-            <Col
-              span={16}
-              style={{
-                textAlign: 'center',
-              }}>
-              <PredictJPEG
-                imageFile={imageFile}
-                setLineTypes={setLineTypes}
-                setDrawingComponents={setDrawingComponents}
-                setMissingComponents={setMissingComponents}
-                setRemainingComponents={setRemainingComponents}
-                isLoading={isLoading}
-                setIsLoading={setIsLoading}
-                setCsvUrl={setCsvUrl}
-                setJsonUrl={setJsonUrl}
-                next={next}
-                setJsonResult={setJsonResult}
-              />
-            </Col>
-          </>
-        ),
-      },
-      {
-        title: 'Table Results',
-        icon:
-          current === 2 && isLoading ? <LoadingOutlined /> : <TableOutlined />,
-        content: (
-          <>
-            {/* Display prediction */}
-            <Col
-              span={24}
-              style={{
-                textAlign: 'center',
-              }}>
-              <PredictionTable
-                lineTypes={lineTypes}
-                drawingComponents={drawingComponents}
-                missingComponents={missingComponents}
-                remainingComponents={remainingComponents}
-                csvUrl={csvUrl}
-                jsonUrl={jsonUrl}
-              />
-            </Col>
-          </>
-        ),
-      },
-      {
-        title: 'Image Results',
-        icon:
-          current === 3 && isLoading ? <LoadingOutlined /> : <TableOutlined />,
-        content: (
-          <>
-            {/* Display prediction with kanva*/}
-            <Col
-              // ref={predictedImageColRef}
-              span={24}
-              style={{
-                textAlign: 'center',
-              }}>
-              <PredictionImage
-                imageFile={imageFile}
-                jsonResult={jsonResult}
-                // predictedImageColRef={predictedImageColRef}
-              />
-            </Col>
-          </>
-        ),
-      },
-    ],
-    [
-      csvUrl,
-      current,
-      drawingComponents,
-      imageFile,
-      isLoading,
-      jsonResult,
-      jsonUrl,
-      lineTypes,
-      missingComponents,
-      next,
-      remainingComponents,
-    ],
-  )
-  const items = steps.map((item) => ({ key: item.title, title: item.title }))
-
   return (
-    <>
-      <Head>
-        <title>ASDR: Home</title>
-        <meta name="description" content="Generated by create-t3-app" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Container maxWidth="lg">
-        <Card
-          title={
-            <Typography.Title level={4}>Diagnose a Drawing</Typography.Title>
-          }>
-          <Row justify="center" align="middle" style={{ width: '100%' }}>
-            {/* Steps */}
-            <>
-              <Steps
-                current={current}
-                items={items}
-                onChange={handleChangeStep}
-              />
-              <Row
-                justify="center"
-                align="top"
-                gutter={[16, 16]}
+    <Container maxWidth="lg">
+      <Row
+        style={{
+          background: theme.token?.colorPrimary,
+          borderRadius: '6px',
+        }}>
+        <Col span={12}>
+          <Image
+            // fill
+            unoptimized
+            src="/images/landing_asdr.webp"
+            alt="automatic system to diagnose and recognize electrical components drawing"
+            width={600}
+            height={600}
+            style={{
+              borderRadius: '6px',
+            }}
+          />
+        </Col>
+
+        <Col span={12}>
+          <Row
+            gutter={[0, 16]}
+            style={{
+              padding: '24px',
+            }}>
+            <Col span={24}></Col>
+
+            <Col span={24}>
+              <Typography.Title
+                level={1}
                 style={{
-                  // minHeight: 600,
-                  marginTop: 16,
-                  padding: 16,
-                  width: '100%',
-                  borderRadius: token.borderRadiusLG,
-                  border: `1px dashed ${token.colorBorder}`,
-                  alignContent: 'flex-start',
+                  color: 'white',
+                  margin: 0,
                 }}>
-                {steps[current]?.content}
-              </Row>
-            </>
+                Are you tired of doom scrolling through electrical drawings?
+                <small>
+                  &nbsp;&nbsp;And find out that you have to do it all over
+                  again?
+                </small>
+              </Typography.Title>
+            </Col>
+
+            <Col span={24}></Col>
+
+            <Col span={24}>
+              <Typography.Title
+                level={2}
+                style={{
+                  color: 'white',
+                  margin: 0,
+                }}>
+                asdr is here to help you:
+              </Typography.Title>
+            </Col>
+
+            <Col span={24}>
+              <Typography.Title
+                level={3}
+                style={{
+                  color: 'white',
+                  margin: 0,
+                }}>
+                ⏰ Save time!
+              </Typography.Title>
+              <Typography.Title
+                level={3}
+                style={{
+                  color: 'white',
+                  margin: 0,
+                }}>
+                📝 Easy to use!
+              </Typography.Title>
+              <Typography.Title
+                level={3}
+                style={{
+                  color: 'white',
+                  margin: 0,
+                }}>
+                📊 High accuracy!
+              </Typography.Title>
+            </Col>
+
+            <Col span={24}></Col>
+
+            <Col span={24}>
+              <Typography.Title
+                level={5}
+                style={{
+                  color: 'white',
+                  margin: 0,
+                }}>
+                Get rid of the manual work and let ASDR do it for you!
+              </Typography.Title>
+            </Col>
           </Row>
-        </Card>
-      </Container>
-    </>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col span={24}>
+          <Typography.Title level={2}>How it works?</Typography.Title>
+
+          <Typography.Paragraph>
+            ASDR is a web application that uses machine learning to analyze
+            electrical drawings and give you the results.
+          </Typography.Paragraph>
+
+          <Typography.Paragraph>
+            1. Upload your electrical drawing
+          </Typography.Paragraph>
+
+          <Typography.Paragraph>2. ASDR will analyze it</Typography.Paragraph>
+
+          <Typography.Paragraph>
+            3. ASDR will give you the results
+          </Typography.Paragraph>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col span={24}>
+          <Typography.Title level={2}>Disclamer</Typography.Title>
+
+          <Typography.Paragraph>
+            This project is a thesis of Chatbordin Klinsrisuk for his master
+            degree of Engineer Technology at the Sirindhorn International
+            Institute of Technology, Thammasat University.
+          </Typography.Paragraph>
+        </Col>
+      </Row>
+    </Container>
   )
 }

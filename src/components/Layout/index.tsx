@@ -2,6 +2,7 @@ import {
   ClusterOutlined,
   DesktopOutlined,
   FileSearchOutlined,
+  HomeOutlined,
 } from '@ant-design/icons'
 import { Container } from '@mui/material'
 import {
@@ -12,16 +13,15 @@ import {
   Menu,
   Row,
   Space,
-  Typography,
   theme,
   type MenuProps,
 } from 'antd'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { api } from '~/utils/api'
 
-const { Header, Content, Footer, Sider } = Layout
+const { Header, Content, Footer } = Layout
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -41,13 +41,13 @@ const App = ({ children }: { children: React.ReactNode }) => {
     token: { colorBgContainer },
   } = theme.useToken()
 
-  const [collapsed, setCollapsed] = useState(true)
+  // const [collapsed, setCollapsed] = useState(true)
 
-  // effects: set collapsed as value from local storage
-  useEffect(() => {
-    const collapsed = localStorage.getItem('asdr-sider-collapsed') === 'true'
-    setCollapsed(collapsed)
-  }, [])
+  // // effects: set collapsed as value from local storage
+  // useEffect(() => {
+  //   const collapsed = localStorage.getItem('asdr-sider-collapsed') === 'true'
+  //   setCollapsed(collapsed)
+  // }, [])
 
   const getItem = useMemo(
     () =>
@@ -78,7 +78,8 @@ const App = ({ children }: { children: React.ReactNode }) => {
 
   const siderItems = useMemo(
     () => [
-      getItem('Diagnose a Drawing', '/', <FileSearchOutlined />),
+      getItem('Home', '/', <HomeOutlined />),
+      getItem('Diagnose a Drawing', '/diagnose', <FileSearchOutlined />),
       getItem('Drawing Type Map', 'map', <ClusterOutlined />, undefined, {
         tab: '1',
       }),
@@ -106,7 +107,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <Layout>
-      <Sider
+      {/* <Sider
         width={256}
         collapsible
         collapsed={collapsed}
@@ -127,7 +128,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
           items={siderItems}
           style={{ height: '100%' }}
         />
-      </Sider>
+      </Sider> */}
 
       <Layout style={{ background: colorBgContainer, minHeight: 1024 }}>
         <Header style={{ display: 'flex', alignItems: 'center' }}>
@@ -140,44 +141,23 @@ const App = ({ children }: { children: React.ReactNode }) => {
               }}>
               {/* Logo */}
               <Col
-                span={8}
+                span={2}
                 style={{
                   cursor: 'pointer',
                 }}
                 onClick={() => void router.push('/')}>
-                <Avatar
-                  shape="square"
-                  size="large"
-                  src="/images/logo_asdr.webp"
-                />
-
-                {/* <Typography.Title
-                  level={3}
-                  style={{
-                    color: 'white',
-                    margin: 0,
-                  }}>
-                  ASDR&nbsp;
-                </Typography.Title> */}
+                <Space>
+                  <Avatar
+                    shape="square"
+                    size="large"
+                    src="/images/logo_asdr.webp"
+                  />
+                </Space>
               </Col>
 
               {/* Center */}
-              <Col
-                span={8}
-                style={{
-                  textAlign: 'center',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                }}
-                onClick={() => void router.push('/')}>
-                <Typography.Title
-                  level={3}
-                  style={{
-                    color: 'white',
-                    margin: 0,
-                  }}></Typography.Title>
+              <Col span={14}>
+                <Menu mode="horizontal" items={siderItems} />
               </Col>
 
               {/* Auth Menu */}
@@ -194,9 +174,9 @@ const App = ({ children }: { children: React.ReactNode }) => {
                         : healthServer?.data?.ml ?? 'error'
                     }
                     text={'ML'}
-                    style={{
-                      color: 'white',
-                    }}
+                    // style={{
+                    //   color: 'white',
+                    // }}
                   />
                   <Badge
                     status={
@@ -205,17 +185,17 @@ const App = ({ children }: { children: React.ReactNode }) => {
                         : healthServer?.data?.db ?? 'error'
                     }
                     text={'DB'}
-                    style={{
-                      color: 'white',
-                    }}
+                    // style={{
+                    //   color: 'white',
+                    // }}
                   />
                   {/* {session?.user ? (
                     <Dropdown menu={{ items: authItems }} trigger={['click']}>
                       <a
                         onClick={(e) => e.preventDefault()}
-                        style={{
-                          color: 'white',
-                        }}>
+                        // style={{
+                        //   color: 'white',
+                        // }}>
                         <Space>
                           {session?.user?.email ?? 'Guest'}
                           <DownOutlined />
