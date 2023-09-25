@@ -1,5 +1,5 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Col, Form, Input, Row, message } from 'antd'
+import { Button, Col, Form, Input, Row, Space, message } from 'antd'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/router'
 
@@ -57,13 +57,18 @@ const LoginPage = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="login-form-button">
-              Log in
-            </Button>
-            Or <a href="">register now!</a>
+            <Space>
+              <Button type="link" href="/auth/regis">
+                Register
+              </Button>
+
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="login-form-button">
+                Log in
+              </Button>
+            </Space>
           </Form.Item>
         </Form>
       </Col>
