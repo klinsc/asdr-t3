@@ -18,7 +18,7 @@ import {
 } from 'antd'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import React, { useEffect, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { api } from '~/utils/api'
 
 const { Header, Content, Footer } = Layout
@@ -276,7 +276,10 @@ const App = ({ children }: { children: React.ReactNode }) => {
 
         <Footer style={{ textAlign: 'center' }}>
           <Row justify="center" align="middle">
-            <Col span={24}>ASDR ©2023 Created by Chatbordin Klinsrisuk</Col>
+            <Col span={24}>
+              asdr ©2023 Created by Chatbordin Klinsrisuk, m6422040904,
+              Thammasat University, Thailand
+            </Col>
 
             <Col span={24}>
               <Space>
