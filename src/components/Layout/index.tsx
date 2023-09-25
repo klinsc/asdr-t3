@@ -50,10 +50,10 @@ const App = ({ children }: { children: React.ReactNode }) => {
   //   setCollapsed(collapsed)
   // }, [])
 
-  // effects: log session
-  useEffect(() => {
-    console.log('session', session)
-  }, [session])
+  // // effects: log session
+  // useEffect(() => {
+  //   console.log('session', session)
+  // }, [session])
 
   const getItem = useMemo(
     () =>
@@ -167,7 +167,13 @@ const App = ({ children }: { children: React.ReactNode }) => {
       </Sider> */}
 
       <Layout style={{ background: colorBgContainer, minHeight: 1024 }}>
-        <Header style={{ display: 'flex', alignItems: 'center' }}>
+        <Header
+          // fix at top
+          style={{
+            position: 'fixed',
+            zIndex: 1,
+            width: '100%',
+          }}>
           <Container maxWidth="lg">
             <Row
               justify="center"
@@ -198,6 +204,9 @@ const App = ({ children }: { children: React.ReactNode }) => {
                   items={siderItems}
                   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                   selectedKeys={[pathname.split('/')[1] || '/']}
+                  style={{
+                    borderBottom: 'none',
+                  }}
                 />
               </Col>
 
@@ -258,6 +267,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
 
         <Content
           style={{
+            marginTop: 64,
             padding: '24px 24px',
             minHeight: 280,
           }}>
