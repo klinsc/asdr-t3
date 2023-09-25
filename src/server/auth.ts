@@ -104,7 +104,7 @@ export const authOptions: NextAuthOptions = {
         // check if the password is valid
         const isValid =
           crypto
-            .scryptSync(credentials.password, user.salt as string, 64, {
+            .scryptSync(credentials.password, user.salt, 64, {
               N: 1024,
             })
             .toString('hex') === user.hash
