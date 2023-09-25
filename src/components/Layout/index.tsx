@@ -1,6 +1,5 @@
 import {
   ClusterOutlined,
-  DesktopOutlined,
   FileSearchOutlined,
   HomeOutlined,
 } from '@ant-design/icons'
@@ -8,6 +7,7 @@ import { Container } from '@mui/material'
 import {
   Avatar,
   Badge,
+  Button,
   Col,
   Layout,
   Menu,
@@ -63,7 +63,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
         icon,
         children,
         query,
-        admin,
+        // admin,
         disabled,
       }: {
         label: React.ReactNode
@@ -80,12 +80,12 @@ const App = ({ children }: { children: React.ReactNode }) => {
           children,
           label,
           onClick: () => {
-            if (admin && session?.user?.role !== 'ADMIN')
-              return void router.push('auth/login/', {
-                query: {
-                  callbackUrl: router.pathname,
-                },
-              })
+            // if (admin && session?.user?.role !== 'ADMIN')
+            //   return void router.push('auth/login/', {
+            //     query: {
+            //       callbackUrl: router.pathname,
+            //     },
+            //   })
 
             void router.push({
               pathname: `/${key}`,
@@ -95,7 +95,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
           disabled,
         } as MenuItem
       },
-    [router, session?.user?.role],
+    [router],
   )
 
   const siderItems = useMemo(
@@ -104,15 +104,11 @@ const App = ({ children }: { children: React.ReactNode }) => {
         label: 'Home',
         key: '/',
         icon: <HomeOutlined />,
-        // disable when on key or auth
-        // disabled: router.pathname === '/',
       }),
       getItem({
         label: 'Diagnose a Drawing',
         key: 'diagnose',
         icon: <FileSearchOutlined />,
-        // disabled:
-        //   router.pathname === '/diagnose' || router.pathname.includes('/auth'),
       }),
       getItem({
         label: 'Drawing Type Map',
@@ -121,22 +117,20 @@ const App = ({ children }: { children: React.ReactNode }) => {
         query: {
           tab: '1',
         },
-        // disabled:
-        //   router.pathname === '/map' || router.pathname.includes('/auth'),
       }),
-      getItem({
-        label:
-          session?.user?.role !== 'admin'
-            ? 'Admin only '
-            : 'Machine Learning Server',
-        key: 'server',
-        icon: <DesktopOutlined />,
-        admin: true,
-        // disabled:
-        //   router.pathname === '/server' || router.pathname.includes('/auth'),
-      }),
+      // getItem({
+      //   label:
+      //     session?.user?.role !== 'admin'
+      //       ? 'Admin only '
+      //       : 'Machine Learning Server',
+      //   key: 'server',
+      //   icon: <DesktopOutlined />,
+      //   admin: true,
+      //   // disabled:
+      //   //   router.pathname === '/server' || router.pathname.includes('/auth'),
+      // }),
     ],
-    [getItem, session?.user?.role],
+    [getItem],
   )
 
   // const authItems: MenuProps['items'] = [
@@ -271,7 +265,28 @@ const App = ({ children }: { children: React.ReactNode }) => {
         </Content>
 
         <Footer style={{ textAlign: 'center' }}>
-          ASDR ©2023 Created by Chatbordin Klinsrisuk
+          <Row justify="center" align="middle">
+            <Col span={24}>ASDR ©2023 Created by Chatbordin Klinsrisuk</Col>
+
+            <Col span={24}>
+              <Space>
+                <Button
+                  type="link"
+                  onClick={() => {
+                    if (session?.user?.role !== 'ADMIN')
+                      return void router.push('auth/login/', {
+                        query: {
+                          callbackUrl: router.pathname,
+                        },
+                      })
+
+                    void router.push('/server')
+                  }}>
+                  admin
+                </Button>
+              </Space>
+            </Col>
+          </Row>
         </Footer>
       </Layout>
     </Layout>
