@@ -50,7 +50,7 @@ export async function timeout({
 }) {
   let status: PresetStatusColorType = 'default'
 
-  await setTimeout(1000)
+  await setTimeout(5000)
   cancelTimeout.abort()
   cancelRequest.abort()
 
