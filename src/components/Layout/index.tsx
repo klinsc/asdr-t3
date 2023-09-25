@@ -18,7 +18,7 @@ import {
 } from 'antd'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { api } from '~/utils/api'
 
 const { Header, Content, Footer } = Layout
@@ -28,6 +28,7 @@ type MenuItem = Required<MenuProps>['items'][number]
 const App = ({ children }: { children: React.ReactNode }) => {
   // routers
   const router = useRouter()
+  const pathname = router.pathname
 
   // session
   const { data: session } = useSession()
@@ -49,50 +50,91 @@ const App = ({ children }: { children: React.ReactNode }) => {
   //   setCollapsed(collapsed)
   // }, [])
 
+  // effects: log session
+  useEffect(() => {
+    console.log('session', session)
+  }, [session])
+
   const getItem = useMemo(
     () =>
-      (
-        label: React.ReactNode,
-        key: React.Key,
-        icon?: React.ReactNode,
-        children?: MenuItem[],
-        query?: Record<string, string | string[] | undefined>,
-        disabled?: boolean,
-      ): MenuItem => {
+      ({
+        label,
+        key,
+        icon,
+        children,
+        query,
+        admin,
+        disabled,
+      }: {
+        label: React.ReactNode
+        key: React.Key
+        icon?: React.ReactNode
+        children?: MenuItem[]
+        query?: Record<string, string | string[] | undefined>
+        admin?: boolean
+        disabled?: boolean
+      }): MenuItem => {
         return {
           key,
           icon,
           children,
           label,
           onClick: () => {
+            if (admin && session?.user?.role !== 'ADMIN')
+              return void router.push('auth/login/', {
+                query: {
+                  callbackUrl: router.pathname,
+                },
+              })
+
             void router.push({
               pathname: `/${key}`,
               query,
             })
           },
-          disabled: disabled ?? false,
+          disabled,
         } as MenuItem
       },
-    [router],
+    [router, session?.user?.role],
   )
 
   const siderItems = useMemo(
     () => [
-      getItem('Home', '/', <HomeOutlined />),
-      getItem('Diagnose a Drawing', '/diagnose', <FileSearchOutlined />),
-      getItem('Drawing Type Map', 'map', <ClusterOutlined />, undefined, {
-        tab: '1',
+      getItem({
+        label: 'Home',
+        key: '/',
+        icon: <HomeOutlined />,
+        // disable when on key or auth
+        // disabled: router.pathname === '/',
       }),
-      getItem(
-        session?.user?.role !== 'admin'
-          ? 'Admin only '
-          : 'Machine Learning Server',
-        'server',
-        <DesktopOutlined />,
-        undefined,
-        undefined,
-        session?.user?.role !== 'admin',
-      ),
+      getItem({
+        label: 'Diagnose a Drawing',
+        key: 'diagnose',
+        icon: <FileSearchOutlined />,
+        // disabled:
+        //   router.pathname === '/diagnose' || router.pathname.includes('/auth'),
+      }),
+      getItem({
+        label: 'Drawing Type Map',
+        key: 'map',
+        icon: <ClusterOutlined />,
+        query: {
+          tab: '1',
+        },
+        // disabled:
+        //   router.pathname === '/map' || router.pathname.includes('/auth'),
+      }),
+      getItem({
+        label:
+          session?.user?.role !== 'admin'
+            ? 'Admin only '
+            : 'Machine Learning Server',
+        key: 'server',
+        icon: <DesktopOutlined />,
+        admin: true,
+        // disabled:
+        //   router.pathname === '/server' || router.pathname.includes('/auth'),
+      }),
     ],
     [getItem, session?.user?.role],
   )
@@ -157,7 +199,12 @@ const App = ({ children }: { children: React.ReactNode }) => {
 
               {/* Center */}
               <Col span={14}>
-                <Menu mode="horizontal" items={siderItems} />
+                <Menu
+                  mode="horizontal"
+                  items={siderItems}
+                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+                  selectedKeys={[pathname.split('/')[1] || '/']}
+                />
               </Col>
 
               {/* Auth Menu */}
