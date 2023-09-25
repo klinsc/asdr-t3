@@ -7,18 +7,21 @@ const App = () => {
   const urlRef = useRef<InputRef>(null)
   const nameRef = useRef<InputRef>(null)
 
+  // messageAPI
+  const [messageAPI, contextHolder] = message.useMessage()
+
   const server = api.mlServer.create.useMutation({
     onSuccess: () => {
-      void message.success('Server created')
+      void messageAPI.success('Server created')
     },
     onError: () => {
-      void message.error('Server creation failed')
+      void messageAPI.error('Server creation failed')
     },
   })
 
   const handleSubmit = () => {
     if (!urlRef?.current?.input?.value || !nameRef?.current?.input?.value)
-      return message.error('Please fill in all fields')
+      return messageAPI.error('Please fill in all fields')
     const url = urlRef?.current?.input.value
     const name = nameRef?.current?.input.value
 
@@ -29,17 +32,24 @@ const App = () => {
   }
 
   return (
-    <Space direction="vertical">
-      <Input
-        placeholder="http://localhost:5000/"
-        addonBefore="URL"
-        ref={urlRef}
-      />
-      <Input placeholder="Machine Learning" addonBefore="Name" ref={nameRef} />
-      <Button type="primary" onClick={() => void handleSubmit()}>
-        Submit
-      </Button>
-    </Space>
+    <>
+      {contextHolder}
+      <Space direction="vertical">
+        <Input
+          placeholder="http://localhost:5000/"
+          addonBefore="URL"
+          ref={urlRef}
+        />
+        <Input
+          placeholder="Machine Learning"
+          addonBefore="Name"
+          ref={nameRef}
+        />
+        <Button type="primary" onClick={() => void handleSubmit()}>
+          Submit
+        </Button>
+      </Space>
+    </>
   )
 }
 

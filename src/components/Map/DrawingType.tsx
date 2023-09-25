@@ -95,7 +95,7 @@ export const DrawingType = () => {
   // handlers
   const handleSubmit = () => {
     if (!nameRef?.current?.input?.value)
-      return message.error('Please fill in all fields')
+      return messageApi.error('Please fill in all fields')
     const name = nameRef?.current?.input.value
     const description = descriptionRef?.current?.input?.value
 

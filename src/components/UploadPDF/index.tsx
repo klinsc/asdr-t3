@@ -29,6 +29,9 @@ const UploadPDF = ({
   // hooks
   const [fileList, setFileList] = useState<UploadFile[]>([])
 
+  // messageAPI
+  const [messageAPI, contextHolder] = message.useMessage()
+
   // trpcs
   const serverGetSelected = api.mlServer.getSelected.useQuery()
 
@@ -56,11 +59,11 @@ const UploadPDF = ({
           setImageFile(blob as File)
         })
         .then(() => {
-          void message.success('upload successfully.')
+          void messageAPI.success('upload successfully.')
           next()
         })
         .catch(() => {
-          void message.error('upload failed.')
+          void messageAPI.error('upload failed.')
         })
         .finally(() => {
           setFileList([])
@@ -77,13 +80,13 @@ const UploadPDF = ({
       // check if more than 1 file
       const isMultiple = fileList.length > 0
       if (isMultiple) {
-        void message.error('You can only upload one file')
+        void messageAPI.error('You can only upload one file')
         return Upload.LIST_IGNORE
       }
 
       const isPDF = file.type === 'application/pdf'
       if (!isPDF) {
-        void message.error(`${file.name} is not a pdf file`)
+        void messageAPI.error(`${file.name} is not a pdf file`)
         return Upload.LIST_IGNORE
       }
 
@@ -95,20 +98,23 @@ const UploadPDF = ({
   }
 
   return (
-    <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
-      <Upload {...props}>
-        <Button
-          icon={<UploadOutlined />}
-          loading={isLoading}
-          type={
-            fileList.length === 0 && imageFile?.length === 0
-              ? 'primary'
-              : 'default'
-          }>
-          Select File
-        </Button>
-      </Upload>
-    </Space>
+    <>
+      {contextHolder}
+      <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+        <Upload {...props}>
+          <Button
+            icon={<UploadOutlined />}
+            loading={isLoading}
+            type={
+              fileList.length === 0 && imageFile?.length === 0
+                ? 'primary'
+                : 'default'
+            }>
+            Select File
+          </Button>
+        </Upload>
+      </Space>
+    </>
   )
 }
 
