@@ -34,8 +34,8 @@ const PredictJPEG = ({
   setRemainingComponents,
   isLoading,
   setIsLoading,
-  setCsvUrl,
-  setJsonUrl,
+  // setCsvUrl,
+  // setJsonUrl,
   next,
   setJsonResult,
 }: PredictJPEGProps) => {
@@ -72,12 +72,13 @@ const PredictJPEG = ({
           body: formData,
         },
       )
-
+      // debugger
       const json = (await response.json()) as {
         line_types: string
         drawing_components: string
         missing_components: string
         remaining_components: string
+        json_result: string
       }
       if (response.status !== 200) throw new Error('Prediction failed!')
 
@@ -92,50 +93,54 @@ const PredictJPEG = ({
       const remainingComponents = JSON.parse(
         json.remaining_components,
       ) as RemainingComponent[]
-
+      const jsonResult = JSON.parse(json.json_result) as BoundingBox[]
+      // debugger
       setLineTypes(lineTypes)
       setDrawingComponents(drawingComponents)
       setMissingComponents(missingComponents)
       setRemainingComponents(remainingComponents)
-
-      // CSV file
-      const csvResponse = await fetch(
-        `${serverGetSelected?.data?.url}predict?type=csv`,
-        {
-          method: 'POST',
-          headers: {
-            enctype: 'multipart/form-data',
-            responseType: 'text/csv',
-          },
-          body: formData,
-        },
-      )
-      if (csvResponse.status !== 200) throw new Error('Prediction failed!')
-      const csvBlob = await csvResponse.blob()
-      const csvUrl = URL.createObjectURL(csvBlob)
-      setCsvUrl(csvUrl)
-
-      // JSON file
-      const jsonResponse = await fetch(
-        `${serverGetSelected?.data?.url}predict?type=json`,
-        {
-          method: 'POST',
-          headers: {
-            enctype: 'multipart/form-data',
-            responseType: 'application/json',
-          },
-          body: formData,
-        },
-      )
-      if (jsonResponse.status !== 200) throw new Error('Prediction failed!')
-      const jsonBlob = await jsonResponse.blob()
-      const jsonUrl = URL.createObjectURL(jsonBlob)
-      setJsonUrl(jsonUrl)
-
-      // convert blob to json
-      const jsonText = await jsonBlob.text()
-      const jsonResult = JSON.parse(jsonText) as BoundingBox[]
       setJsonResult(jsonResult)
+
+      // temporary: disabled csv and json
+
+      // // CSV file
+      // const csvResponse = await fetch(
+      //   `${serverGetSelected?.data?.url}predict?type=csv`,
+      //   {
+      //     method: 'POST',
+      //     headers: {
+      //       enctype: 'multipart/form-data',
+      //       responseType: 'text/csv',
+      //     },
+      //     body: formData,
+      //   },
+      // )
+      // if (csvResponse.status !== 200) throw new Error('Prediction failed!')
+      // const csvBlob = await csvResponse.blob()
+      // const csvUrl = URL.createObjectURL(csvBlob)
+      // setCsvUrl(csvUrl)
+
+      // // JSON file
+      // const jsonResponse = await fetch(
+      //   `${serverGetSelected?.data?.url}predict?type=json`,
+      //   {
+      //     method: 'POST',
+      //     headers: {
+      //       enctype: 'multipart/form-data',
+      //       responseType: 'application/json',
+      //     },
+      //     body: formData,
+      //   },
+      // )
+      // if (jsonResponse.status !== 200) throw new Error('Prediction failed!')
+      // const jsonBlob = await jsonResponse.blob()
+      // const jsonUrl = URL.createObjectURL(jsonBlob)
+      // setJsonUrl(jsonUrl)
+
+      // // convert blob to json
+      // const jsonText = await jsonBlob.text()
+      // const jsonResult = JSON.parse(jsonText) as BoundingBox[]
+      // setJsonResult(jsonResult)
 
       void messageAPI.success('Prediction successfully!')
     } catch (error) {
