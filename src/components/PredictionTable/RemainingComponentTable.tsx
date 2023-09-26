@@ -22,13 +22,25 @@ const RemainingComponentTable = (props: RemainingComponentTableProps) => {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        filters: props.remainingComponents
-          .map((component) => ({
-            text: component.name,
-            value: component.name,
-          }))
+        filteredValue: props.remainingComponents
+          .filter((component) => component.count > 0)
+          .map((component) => component.name)
           // remove the same line type
-          .filter((value, index, self) => self.findIndex((v) => v.value === value.value) === index),
+          .filter(
+            (value, index, self) =>
+              self.findIndex((v) => v === value) === index,
+          ),
+        // filters: props.remainingComponents
+        //   .filter((component) => component.count > 0)
+        //   .map((component) => ({
+        //     text: component.name,
+        //     value: component.name,
+        //   }))
+        //   // remove the same line type
+        //   .filter(
+        //     (value, index, self) =>
+        //       self.findIndex((v) => v.value === value.value) === index,
+        //   ),
         onFilter: (value, record) => record.name.startsWith(String(value)),
         sorter: (a, b) => a.name.length - b.name.length,
         sortDirections: ['ascend', 'descend'],
@@ -48,7 +60,9 @@ const RemainingComponentTable = (props: RemainingComponentTableProps) => {
     <Table
       bordered
       onChange={handleChange}
-      caption={<Typography.Title level={5}>Remaining Components</Typography.Title>}
+      caption={
+        <Typography.Title level={5}>Remaining Components</Typography.Title>
+      }
       columns={columns}
       dataSource={props.remainingComponents}
     />
