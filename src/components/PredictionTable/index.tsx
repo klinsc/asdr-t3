@@ -1,5 +1,5 @@
 import { Button, Checkbox, Col, Row, Space } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type {
   DrawingComponent,
   LineType,
@@ -39,6 +39,8 @@ const checkBoxes = [
   },
 ]
 
+type Hiddens = [boolean, boolean, boolean, boolean]
+
 const PredictionTable = ({
   lineTypes,
   drawingComponents,
@@ -47,25 +49,47 @@ const PredictionTable = ({
   csvUrl,
   jsonUrl,
 }: PredictionTableProps) => {
-  const [hidden, setHidden] = useState([true, true, true, true])
+  const [hidden, setHidden] = useState<Hiddens>([false, false, false, false])
 
   // handlers
   const handleCheckbox = (index: number) => {
-    const newHidden = [...hidden]
+    const newHidden = [...hidden] as Hiddens
     newHidden[index] = !newHidden[index]
     setHidden(newHidden)
   }
+
+  // effects: get store states from local storage
+  useEffect(() => {
+    const hiddenString = localStorage.getItem('hidden')
+    if (!hiddenString) return
+
+    const newHidden = JSON.parse(hiddenString) as Hiddens
+    setHidden(newHidden)
+  }, [])
+
+  // effects: set store states to local storage
+  useEffect(() => {
+    localStorage.setItem('hidden', JSON.stringify(hidden))
+  }, [hidden])
 
   return (
     <>
       <Space style={{ width: '100%', justifyContent: 'center' }}>
         {csvUrl && (
-          <Button type="link" href={csvUrl} target="_blank" rel="noopener noreferrer">
+          <Button
+            type="link"
+            href={csvUrl}
+            target="_blank"
+            rel="noopener noreferrer">
             Download CSV
           </Button>
         )}
         {jsonUrl && (
-          <Button type="link" href={jsonUrl} target="_blank" rel="noopener noreferrer">
+          <Button
+            type="link"
+            href={jsonUrl}
+            target="_blank"
+            rel="noopener noreferrer">
             Download JSON
           </Button>
         )}
@@ -73,7 +97,10 @@ const PredictionTable = ({
 
       <Space style={{ width: '100%', justifyContent: 'center' }}>
         {checkBoxes.map(({ name, index }) => (
-          <Checkbox key={index} onChange={() => handleCheckbox(index)} checked={hidden[index]}>
+          <Checkbox
+            key={index}
+            onChange={() => handleCheckbox(index)}
+            checked={hidden[index]}>
             {name}
           </Checkbox>
         ))}
@@ -97,7 +124,9 @@ const PredictionTable = ({
             style={{
               display: hidden[2] ? 'block' : 'none',
             }}>
-            <RemainingComponentTable remainingComponents={remainingComponents} />
+            <RemainingComponentTable
+              remainingComponents={remainingComponents}
+            />
           </Col>
           <Col
             style={{
