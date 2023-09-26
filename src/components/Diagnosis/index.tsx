@@ -135,38 +135,13 @@ export default function Home() {
         ),
       },
       {
-        title: 'Table Results',
+        title: 'Image Results',
         icon:
           current === 2 && isLoading ? <LoadingOutlined /> : <TableOutlined />,
         content: (
           <>
-            {/* Display prediction */}
-            <Col
-              span={24}
-              style={{
-                textAlign: 'center',
-              }}>
-              <PredictionTable
-                lineTypes={lineTypes}
-                drawingComponents={drawingComponents}
-                missingComponents={missingComponents}
-                remainingComponents={remainingComponents}
-                csvUrl={csvUrl}
-                jsonUrl={jsonUrl}
-              />
-            </Col>
-          </>
-        ),
-      },
-      {
-        title: 'Image Results',
-        icon:
-          current === 3 && isLoading ? <LoadingOutlined /> : <TableOutlined />,
-        content: (
-          <>
             {/* Display prediction with kanva*/}
             <Col
-              // ref={predictedImageColRef}
               span={24}
               style={{
                 textAlign: 'center',
@@ -174,7 +149,16 @@ export default function Home() {
               <PredictionImage
                 imageFile={imageFile}
                 jsonResult={jsonResult}
-                // predictedImageColRef={predictedImageColRef}
+                predictionTable={
+                  <PredictionTable
+                    lineTypes={lineTypes}
+                    drawingComponents={drawingComponents}
+                    missingComponents={missingComponents}
+                    remainingComponents={remainingComponents}
+                    csvUrl={csvUrl}
+                    jsonUrl={jsonUrl}
+                  />
+                }
               />
             </Col>
           </>
@@ -205,10 +189,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Container maxWidth="lg">
-        <Card
-          title={
-            <Typography.Title level={4}>Diagnose a Drawing</Typography.Title>
-          }>
+        <Card>
           <Row justify="center" align="middle" style={{ width: '100%' }}>
             {/* Steps */}
             <>
