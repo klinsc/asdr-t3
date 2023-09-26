@@ -74,7 +74,7 @@ const PredictionTable = ({
 
   return (
     <>
-      <Space style={{ width: '100%', justifyContent: 'center' }}>
+      {/* <Space style={{ width: '100%', justifyContent: 'center' }}>
         {csvUrl && (
           <Button
             type="link"
@@ -93,49 +93,50 @@ const PredictionTable = ({
             Download JSON
           </Button>
         )}
-      </Space>
+      </Space> */}
 
-      <Space style={{ width: '100%', justifyContent: 'center' }}>
-        {checkBoxes.map(({ name, index }) => (
-          <Checkbox
-            key={index}
-            onChange={() => handleCheckbox(index)}
-            checked={hidden[index]}>
-            {name}
-          </Checkbox>
-        ))}
-      </Space>
+      <Row justify="center" align="top" gutter={[16, 16]}>
+        <Col span={24}>
+          <Space style={{ width: '100%', justifyContent: 'center' }}>
+            {checkBoxes.map(({ name, index }) => (
+              <Checkbox
+                key={index}
+                onChange={() => handleCheckbox(index)}
+                checked={hidden[index]}>
+                {name}
+              </Checkbox>
+            ))}
+          </Space>
+        </Col>
 
-      <Space style={{ width: '100%', justifyContent: 'center' }}>
-        <Row justify="center" align="top" gutter={[16, 16]}>
-          <Col
-            style={{
-              display: hidden[0] ? 'block' : 'none',
-            }}>
-            <DrawingComponentTable drawingComponents={drawingComponents} />
-          </Col>
-          <Col
-            style={{
-              display: hidden[1] ? 'block' : 'none',
-            }}>
-            <LineTypeTable lineTypes={lineTypes} />
-          </Col>
-          <Col
-            style={{
-              display: hidden[2] ? 'block' : 'none',
-            }}>
-            <RemainingComponentTable
-              remainingComponents={remainingComponents}
-            />
-          </Col>
-          <Col
-            style={{
-              display: hidden[3] ? 'block' : 'none',
-            }}>
-            <MissingComponentTable missingComponents={missingComponents} />
-          </Col>
-        </Row>
-      </Space>
+        <Col
+          span={8}
+          style={{
+            display: hidden[0] ? 'block' : 'none',
+          }}>
+          <DrawingComponentTable drawingComponents={drawingComponents} />
+        </Col>
+        <Col
+          span={8}
+          style={{
+            display: hidden[1] ? 'block' : 'none',
+          }}>
+          <LineTypeTable lineTypes={lineTypes} />
+        </Col>
+        <Col
+          span={8}
+          style={{
+            display: hidden[2] ? 'block' : 'none',
+          }}>
+          <RemainingComponentTable remainingComponents={remainingComponents} />
+        </Col>
+        <Col
+          style={{
+            display: hidden[3] ? 'block' : 'none',
+          }}>
+          <MissingComponentTable missingComponents={missingComponents} />
+        </Col>
+      </Row>
     </>
   )
 }
