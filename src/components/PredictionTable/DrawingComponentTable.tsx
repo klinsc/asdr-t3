@@ -28,7 +28,10 @@ const DrawingComponentTable = (props: DrawingComponentTableProps) => {
             value: component.name,
           }))
           // remove the same line type
-          .filter((value, index, self) => self.findIndex((v) => v.value === value.value) === index),
+          .filter(
+            (value, index, self) =>
+              self.findIndex((v) => v.value === value.value) === index,
+          ),
         onFilter: (value, record) => record.name.startsWith(String(value)),
         sorter: (a, b) => a.name.length - b.name.length,
         sortDirections: ['ascend', 'descend'],
@@ -48,7 +51,9 @@ const DrawingComponentTable = (props: DrawingComponentTableProps) => {
     <Table
       bordered
       onChange={handleChange}
-      caption={<Typography.Title level={5}>Drawing Components</Typography.Title>}
+      caption={
+        <Typography.Title level={5}>Drawing Components</Typography.Title>
+      }
       columns={columns}
       dataSource={props.drawingComponents}
     />
