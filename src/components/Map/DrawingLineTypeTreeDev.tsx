@@ -10,8 +10,12 @@ import {
   Button,
   Col,
   Input,
+  InputNumber,
   Modal,
+  Radio,
+  type RadioChangeEvent,
   Row,
+  Select,
   Space,
   Table,
   Tree,
@@ -47,7 +51,8 @@ const DrawingLineTypeTreeDev = ({
 }: DrawingLineTypeTreeProps) => {
   // router
   const router = useRouter()
-  const { creating, editing, lineTypeId } = router.query
+  const { creating, editing, lineTypeId, componentType, componentId, count } =
+    router.query
 
   // states: infoOnMouseEnter
   const [infoOnMouseEnter, setInfoOnMouseEnter] =
@@ -63,6 +68,31 @@ const DrawingLineTypeTreeDev = ({
   const getAllLineTypes = api.lineType.getAllWithComponents.useQuery({
     drawingTypeId,
   })
+  // types: addLineTypeComponent
+  const addLineTypeComponent = api.lineTypeComponent.create.useMutation({
+    onSuccess: () => {
+      void messageApi.success('Add line type component successfully')
+
+      // refetch: getDrawingType, getAllLineTypes
+      void getDrawingType.refetch()
+      void getAllLineTypes.refetch()
+
+      // reset creating
+      void router.push({
+        pathname: '/map',
+        query: {
+          ...router.query,
+          creating: undefined,
+          drawingTypeId: undefined,
+          componentType: undefined,
+        },
+      })
+    },
+    onError: (error) => {
+      void messageApi.error(error.message)
+    },
+  })
+
   // trpcs: getDrawingType
   const getDrawingType = api.drawingType.getOne.useQuery({
     id: drawingTypeId,
@@ -174,6 +204,8 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
+  // trpcs: getAllComponents
+  const getAllComponents = api.component.getAll.useQuery()
 
   // Components: DrawingTypeNode
   const drawingTypeNode = () => {
@@ -371,14 +403,182 @@ const DrawingLineTypeTreeDev = ({
                 })
               }}
             />
+            {/* Add component button */}
+            <Button
+              type="text"
+              shape="circle"
+              size="small"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                void router.push({
+                  pathname: '/map',
+                  query: {
+                    ...router.query,
+                    creating: 'component',
+                    lineTypeId: lineType.id,
+                    componentType: '1',
+                    count: '1',
+                  },
+                })
+              }}
+            />
           </Space.Compact>
         </Space>
       ),
       key: lineType.id,
-      children: lineType.components.map((component) => ({
-        title: component.Component.name,
-        key: component.id,
-      })),
+      children:
+        creating === 'component' && lineTypeId === lineType.id
+          ? [
+              ...lineType.components.map((component) => ({
+                title: (
+                  <Typography.Text className={cx(editTextNode)}>
+                    {`${component.Component.name} x ${component.count}`}
+                  </Typography.Text>
+                ),
+                key: component.id,
+              })),
+              {
+                title: (
+                  <Row
+                    align="middle"
+                    justify="space-between"
+                    gutter={[4, 4]}
+                    style={{
+                      padding: '4px',
+                    }}>
+                    <Col span={24}>
+                      <Space.Compact size="small">
+                        <InputNumber
+                          addonBefore={
+                            <Select
+                              size="small"
+                              defaultValue="New Component"
+                              autoFocus
+                              value={componentId as string}
+                              onChange={(value) => {
+                                void router.push({
+                                  pathname: '/map',
+                                  query: {
+                                    ...router.query,
+                                    componentId: value,
+                                  },
+                                })
+                              }}>
+                              {getAllComponents.data?.map((component) => (
+                                <Select.Option
+                                  key={component.id}
+                                  value={component.id}>
+                                  {component.name}
+                                </Select.Option>
+                              ))}
+                            </Select>
+                          }
+                          size="small"
+                          min={1}
+                          max={20}
+                          defaultValue={1}
+                          onChange={(value) => {
+                            void router.push({
+                              pathname: '/map',
+                              query: {
+                                ...router.query,
+                                count: value,
+                              },
+                            })
+                          }}
+                        />
+                      </Space.Compact>
+                    </Col>
+
+                    <Col span={24}>
+                      <Radio.Group
+                        size="small"
+                        onChange={(e: RadioChangeEvent) => {
+                          const componentType = String(e.target.value as string)
+
+                          void router.push({
+                            pathname: '/map',
+                            query: {
+                              ...router.query,
+                              componentType,
+                            },
+                          })
+                        }}
+                        value={componentType as string}>
+                        <Radio value={'1'}>Mandatory</Radio>
+                        <Radio value={'2'}>Optional</Radio>
+                      </Radio.Group>
+                    </Col>
+
+                    <Col
+                      span={24}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                      }}>
+                      <Button
+                        type="text"
+                        shape="circle"
+                        size="small"
+                        icon={<DeleteOutlined />}
+                        onClick={() => {
+                          void router.push({
+                            pathname: '/map',
+                            query: {
+                              ...router.query,
+                              creating: undefined,
+                              lineTypeId: undefined,
+                              componentType: undefined,
+                            },
+                          })
+                        }}
+                      />
+
+                      <Button
+                        type="primary"
+                        shape="circle"
+                        size="small"
+                        icon={<PlusOutlined />}
+                        onClick={() => {
+                          const componentType =
+                            String(router.query.componentType) === '1'
+                              ? 'mandatory'
+                              : 'optional'
+
+                          void addLineTypeComponent.mutate({
+                            lineTypeId,
+                            componentId: componentId as string,
+                            componentType,
+                            count: Number(count),
+                          })
+                        }}
+                      />
+                    </Col>
+                  </Row>
+                ),
+                key: 'newComponent',
+              },
+            ]
+          : lineType.components.map((component) => ({
+              title: (
+                <Typography.Text
+                  className={cx(editTextNode)}
+                  onClick={() => {
+                    void router.push({
+                      pathname: '/map',
+                      query: {
+                        ...router.query,
+                        editing: 'component',
+                        lineTypeId: lineType.id,
+                        componentId: component.id,
+                      },
+                    })
+                  }}>
+                  {`${component.Component.name} x ${component.count}`}
+                </Typography.Text>
+              ),
+              key: component.id,
+            })),
     }))
 
     // check if lineTypes is undefined

@@ -136,29 +136,7 @@ export const DrawingTypeDev = () => {
           {drawingTypeGetAll?.data && drawingTypeGetAll?.data?.length > 0 ? (
             drawingTypeGetAll.data.map((drawingType) => (
               <Col span={8} key={drawingType.id}>
-                <Card
-                  // Title
-                  title={drawingType.name}
-                  // Edit button
-                  extra={
-                    <Button
-                      type="text"
-                      onClick={() => {
-                        void router.push({
-                          pathname: '/map',
-                          query: {
-                            tab,
-                            edit: 'true',
-                            id: drawingType.id,
-                          },
-                        })
-                      }}>
-                      Edit
-                    </Button>
-                  }>
-                  {/* Description */}
-                  <Typography.Text>{drawingType.description}</Typography.Text>
-
+                <Card>
                   {/* A line type tree of this drawing type */}
                   <DrawingLineTypeTreeDev drawingTypeId={drawingType.id} />
                 </Card>
