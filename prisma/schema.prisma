@@ -112,6 +112,7 @@ model LineType {
   id                String              @id @default(cuid())
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
+  index             Int
   name              String
   description       String?
   drawingTypeId     String
