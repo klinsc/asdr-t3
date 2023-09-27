@@ -19,6 +19,16 @@ import {
 import type { DataNode } from 'antd/es/tree'
 import { useRouter } from 'next/router'
 import { api } from '~/utils/api'
+import { css, cx } from '@emotion/css'
+
+const editTextNode = css`
+  margin: -1px;
+  border: 1px solid transparent;
+  &:hover {
+    border: 1px solid black;
+    border-radius: 2px;
+  }
+`
 
 // enum ComponentType {
 //   MANDATORY = 'mandatory',
@@ -200,25 +210,21 @@ const DrawingLineTypeTreeDev = ({
                 }}
               />
             ) : (
-              <Typography.Text>{getDrawingType.data?.name}</Typography.Text>
+              <Typography.Text
+                className={cx(editTextNode)}
+                onClick={() => {
+                  void router.push({
+                    pathname: '/map',
+                    query: {
+                      ...router.query,
+                      editing: 'drawingType',
+                      drawingTypeId: getDrawingType.data?.id,
+                    },
+                  })
+                }}>
+                {getDrawingType.data?.name}
+              </Typography.Text>
             )}
-
-            <Button
-              type="text"
-              shape="circle"
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => {
-                void router.push({
-                  pathname: '/map',
-                  query: {
-                    ...router.query,
-                    editing: 'drawingType',
-                    drawingTypeId: getDrawingType.data?.id,
-                  },
-                })
-              }}
-            />
 
             <Button
               type="text"
@@ -303,24 +309,21 @@ const DrawingLineTypeTreeDev = ({
               }}
             />
           ) : (
-            <Typography.Text>{lineType.name}</Typography.Text>
+            <Typography.Text
+              className={cx(editTextNode)}
+              onClick={() => {
+                void router.push({
+                  pathname: '/map',
+                  query: {
+                    ...router.query,
+                    editing: 'lineType',
+                    lineTypeId: lineType.id,
+                  },
+                })
+              }}>
+              {lineType.name}
+            </Typography.Text>
           )}
-          <Button
-            type="text"
-            shape="circle"
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() => {
-              void router.push({
-                pathname: '/map',
-                query: {
-                  ...router.query,
-                  editing: 'lineType',
-                  lineTypeId: lineType.id,
-                },
-              })
-            }}
-          />
           <Button
             type="text"
             shape="circle"
