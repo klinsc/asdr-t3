@@ -20,3 +20,11 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.ant-tree-switcher.ant-tree-switcher_open {
+  align-self: center;
+}
+
+.ant-tree-switcher.ant-tree-switcher_close {
+  align-self: center;
+}
