@@ -4,6 +4,7 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import ComponentList from '~/components/Map/ComponentList'
 import { DrawingType } from '~/components/Map/DrawingType'
+import { DrawingTypeDev } from '~/components/Map/DrawingTypeDev'
 import { LineType } from '~/components/Map/LineType'
 
 export default function Map() {
@@ -27,6 +28,11 @@ export default function Map() {
       label: 'Components',
       key: '3',
       children: <ComponentList />,
+    },
+    {
+      label: 'Drawing Types',
+      key: '4',
+      children: <DrawingTypeDev />,
     },
   ]
 
