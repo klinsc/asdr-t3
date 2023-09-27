@@ -2,14 +2,16 @@ import {
   CaretDownOutlined,
   CaretUpOutlined,
   DeleteOutlined,
-  EditOutlined,
   LoadingOutlined,
   PlusOutlined,
 } from '@ant-design/icons'
+import { css, cx } from '@emotion/css'
 import {
   Button,
+  Col,
   Input,
   Modal,
+  Row,
   Space,
   Table,
   Tree,
@@ -18,8 +20,9 @@ import {
 } from 'antd'
 import type { DataNode } from 'antd/es/tree'
 import { useRouter } from 'next/router'
+import { type NodeMouseEventParams } from 'rc-tree/lib/contextTypes'
+import { useRef, useState } from 'react'
 import { api } from '~/utils/api'
-import { css, cx } from '@emotion/css'
 
 const editTextNode = css`
   margin: -1px;
@@ -45,6 +48,13 @@ const DrawingLineTypeTreeDev = ({
   // router
   const router = useRouter()
   const { creating, editing, lineTypeId } = router.query
+
+  // states: infoOnMouseEnter
+  const [infoOnMouseEnter, setInfoOnMouseEnter] =
+    useState<NodeMouseEventParams>()
+
+  // refs: colRef
+  const colRef = useRef<HTMLDivElement>(null)
 
   // messageAPI
   const [messageApi, contextHolder] = message.useMessage()
@@ -166,7 +176,7 @@ const DrawingLineTypeTreeDev = ({
   })
 
   // Components: DrawingTypeNode
-  const DrawingTypeNode = () => {
+  const drawingTypeNode = () => {
     return (
       <>
         {updateDrawingType.isLoading ? (
@@ -252,29 +262,16 @@ const DrawingLineTypeTreeDev = ({
   const lineTypesNode = () => {
     const lineTypes = getAllLineTypes.data?.map((lineType) => ({
       title: (
-        <Space align="center" size="small">
-          <Space.Compact size="small">
-            {/* Up/Down button */}
-            <Button
-              type="text"
-              shape="circle"
-              size="small"
-              icon={<CaretUpOutlined />}
-              onClick={() => {
-                void upLineType.mutate({ id: lineType.id })
-              }}
-            />
-            <Button
-              type="text"
-              shape="circle"
-              size="small"
-              icon={<CaretDownOutlined />}
-              onClick={() => {
-                void downLineType.mutate({ id: lineType.id })
-              }}
-            />
-          </Space.Compact>
-
+        <Space
+          align="center"
+          size="small"
+          style={{
+            // subtract 24px x tree nodes
+            width: colRef.current?.offsetWidth
+              ? colRef.current?.offsetWidth - 48
+              : 0,
+          }}>
+          {/* Edit button */}
           {editing === 'lineType' && lineTypeId === lineType.id ? (
             <Input
               size="small"
@@ -302,7 +299,7 @@ const DrawingLineTypeTreeDev = ({
                     query: {
                       ...router.query,
                       editing: undefined,
-                      drawingTypeId: undefined,
+                      lineTypeId: undefined,
                     },
                   })
                 }
@@ -324,25 +321,57 @@ const DrawingLineTypeTreeDev = ({
               {lineType.name}
             </Typography.Text>
           )}
-          <Button
-            type="text"
-            shape="circle"
+
+          {/* Buttons */}
+          <Space.Compact
             size="small"
-            icon={<DeleteOutlined />}
-            onClick={() => {
-              // get user confirmation
-              Modal.confirm({
-                title: 'Do you want to delete this line type?',
-                content: `Line type: "${lineType.name}"`,
-                okText: 'Yes',
-                cancelText: 'No',
-                onOk: () => {
-                  // delete
-                  void deleteLineType.mutate({ id: lineType.id })
-                },
-              })
-            }}
-          />
+            style={{
+              visibility:
+                infoOnMouseEnter?.node.key === lineType.id
+                  ? 'visible'
+                  : 'hidden',
+            }}>
+            {/* Up button */}
+            <Button
+              type="text"
+              shape="circle"
+              size="small"
+              icon={<CaretUpOutlined />}
+              onClick={() => {
+                void upLineType.mutate({ id: lineType.id })
+              }}
+            />
+            {/* Down button */}
+            <Button
+              type="text"
+              shape="circle"
+              size="small"
+              icon={<CaretDownOutlined />}
+              onClick={() => {
+                void downLineType.mutate({ id: lineType.id })
+              }}
+            />
+            {/* Delete button */}
+            <Button
+              type="text"
+              shape="circle"
+              size="small"
+              icon={<DeleteOutlined />}
+              onClick={() => {
+                // get user confirmation
+                Modal.confirm({
+                  title: 'Do you want to delete this line type?',
+                  content: `Line type: "${lineType.name}"`,
+                  okText: 'Yes',
+                  cancelText: 'No',
+                  onOk: () => {
+                    // delete
+                    void deleteLineType.mutate({ id: lineType.id })
+                  },
+                })
+              }}
+            />
+          </Space.Compact>
         </Space>
       ),
       key: lineType.id,
@@ -360,7 +389,7 @@ const DrawingLineTypeTreeDev = ({
 
   const treeData: DataNode[] = [
     {
-      title: getDrawingType.data ? <DrawingTypeNode /> : 'Drawing Type',
+      title: getDrawingType.data ? drawingTypeNode() : 'Drawing Type',
       key: '0',
       children:
         creating === 'lineType' && drawingTypeId
@@ -412,16 +441,27 @@ const DrawingLineTypeTreeDev = ({
       {contextHolder}
 
       {/* Tree */}
-      {getAllLineTypes.data ? (
-        <Tree
-          selectable={false}
-          showLine
-          defaultExpandAll
-          treeData={treeData}
-        />
-      ) : (
-        <Table dataSource={[]} key={'dummyTabl'} />
-      )}
+      <Row>
+        <Col span={24} ref={colRef}>
+          {getAllLineTypes.data ? (
+            <Tree
+              selectable={false}
+              showLine
+              defaultExpandAll
+              treeData={treeData}
+              style={{
+                width: '100%',
+              }}
+              onMouseEnter={(info) => {
+                setInfoOnMouseEnter(info)
+                return
+              }}
+            />
+          ) : (
+            <Table dataSource={[]} key={'dummyTabl'} />
+          )}
+        </Col>
+      </Row>
     </>
   )
 }
