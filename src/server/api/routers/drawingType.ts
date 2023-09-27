@@ -41,7 +41,7 @@ export const drawingTypeRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         name: z.string().optional(),
-        description: z.string().optional(),
+        description: z.string().optional().nullish(),
       }),
     )
     .mutation(({ input, ctx }) => {
