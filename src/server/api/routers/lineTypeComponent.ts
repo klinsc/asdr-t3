@@ -52,25 +52,40 @@ export const lineTypeComponentRouter = createTRPCRouter({
       })
     }),
 
-  // update: publicProcedure
-  //   .input(
-  //     z.object({
-  //       id: z.string(),
-  //       name: z.string().optional(),
-  //       description: z.string().optional(),
-  //     }),
-  //   )
-  //   .mutation(({ input, ctx }) => {
-  //     return ctx.prisma.lineType.update({
-  //       where: {
-  //         id: input.id,
-  //       },
-  //       data: {
-  //         name: input.name,
-  //         description: input.description,
-  //       },
-  //     })
-  //   }),
+  update: publicProcedure
+    .input(
+      z.object({
+        lineTypeComponentId: z.string(),
+        componentId: z.string(),
+        count: z.number(),
+        lineTypeId: z.string(),
+        componentType: z.enum(['mandatory', 'optional']),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const lineTypeComponentToUpdate =
+        await ctx.prisma.lineTypeComponent.findUnique({
+          where: {
+            id: input.lineTypeComponentId,
+          },
+        })
+
+      if (!lineTypeComponentToUpdate) {
+        throw new Error('lineTypeComponent not found')
+      }
+
+      return ctx.prisma.lineTypeComponent.update({
+        where: {
+          id: input.lineTypeComponentId,
+        },
+        data: {
+          componentId: input.componentId,
+          count: input.count,
+          lineTypeId: input.lineTypeId,
+          componentType: input.componentType,
+        },
+      })
+    }),
 
   delete: publicProcedure
     .input(z.object({ lineTypeComponentId: z.string() }))

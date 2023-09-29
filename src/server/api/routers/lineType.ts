@@ -41,7 +41,7 @@ export const lineTypeRouter = createTRPCRouter({
       return lineTypes.map((lineType) => {
         return {
           ...lineType,
-          components: lineTypeComponents.filter(
+          lineTypeComponents: lineTypeComponents.filter(
             (lineTypeComponent) => lineTypeComponent.lineTypeId === lineType.id,
           ),
         }
