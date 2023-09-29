@@ -144,6 +144,7 @@ model LineTypeComponent {
   count         Int           @default(1)
   lineTypeId    String
   componentId   String
+  index         Int
   LineType      LineType      @relation(fields: [lineTypeId], references: [id])
   Component     Component     @relation(fields: [componentId], references: [id])
 }

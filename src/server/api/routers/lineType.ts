@@ -36,6 +36,9 @@ export const lineTypeRouter = createTRPCRouter({
         include: {
           Component: true,
         },
+        orderBy: {
+          index: 'asc',
+        },
       })
 
       return lineTypes.map((lineType) => {

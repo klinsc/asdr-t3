@@ -128,6 +128,45 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
+  // trpcs: deleteLineTypeComponent
+  const deleteLineTypeComponent = api.lineTypeComponent.delete.useMutation({
+    onSuccess: () => {
+      void messageApi.success('Delete line type component successfully')
+
+      // refetch: getDrawingType, getAllLineTypes
+      void getDrawingType.refetch()
+      void getAllLineTypes.refetch()
+    },
+    onError: (error) => {
+      void messageApi.error(error.message)
+    },
+  })
+  // trpcs: up LineTypeComponent
+  const upLineTypeComponent = api.lineTypeComponent.upIndex.useMutation({
+    onSuccess: () => {
+      void messageApi.success('Up line type component successfully')
+
+      // refetch: getDrawingType, getAllLineTypes
+      void getDrawingType.refetch()
+      void getAllLineTypes.refetch()
+    },
+    onError: (error) => {
+      void messageApi.error(error.message)
+    },
+  })
+  // trpcs: down LineTypeComponent
+  const downLineTypeComponent = api.lineTypeComponent.downIndex.useMutation({
+    onSuccess: () => {
+      void messageApi.success('Down line type component successfully')
+
+      // refetch: getDrawingType, getAllLineTypes
+      void getDrawingType.refetch()
+      void getAllLineTypes.refetch()
+    },
+    onError: (error) => {
+      void messageApi.error(error.message)
+    },
+  })
 
   // trpcs: getDrawingType
   const getDrawingType = api.drawingType.getOne.useQuery({
@@ -390,7 +429,7 @@ const DrawingLineTypeTreeDev = ({
             </Typography.Text>
           )}
 
-          {/* Buttons */}
+          {/* onHover Buttons */}
           <Space.Compact
             size="small"
             style={{
@@ -446,12 +485,26 @@ const DrawingLineTypeTreeDev = ({
               size="small"
               icon={<PlusOutlined />}
               onClick={() => {
+                // get line type components that are not in this line type
+                const components = getAllComponents.data?.filter(
+                  (component) =>
+                    !lineType.lineTypeComponents.some(
+                      (lineTypeComponent) =>
+                        lineTypeComponent.Component.id === component.id,
+                    ),
+                )
+                if (!components?.[0]?.id) {
+                  void messageApi.error('Components not found')
+                  return
+                }
+
                 void router.push({
                   pathname: '/map',
                   query: {
                     ...router.query,
                     creating: 'component',
                     lineTypeId: lineType.id,
+                    componentId: components?.[0].id,
                     componentType: '1',
                     count: '1',
                   },
@@ -778,25 +831,85 @@ const DrawingLineTypeTreeDev = ({
                         </Row>
                       </>
                     ) : (
-                      <Typography.Text
-                        className={cx(editTextNode)}
-                        onClick={() => {
-                          void router.push({
-                            pathname: '/map',
-                            query: {
-                              ...router.query,
-                              editing: 'component',
-                              lineTypeId: lineType.id,
-                              componentId: lineTypeComponent.id,
-                              editingComponent:
-                                lineTypeComponent.Component.name,
-                              componentType: lineTypeComponent.componentType,
-                              count: lineTypeComponent.count,
-                            },
-                          })
-                        }}>
-                        {`${lineTypeComponent.Component.name} x ${lineTypeComponent.count}`}
-                      </Typography.Text>
+                      <>
+                        <Typography.Text
+                          className={cx(editTextNode)}
+                          onClick={() => {
+                            void router.push({
+                              pathname: '/map',
+                              query: {
+                                ...router.query,
+                                editing: 'component',
+                                lineTypeId: lineType.id,
+                                componentId: lineTypeComponent.id,
+                                editingComponent:
+                                  lineTypeComponent.Component.name,
+                                componentType: lineTypeComponent.componentType,
+                                count: lineTypeComponent.count,
+                              },
+                            })
+                          }}>
+                          {`${lineTypeComponent.Component.name} x ${lineTypeComponent.count}`}
+                        </Typography.Text>
+
+                        {/* onHover Buttons */}
+                        <Space.Compact
+                          size="small"
+                          style={{
+                            visibility:
+                              infoOnMouseEnter?.node.key ===
+                              lineTypeComponent.id
+                                ? 'visible'
+                                : 'hidden',
+                          }}>
+                          {/* Up button */}
+                          <Button
+                            type="text"
+                            shape="circle"
+                            size="small"
+                            icon={<CaretUpOutlined />}
+                            onClick={() => {
+                              void upLineTypeComponent.mutate({
+                                lineTypeComponentId: lineTypeComponent.id,
+                              })
+                            }}
+                          />
+                          {/* Down button */}
+                          <Button
+                            type="text"
+                            shape="circle"
+                            size="small"
+                            icon={<CaretDownOutlined />}
+                            onClick={() => {
+                              void downLineTypeComponent.mutate({
+                                lineTypeComponentId: lineTypeComponent.id,
+                              })
+                            }}
+                          />
+                          {/* Delete button */}
+                          <Button
+                            type="text"
+                            shape="circle"
+                            size="small"
+                            icon={<DeleteOutlined />}
+                            onClick={() => {
+                              // get user confirmation
+                              Modal.confirm({
+                                title: 'Do you want to delete this component?',
+                                content: `Component: "${lineTypeComponent.Component.name}"`,
+                                okText: 'Yes',
+                                cancelText: 'No',
+                                onOk: () => {
+                                  // delete
+                                  void deleteLineTypeComponent.mutate({
+                                    lineTypeComponentId: lineTypeComponent.id,
+                                  })
+                                },
+                              })
+                            }}
+                          />
+                        </Space.Compact>
+                      </>
                     )}
                   </>
                 ),
