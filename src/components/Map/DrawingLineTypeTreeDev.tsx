@@ -49,10 +49,12 @@ const editTextNode = css`
 
 interface DrawingLineTypeTreeProps {
   drawingTypeId: string
+  drawingTypeGetAll: ReturnType<typeof api.drawingType.getAll.useQuery>
 }
 
 const DrawingLineTypeTreeDev = ({
   drawingTypeId,
+  drawingTypeGetAll,
 }: DrawingLineTypeTreeProps) => {
   // router
   const router = useRouter()
@@ -74,6 +76,10 @@ const DrawingLineTypeTreeDev = ({
   const colRef = useRef<HTMLDivElement>(null)
   // refs: editingLineTypeRef
   const editingLineTypeRef = useRef<InputRef>(null)
+  // refs: editingDrawingTypeRef
+  const editingDrawingTypeRef = useRef<InputRef>(null)
+  // refs: creatingDrawingTypeRef
+  const creatingDrawingTypeRef = useRef<InputRef>(null)
 
   // messageAPI
   const [messageApi, contextHolder] = message.useMessage()
@@ -213,6 +219,44 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
+  // trpcs: deleteDrawingType
+  const deleteDrawingType = api.drawingType.delete.useMutation({
+    onSuccess: () => {
+      void messageApi.success('Delete drawing type successfully')
+
+      // refetch
+      void getDrawingType.refetch()
+      void drawingTypeGetAll.refetch()
+
+      // reset editing
+      void router.push({
+        pathname: '/map',
+        query: {
+          ...router.query,
+          editing: undefined,
+          drawingTypeId: undefined,
+        },
+      })
+    },
+    onError: (error) => {
+      void messageApi.error(error.message)
+    },
+  })
+
+  // trpcs: duplicateDrawingType
+  const duplicateDrawingType = api.drawingType.duplicate.useMutation({
+    onSuccess: () => {
+      void messageApi.success('Duplicate drawing type successfully')
+
+      // refetch
+      void getDrawingType.refetch()
+      void getAllLineTypes.refetch()
+      void drawingTypeGetAll.refetch()
+    },
+    onError: (error) => {
+      void messageApi.error(error.message)
+    },
+  })
   // trpcs: createLineType
   const createLineType = api.lineType.create.useMutation({
     onSuccess: () => {
@@ -324,29 +368,50 @@ const DrawingLineTypeTreeDev = ({
           <Space align="center" size="small">
             {editing === 'drawingType' &&
             drawingTypeId === getDrawingType.data?.id ? (
-              <Input
-                size="small"
-                autoFocus
-                defaultValue={getDrawingType.data?.name}
-                onPressEnter={(e) => {
-                  if (!getDrawingType.data) return
+              <>
+                <Input
+                  size="small"
+                  autoFocus
+                  defaultValue={getDrawingType.data?.name}
+                  onPressEnter={(e) => {
+                    if (!getDrawingType.data) return
 
-                  // check if the value is the same as the current name
-                  if (e.currentTarget.value === getDrawingType.data.name) return
+                    // check if the value is the same as the current name
+                    if (e.currentTarget.value === getDrawingType.data.name)
+                      return
 
-                  // update
-                  void updateDrawingType.mutate({
-                    id: getDrawingType.data?.id,
-                    name: e.currentTarget.value,
-                  })
-                }}
-                onKeyDown={(e) => {
-                  // check if the key is escape
-                  if (e.key === 'Escape') {
-                    // refetch
-                    void getDrawingType.refetch()
+                    // update
+                    void updateDrawingType.mutate({
+                      id: getDrawingType.data?.id,
+                      name: e.currentTarget.value,
+                    })
+                  }}
+                  onKeyDown={(e) => {
+                    // check if the key is escape
+                    if (e.key === 'Escape') {
+                      // refetch
+                      void getDrawingType.refetch()
 
-                    // reset editing
+                      // reset editing
+                      void router.push({
+                        pathname: '/map',
+                        query: {
+                          ...router.query,
+                          editing: undefined,
+                          drawingTypeId: undefined,
+                        },
+                      })
+                    }
+                  }}
+                  ref={editingDrawingTypeRef}
+                />
+                {/* Close button */}
+                <Button
+                  type="text"
+                  shape="circle"
+                  size="small"
+                  icon={<CloseOutlined />}
+                  onClick={() => {
                     void router.push({
                       pathname: '/map',
                       query: {
@@ -355,42 +420,148 @@ const DrawingLineTypeTreeDev = ({
                         drawingTypeId: undefined,
                       },
                     })
-                  }
-                }}
-              />
-            ) : (
-              <Typography.Text
-                className={cx(editTextNode)}
-                onClick={() => {
-                  void router.push({
-                    pathname: '/map',
-                    query: {
-                      ...router.query,
-                      editing: 'drawingType',
-                      drawingTypeId: getDrawingType.data?.id,
-                    },
-                  })
-                }}>
-                {getDrawingType.data?.name}
-              </Typography.Text>
-            )}
+                  }}
+                />
+                {/* Update button */}
+                <Button
+                  type="text"
+                  shape="circle"
+                  size="small"
+                  icon={<CheckOutlined />}
+                  onClick={() => {
+                    if (!getDrawingType.data) return
 
-            <Button
-              type="text"
-              shape="circle"
-              size="small"
-              icon={<PlusOutlined />}
-              onClick={() => {
-                void router.push({
-                  pathname: '/map',
-                  query: {
-                    ...router.query,
-                    creating: 'lineType',
-                    drawingTypeId: getDrawingType.data?.id,
-                  },
-                })
-              }}
-            />
+                    // check if the value is the same as the current name
+                    if (
+                      editingDrawingTypeRef.current?.input?.value ===
+                      getDrawingType.data.name
+                    )
+                      return
+
+                    // update
+                    void updateDrawingType.mutate({
+                      id: getDrawingType.data?.id,
+                      name: editingDrawingTypeRef.current?.input?.value,
+                    })
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <Typography.Text
+                  className={cx(editTextNode)}
+                  onClick={() => {
+                    void router.push({
+                      pathname: '/map',
+                      query: {
+                        ...router.query,
+                        editing: 'drawingType',
+                        drawingTypeId: getDrawingType.data?.id,
+                      },
+                    })
+                  }}>
+                  {getDrawingType.data?.name}
+                </Typography.Text>
+
+                {/* onHover Buttons */}
+                {/* Delete button */}
+                <Button
+                  type="text"
+                  shape="circle"
+                  size="small"
+                  icon={<DeleteOutlined />}
+                  onClick={() => {
+                    const drawingTypeId = getDrawingType.data?.id
+                    if (!drawingTypeId) {
+                      void messageApi.error('Drawing type not found')
+                      return
+                    }
+
+                    // get user confirmation
+                    Modal.confirm({
+                      title: 'Do you want to delete this drawing type?',
+                      content: `Drawing type: "${getDrawingType.data?.name}"`,
+                      okText: 'Yes',
+                      cancelText: 'No',
+                      onOk: () => {
+                        // delete
+                        void deleteDrawingType.mutate({
+                          id: drawingTypeId,
+                        })
+                      },
+                    })
+                  }}
+                  style={{
+                    visibility:
+                      infoOnMouseEnter?.node.key === '0' ? 'visible' : 'hidden',
+                  }}
+                />
+
+                {/* Duplicate button */}
+                <Button
+                  type="text"
+                  shape="circle"
+                  size="small"
+                  icon={<CopyOutlined />}
+                  onClick={() => {
+                    // get user confirmation
+                    Modal.confirm({
+                      title: 'Enter the name of the new drawing type',
+                      content: (
+                        <Input
+                          autoFocus
+                          defaultValue={`${getDrawingType.data?.name} (copy)`}
+                          ref={creatingDrawingTypeRef}
+                        />
+                      ),
+                      okText: 'Create',
+                      cancelText: 'Cancel',
+                      onOk: () => {
+                        if (
+                          !getDrawingType.data?.id ||
+                          !creatingDrawingTypeRef.current?.input?.value
+                        ) {
+                          void messageApi.error('Drawing type not found')
+                          return
+                        }
+
+                        // duplicate
+                        void duplicateDrawingType.mutate({
+                          id: getDrawingType.data?.id,
+                          name: creatingDrawingTypeRef.current?.input?.value,
+                        })
+                      },
+                    })
+                  }}
+                  style={{
+                    visibility:
+                      infoOnMouseEnter?.node.key === '0' ? 'visible' : 'hidden',
+                  }}
+                />
+
+                {/* Add button */}
+                <Button
+                  type="text"
+                  shape="circle"
+                  size="small"
+                  icon={<PlusOutlined />}
+                  onClick={() => {
+                    void router.push({
+                      pathname: '/map',
+                      query: {
+                        ...router.query,
+                        creating: 'lineType',
+                        drawingTypeId: getDrawingType.data?.id,
+                      },
+                    })
+                  }}
+                  style={{
+                    visibility:
+                      infoOnMouseEnter?.node.key === '0' ? 'visible' : 'hidden',
+                  }}
+                />
+              </>
+            )}
           </Space>
         )}
       </>

@@ -138,7 +138,10 @@ export const DrawingTypeDev = () => {
               <Col span={8} key={drawingType.id}>
                 <Card>
                   {/* A line type tree of this drawing type */}
-                  <DrawingLineTypeTreeDev drawingTypeId={drawingType.id} />
+                  <DrawingLineTypeTreeDev
+                    drawingTypeId={drawingType.id}
+                    drawingTypeGetAll={drawingTypeGetAll}
+                  />
                 </Card>
 
                 {/* Edit modal */}
