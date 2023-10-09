@@ -1,5 +1,18 @@
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
+import { ComponentType } from '@prisma/client'
+
+// checks: componentTypes and componentTypeList are the same
+const componentTypes = ['mandatory', 'optional'] as const
+const componentTypeList = Object.values(ComponentType).map((value) => value)
+// check if componentTypes and componentTypeList are the same
+// if not, throw error
+if (
+  componentTypes.length !== componentTypeList.length ||
+  !componentTypes.every((value, index) => value === componentTypeList[index])
+) {
+  throw new Error('componentTypes and componentTypeList are not the same')
+}
 
 export const lineTypeComponentRouter = createTRPCRouter({
   getAll: publicProcedure
@@ -38,7 +51,7 @@ export const lineTypeComponentRouter = createTRPCRouter({
         componentId: z.string(),
         count: z.number(),
         lineTypeId: z.string(),
-        componentType: z.enum(['mandatory', 'optional']),
+        componentType: z.enum(componentTypes),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -75,7 +88,7 @@ export const lineTypeComponentRouter = createTRPCRouter({
         componentId: z.string(),
         count: z.number(),
         lineTypeId: z.string(),
-        componentType: z.enum(['mandatory', 'optional']),
+        componentType: z.enum(componentTypes),
       }),
     )
     .mutation(async ({ input, ctx }) => {

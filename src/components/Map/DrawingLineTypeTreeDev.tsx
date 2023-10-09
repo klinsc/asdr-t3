@@ -8,6 +8,7 @@ import {
   PlusOutlined,
 } from '@ant-design/icons'
 import { css, cx } from '@emotion/css'
+import { ComponentType } from '@prisma/client'
 import {
   Button,
   Col,
@@ -594,54 +595,59 @@ const DrawingLineTypeTreeDev = ({
                           })
                         }}
                         value={componentType as string}>
-                        <Radio value={'1'}>Mandatory</Radio>
-                        <Radio value={'2'}>Optional</Radio>
+                        {
+                          // import componentType enum
+                          Object.values(ComponentType).map((componentType) => (
+                            <Radio key={componentType} value={componentType}>
+                              {/* ComponentType with first letter is a capital */}
+                              {componentType?.[0]?.toUpperCase() +
+                                componentType.slice(1)}
+                            </Radio>
+                          ))
+                        }
                       </Radio.Group>
                     </Col>
 
-                    <Col
-                      span={24}
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                      }}>
-                      <Button
-                        type="text"
-                        shape="circle"
-                        size="small"
-                        icon={<DeleteOutlined />}
-                        onClick={() => {
-                          void router.push({
-                            pathname: '/map',
-                            query: {
-                              ...router.query,
-                              creating: undefined,
-                              lineTypeId: undefined,
-                              componentType: undefined,
-                            },
-                          })
-                        }}
-                      />
+                    <Col span={24}>
+                      <Space size="small">
+                        <Button
+                          type="text"
+                          shape="circle"
+                          size="small"
+                          icon={<CloseOutlined />}
+                          onClick={() => {
+                            void router.push({
+                              pathname: '/map',
+                              query: {
+                                ...router.query,
+                                creating: undefined,
+                                lineTypeId: undefined,
+                                componentType: undefined,
+                              },
+                            })
+                          }}
+                        />
 
-                      <Button
-                        type="primary"
-                        shape="circle"
-                        size="small"
-                        icon={<PlusOutlined />}
-                        onClick={() => {
-                          const componentType =
-                            String(router.query.componentType) === '1'
-                              ? 'mandatory'
-                              : 'optional'
+                        <Button
+                          type="primary"
+                          shape="circle"
+                          size="small"
+                          icon={<PlusOutlined />}
+                          onClick={() => {
+                            const componentType =
+                              String(router.query.componentType) === '1'
+                                ? 'mandatory'
+                                : 'optional'
 
-                          void addLineTypeComponent.mutate({
-                            lineTypeId,
-                            componentId: componentId as string,
-                            componentType,
-                            count: Number(count),
-                          })
-                        }}
-                      />
+                            void addLineTypeComponent.mutate({
+                              lineTypeId,
+                              componentId: componentId as string,
+                              componentType,
+                              count: Number(count),
+                            })
+                          }}
+                        />
+                      </Space>
                     </Col>
                   </Row>
                 ),
@@ -768,8 +774,20 @@ const DrawingLineTypeTreeDev = ({
                                 })
                               }}
                               value={componentType as string}>
-                              <Radio value={'mandatory'}>Mandatory</Radio>
-                              <Radio value={'optional'}>Optional</Radio>
+                              {
+                                // import componentType enum
+                                Object.values(ComponentType).map(
+                                  (componentType) => (
+                                    <Radio
+                                      key={componentType}
+                                      value={componentType}>
+                                      {/* ComponentType with first letter is a capital */}
+                                      {componentType?.[0]?.toUpperCase() +
+                                        componentType.slice(1)}
+                                    </Radio>
+                                  ),
+                                )
+                              }
                             </Radio.Group>
                           </Col>
 
@@ -802,11 +820,6 @@ const DrawingLineTypeTreeDev = ({
                               size="small"
                               icon={<CheckOutlined />}
                               onClick={() => {
-                                const editingComponentType =
-                                  String(router.query.componentType) === '1'
-                                    ? 'mandatory'
-                                    : 'optional'
-
                                 const editingComponentId =
                                   getAllComponents.data?.find(
                                     (component) =>
@@ -822,7 +835,7 @@ const DrawingLineTypeTreeDev = ({
                                   lineTypeComponentId: lineTypeComponent.id,
                                   lineTypeId: lineType.id,
                                   componentId: editingComponentId,
-                                  componentType: editingComponentType,
+                                  componentType: componentType as ComponentType,
                                   count: Number(count),
                                 })
                               }}
@@ -849,7 +862,7 @@ const DrawingLineTypeTreeDev = ({
                               },
                             })
                           }}>
-                          {`${lineTypeComponent.Component.name} x ${lineTypeComponent.count}`}
+                          {`${lineTypeComponent.Component.name} x${lineTypeComponent.count}`}
                         </Typography.Text>
 
                         {/* onHover Buttons */}
