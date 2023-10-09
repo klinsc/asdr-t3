@@ -24,6 +24,7 @@ import {
   Tree,
   Typography,
   message,
+  type InputRef,
   type RadioChangeEvent,
 } from 'antd'
 import type { DataNode } from 'antd/es/tree'
@@ -71,6 +72,8 @@ const DrawingLineTypeTreeDev = ({
 
   // refs: colRef
   const colRef = useRef<HTMLDivElement>(null)
+  // refs: editingLineTypeRef
+  const editingLineTypeRef = useRef<InputRef>(null)
 
   // messageAPI
   const [messageApi, contextHolder] = message.useMessage()
@@ -409,27 +412,48 @@ const DrawingLineTypeTreeDev = ({
           }}>
           {/* Edit button */}
           {editing === 'lineType' && lineTypeId === lineType.id ? (
-            <Input
-              size="small"
-              autoFocus
-              defaultValue={lineType.name}
-              onPressEnter={(e) => {
-                // check if the value is the same as the current name
-                if (e.currentTarget.value === lineType.name) return
+            <>
+              <Input
+                size="small"
+                autoFocus
+                defaultValue={lineType.name}
+                onPressEnter={(e) => {
+                  // check if the value is the same as the current name
+                  if (e.currentTarget.value === lineType.name) return
 
-                // update
-                void updateLineType.mutate({
-                  id: lineType.id,
-                  name: e.currentTarget.value,
-                })
-              }}
-              onKeyDown={(e) => {
-                // check if the key is escape
-                if (e.key === 'Escape') {
-                  // refetch
-                  void getDrawingType.refetch()
+                  // update
+                  void updateLineType.mutate({
+                    id: lineType.id,
+                    name: e.currentTarget.value,
+                  })
+                }}
+                onKeyDown={(e) => {
+                  // check if the key is escape
+                  if (e.key === 'Escape') {
+                    // refetch
+                    void getDrawingType.refetch()
 
-                  // reset editing
+                    // reset editing
+                    void router.push({
+                      pathname: '/map',
+                      query: {
+                        ...router.query,
+                        editing: undefined,
+                        lineTypeId: undefined,
+                      },
+                    })
+                  }
+                }}
+                // ref
+                ref={editingLineTypeRef}
+              />
+              {/* Close button */}
+              <Button
+                type="text"
+                shape="circle"
+                size="small"
+                icon={<CloseOutlined />}
+                onClick={() => {
                   void router.push({
                     pathname: '/map',
                     query: {
@@ -438,129 +462,150 @@ const DrawingLineTypeTreeDev = ({
                       lineTypeId: undefined,
                     },
                   })
-                }
-              }}
-            />
+                }}
+              />
+              {/* Update button */}
+              <Button
+                type="text"
+                shape="circle"
+                size="small"
+                icon={<CheckOutlined />}
+                onClick={() => {
+                  // check if the value is the same as the current name
+                  if (
+                    editingLineTypeRef.current?.input?.value === lineType.name
+                  )
+                    return
+
+                  // update
+                  void updateLineType.mutate({
+                    id: lineType.id,
+                    name: editingLineTypeRef.current?.input?.value,
+                  })
+                }}
+              />
+            </>
           ) : (
-            <Typography.Text
-              className={cx(editTextNode)}
-              onClick={() => {
-                void router.push({
-                  pathname: '/map',
-                  query: {
-                    ...router.query,
-                    editing: 'lineType',
-                    lineTypeId: lineType.id,
-                  },
-                })
-              }}>
-              {lineType.name}
-            </Typography.Text>
+            <>
+              <Typography.Text
+                className={cx(editTextNode)}
+                onClick={() => {
+                  void router.push({
+                    pathname: '/map',
+                    query: {
+                      ...router.query,
+                      editing: 'lineType',
+                      lineTypeId: lineType.id,
+                    },
+                  })
+                }}>
+                {lineType.name}
+              </Typography.Text>
+              {/* onHover Buttons */}
+              <Space.Compact
+                size="small"
+                style={{
+                  visibility:
+                    infoOnMouseEnter?.node.key === lineType.id
+                      ? 'visible'
+                      : 'hidden',
+                }}>
+                {/* Up button */}
+                <Button
+                  type="text"
+                  shape="circle"
+                  size="small"
+                  icon={<CaretUpOutlined />}
+                  onClick={() => {
+                    void upLineType.mutate({ id: lineType.id })
+                  }}
+                />
+                {/* Down button */}
+                <Button
+                  type="text"
+                  shape="circle"
+                  size="small"
+                  icon={<CaretDownOutlined />}
+                  onClick={() => {
+                    void downLineType.mutate({ id: lineType.id })
+                  }}
+                />
+                {/* Delete button */}
+                <Button
+                  type="text"
+                  shape="circle"
+                  size="small"
+                  icon={<DeleteOutlined />}
+                  onClick={() => {
+                    // get user confirmation
+                    Modal.confirm({
+                      title: 'Do you want to delete this line type?',
+                      content: `Line type: "${lineType.name}"`,
+                      okText: 'Yes',
+                      cancelText: 'No',
+                      onOk: () => {
+                        // delete
+                        void deleteLineType.mutate({ id: lineType.id })
+                      },
+                    })
+                  }}
+                />
+                {/* Duplicate button */}
+                <Button
+                  type="text"
+                  shape="circle"
+                  size="small"
+                  icon={<CopyOutlined />}
+                  onClick={() => {
+                    // get user confirmation
+                    Modal.confirm({
+                      title: 'Do you want to duplicate this line type?',
+                      content: `Line type: "${lineType.name}"`,
+                      okText: 'Yes',
+                      cancelText: 'No',
+                      onOk: () => {
+                        // duplicate
+                        void duplicateLineType.mutate({ id: lineType.id })
+                      },
+                    })
+                  }}
+                />
+                {/* Add component button */}
+                <Button
+                  type="text"
+                  shape="circle"
+                  size="small"
+                  icon={<PlusOutlined />}
+                  onClick={() => {
+                    // get line type components that are not in this line type
+                    const components = getAllComponents.data?.filter(
+                      (component) =>
+                        !lineType.lineTypeComponents.some(
+                          (lineTypeComponent) =>
+                            lineTypeComponent.Component.id === component.id,
+                        ),
+                    )
+                    if (!components?.[0]?.id) {
+                      void messageApi.error('Components not found')
+                      return
+                    }
+
+                    void router.push({
+                      pathname: '/map',
+                      query: {
+                        ...router.query,
+                        creating: 'component',
+                        lineTypeId: lineType.id,
+                        componentId: components?.[0].id,
+                        componentType: '1',
+                        count: '1',
+                      },
+                    })
+                  }}
+                />
+              </Space.Compact>
+            </>
           )}
-
-          {/* onHover Buttons */}
-          <Space.Compact
-            size="small"
-            style={{
-              visibility:
-                infoOnMouseEnter?.node.key === lineType.id
-                  ? 'visible'
-                  : 'hidden',
-            }}>
-            {/* Up button */}
-            <Button
-              type="text"
-              shape="circle"
-              size="small"
-              icon={<CaretUpOutlined />}
-              onClick={() => {
-                void upLineType.mutate({ id: lineType.id })
-              }}
-            />
-            {/* Down button */}
-            <Button
-              type="text"
-              shape="circle"
-              size="small"
-              icon={<CaretDownOutlined />}
-              onClick={() => {
-                void downLineType.mutate({ id: lineType.id })
-              }}
-            />
-            {/* Delete button */}
-            <Button
-              type="text"
-              shape="circle"
-              size="small"
-              icon={<DeleteOutlined />}
-              onClick={() => {
-                // get user confirmation
-                Modal.confirm({
-                  title: 'Do you want to delete this line type?',
-                  content: `Line type: "${lineType.name}"`,
-                  okText: 'Yes',
-                  cancelText: 'No',
-                  onOk: () => {
-                    // delete
-                    void deleteLineType.mutate({ id: lineType.id })
-                  },
-                })
-              }}
-            />
-            {/* Duplicate button */}
-            <Button
-              type="text"
-              shape="circle"
-              size="small"
-              icon={<CopyOutlined />}
-              onClick={() => {
-                // get user confirmation
-                Modal.confirm({
-                  title: 'Do you want to duplicate this line type?',
-                  content: `Line type: "${lineType.name}"`,
-                  okText: 'Yes',
-                  cancelText: 'No',
-                  onOk: () => {
-                    // duplicate
-                    void duplicateLineType.mutate({ id: lineType.id })
-                  },
-                })
-              }}
-            />
-            {/* Add component button */}
-            <Button
-              type="text"
-              shape="circle"
-              size="small"
-              icon={<PlusOutlined />}
-              onClick={() => {
-                // get line type components that are not in this line type
-                const components = getAllComponents.data?.filter(
-                  (component) =>
-                    !lineType.lineTypeComponents.some(
-                      (lineTypeComponent) =>
-                        lineTypeComponent.Component.id === component.id,
-                    ),
-                )
-                if (!components?.[0]?.id) {
-                  void messageApi.error('Components not found')
-                  return
-                }
-
-                void router.push({
-                  pathname: '/map',
-                  query: {
-                    ...router.query,
-                    creating: 'component',
-                    lineTypeId: lineType.id,
-                    componentId: components?.[0].id,
-                    componentType: '1',
-                    count: '1',
-                  },
-                })
-              }}
-            />
-          </Space.Compact>
         </Space>
       ),
       key: lineType.id,
