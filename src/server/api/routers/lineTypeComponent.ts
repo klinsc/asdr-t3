@@ -261,4 +261,43 @@ export const lineTypeComponentRouter = createTRPCRouter({
         },
       })
     }),
+
+  duplicate: publicProcedure
+    .input(z.object({ lineTypeComponentId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const lineTypeComponentToDuplicate =
+        await ctx.prisma.lineTypeComponent.findUnique({
+          where: {
+            id: input.lineTypeComponentId,
+          },
+        })
+
+      if (!lineTypeComponentToDuplicate) {
+        throw new Error('lineTypeComponentToDuplicate not found')
+      }
+
+      const lineTypeComponents = await ctx.prisma.lineTypeComponent.findMany({
+        where: {
+          lineTypeId: lineTypeComponentToDuplicate.lineTypeId,
+        },
+      })
+
+      const maxIndex = lineTypeComponents.reduce((acc, lineTypeComponent) => {
+        if (lineTypeComponent.index > acc) {
+          return lineTypeComponent.index
+        }
+
+        return acc
+      }, 0)
+
+      return ctx.prisma.lineTypeComponent.create({
+        data: {
+          componentId: lineTypeComponentToDuplicate.componentId,
+          count: lineTypeComponentToDuplicate.count,
+          lineTypeId: lineTypeComponentToDuplicate.lineTypeId,
+          componentType: lineTypeComponentToDuplicate.componentType,
+          index: maxIndex + 1,
+        },
+      })
+    }),
 })

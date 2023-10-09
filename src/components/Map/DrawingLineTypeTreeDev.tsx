@@ -3,6 +3,7 @@ import {
   CaretUpOutlined,
   CheckOutlined,
   CloseOutlined,
+  CopyOutlined,
   DeleteOutlined,
   LoadingOutlined,
   PlusOutlined,
@@ -168,6 +169,20 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
+  // trpcs: duplicateLineTypeComponent
+  const duplicateLineTypeComponent =
+    api.lineTypeComponent.duplicate.useMutation({
+      onSuccess: () => {
+        void messageApi.success('Duplicate line type component successfully')
+
+        // refetch: getDrawingType, getAllLineTypes
+        void getDrawingType.refetch()
+        void getAllLineTypes.refetch()
+      },
+      onError: (error) => {
+        void messageApi.error(error.message)
+      },
+    })
 
   // trpcs: getDrawingType
   const getDrawingType = api.drawingType.getOne.useQuery({
@@ -915,6 +930,29 @@ const DrawingLineTypeTreeDev = ({
                                 onOk: () => {
                                   // delete
                                   void deleteLineTypeComponent.mutate({
+                                    lineTypeComponentId: lineTypeComponent.id,
+                                  })
+                                },
+                              })
+                            }}
+                          />
+                          {/* Duplicate button */}
+                          <Button
+                            type="text"
+                            shape="circle"
+                            size="small"
+                            icon={<CopyOutlined />}
+                            onClick={() => {
+                              // get user confirmation
+                              Modal.confirm({
+                                title:
+                                  'Do you want to duplicate this component?',
+                                content: `Component: "${lineTypeComponent.Component.name}"`,
+                                okText: 'Yes',
+                                cancelText: 'No',
+                                onOk: () => {
+                                  // duplicate
+                                  void duplicateLineTypeComponent.mutate({
                                     lineTypeComponentId: lineTypeComponent.id,
                                   })
                                 },
