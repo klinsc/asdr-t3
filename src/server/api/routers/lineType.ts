@@ -254,4 +254,47 @@ export const lineTypeRouter = createTRPCRouter({
 
       return
     }),
+
+  duplicate: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const lineType = await ctx.prisma.lineType.findUnique({
+        where: {
+          id: input.id,
+        },
+      })
+
+      if (!lineType) {
+        throw new Error('lineType not found')
+      }
+
+      const lineTypeComponents = await ctx.prisma.lineTypeComponent.findMany({
+        where: {
+          lineTypeId: lineType.id,
+        },
+      })
+
+      const newLineType = await ctx.prisma.lineType.create({
+        data: {
+          name: lineType.name,
+          description: lineType.description,
+          drawingTypeId: lineType.drawingTypeId,
+          index: lineType.index + 1,
+        },
+      })
+
+      await Promise.all(
+        lineTypeComponents.map(async (lineTypeComponent) => {
+          await ctx.prisma.lineTypeComponent.create({
+            data: {
+              lineTypeId: newLineType.id,
+              componentId: lineTypeComponent.componentId,
+              index: lineTypeComponent.index,
+            },
+          })
+        }),
+      )
+
+      return newLineType
+    }),
 })

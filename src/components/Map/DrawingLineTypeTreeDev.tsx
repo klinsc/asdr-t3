@@ -297,6 +297,19 @@ const DrawingLineTypeTreeDev = ({
   })
   // trpcs: getAllComponents
   const getAllComponents = api.component.getAll.useQuery()
+  // trpcs: duplicateLineType
+  const duplicateLineType = api.lineType.duplicate.useMutation({
+    onSuccess: () => {
+      void messageApi.success('Duplicate line type successfully')
+
+      // refetch: getDrawingType, getAllLineTypes
+      void getDrawingType.refetch()
+      void getAllLineTypes.refetch()
+    },
+    onError: (error) => {
+      void messageApi.error(error.message)
+    },
+  })
 
   // Components: DrawingTypeNode
   const drawingTypeNode = () => {
@@ -490,6 +503,26 @@ const DrawingLineTypeTreeDev = ({
                   onOk: () => {
                     // delete
                     void deleteLineType.mutate({ id: lineType.id })
+                  },
+                })
+              }}
+            />
+            {/* Duplicate button */}
+            <Button
+              type="text"
+              shape="circle"
+              size="small"
+              icon={<CopyOutlined />}
+              onClick={() => {
+                // get user confirmation
+                Modal.confirm({
+                  title: 'Do you want to duplicate this line type?',
+                  content: `Line type: "${lineType.name}"`,
+                  okText: 'Yes',
+                  cancelText: 'No',
+                  onOk: () => {
+                    // duplicate
+                    void duplicateLineType.mutate({ id: lineType.id })
                   },
                 })
               }}
