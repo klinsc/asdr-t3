@@ -88,7 +88,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
             //   })
 
             void router.push({
-              pathname: `/${key}`,
+              pathname: `${key}`,
               query,
             })
           },
