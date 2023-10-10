@@ -84,12 +84,12 @@ const DrawingLineTypeTreeDev = ({
   // messageAPI
   const [messageApi, contextHolder] = message.useMessage()
 
-  // trpcs: getLineTypeComponents
+  // trpcs: getAll lineTypeComponents
   const getAllLineTypes = api.lineType.getAllWithComponents.useQuery({
     drawingTypeId,
   })
-  // types: addLineTypeComponent
-  const addLineTypeComponent = api.lineTypeComponent.create.useMutation({
+  // types: create lineTypeComponent
+  const createLineTypeComponent = api.lineTypeComponent.create.useMutation({
     onSuccess: () => {
       void messageApi.success('Add line type component successfully')
 
@@ -112,7 +112,7 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
-  // trpcs: updateLineTypeComponent
+  // trpcs: update lineTypeComponent
   const updateLineTypeComponent = api.lineTypeComponent.update.useMutation({
     onSuccess: () => {
       void messageApi.success('Update line type component successfully')
@@ -139,7 +139,7 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
-  // trpcs: deleteLineTypeComponent
+  // trpcs: delete lineTypeComponent
   const deleteLineTypeComponent = api.lineTypeComponent.delete.useMutation({
     onSuccess: () => {
       void messageApi.success('Delete line type component successfully')
@@ -152,7 +152,7 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
-  // trpcs: up LineTypeComponent
+  // trpcs: upIndex lineTypeComponent
   const upLineTypeComponent = api.lineTypeComponent.upIndex.useMutation({
     onSuccess: () => {
       void messageApi.success('Up line type component successfully')
@@ -165,7 +165,7 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
-  // trpcs: down LineTypeComponent
+  // trpcs: downIndex lineTypeComponent
   const downLineTypeComponent = api.lineTypeComponent.downIndex.useMutation({
     onSuccess: () => {
       void messageApi.success('Down line type component successfully')
@@ -178,7 +178,7 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
-  // trpcs: duplicateLineTypeComponent
+  // trpcs: duplicate lineTypeComponent
   const duplicateLineTypeComponent =
     api.lineTypeComponent.duplicate.useMutation({
       onSuccess: () => {
@@ -193,11 +193,12 @@ const DrawingLineTypeTreeDev = ({
       },
     })
 
-  // trpcs: getDrawingType
+  // trpcs: get drawingType
   const getDrawingType = api.drawingType.getOne.useQuery({
     id: drawingTypeId,
   })
-  // trpcs: updateDrawingType
+
+  // trpcs: update drawingType
   const updateDrawingType = api.drawingType.update.useMutation({
     onSuccess: () => {
       void messageApi.success('Update drawing type successfully')
@@ -219,7 +220,7 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
-  // trpcs: deleteDrawingType
+  // trpcs: delete drawingType
   const deleteDrawingType = api.drawingType.delete.useMutation({
     onSuccess: () => {
       void messageApi.success('Delete drawing type successfully')
@@ -242,8 +243,7 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
-
-  // trpcs: duplicateDrawingType
+  // trpcs: duplicate drawingType
   const duplicateDrawingType = api.drawingType.duplicate.useMutation({
     onSuccess: () => {
       void messageApi.success('Duplicate drawing type successfully')
@@ -257,7 +257,8 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
-  // trpcs: createLineType
+
+  // trpcs: create lineType
   const createLineType = api.lineType.create.useMutation({
     onSuccess: () => {
       void messageApi.success('Add line type successfully')
@@ -280,7 +281,7 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
-  // trpcs: deleteLineType
+  // trpcs: delete lineType
   const deleteLineType = api.lineType.delete.useMutation({
     onSuccess: () => {
       void messageApi.success('Delete line type successfully')
@@ -293,7 +294,7 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
-  // trpcs: updateLineType
+  // trpcs: update lineType
   const updateLineType = api.lineType.update.useMutation({
     onSuccess: () => {
       void messageApi.success('Update line type successfully')
@@ -316,7 +317,7 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
-  // trpcs: upLineType
+  // trpcs: upIndex lineType
   const upLineType = api.lineType.upIndex.useMutation({
     onSuccess: () => {
       void messageApi.success('Up line type successfully')
@@ -329,7 +330,7 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
-  // trpcs: downLineType
+  // trpcs: downIndex lineType
   const downLineType = api.lineType.downIndex.useMutation({
     onSuccess: () => {
       void messageApi.success('Down line type successfully')
@@ -342,9 +343,7 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
-  // trpcs: getAllComponents
-  const getAllComponents = api.component.getAll.useQuery()
-  // trpcs: duplicateLineType
+  // trpcs: duplicate lineType
   const duplicateLineType = api.lineType.duplicate.useMutation({
     onSuccess: () => {
       void messageApi.success('Duplicate line type successfully')
@@ -357,6 +356,9 @@ const DrawingLineTypeTreeDev = ({
       void messageApi.error(error.message)
     },
   })
+
+  // trpcs: getAll Components
+  const getAllComponents = api.component.getAll.useQuery()
 
   // Components: DrawingTypeNode
   const drawingTypeNode = () => {
@@ -903,7 +905,7 @@ const DrawingLineTypeTreeDev = ({
                                 ? 'mandatory'
                                 : 'optional'
 
-                            void addLineTypeComponent.mutate({
+                            void createLineTypeComponent.mutate({
                               lineTypeId,
                               componentId: componentId as string,
                               componentType,
