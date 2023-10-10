@@ -64,7 +64,7 @@ export const DrawingTypeDev = () => {
 
       // redirect
       void router.push({
-        pathname: '/map',
+        pathname: '/drawingtypes',
         query: {
           tab,
         },
@@ -83,7 +83,7 @@ export const DrawingTypeDev = () => {
 
       // redirect
       void router.push({
-        pathname: '/map',
+        pathname: '/drawingtypes',
         query: { tab },
       })
     },
@@ -108,7 +108,7 @@ export const DrawingTypeDev = () => {
   // handlers: add a new drawing type
   const handleAdd = () => {
     void router.push({
-      pathname: '/map',
+      pathname: '/drawingtypes',
       query: {
         ...router.query,
         add: 'true',
@@ -151,7 +151,7 @@ export const DrawingTypeDev = () => {
                   destroyOnClose
                   onCancel={() => {
                     void router.push({
-                      pathname: '/map',
+                      pathname: '/drawingtypes',
                       query: {
                         tab,
                       },
@@ -177,7 +177,7 @@ export const DrawingTypeDev = () => {
                       key="cancel"
                       onClick={() => {
                         void router.push({
-                          pathname: '/map',
+                          pathname: '/drawingtypes',
                           query: {
                             tab,
                           },

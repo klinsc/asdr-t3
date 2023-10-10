@@ -99,7 +99,7 @@ const DrawingLineTypeTreeDev = ({
 
       // reset creating
       void router.push({
-        pathname: '/map',
+        pathname: '/drawingtypes',
         query: {
           ...router.query,
           creating: undefined,
@@ -123,7 +123,7 @@ const DrawingLineTypeTreeDev = ({
 
       // reset editing
       void router.push({
-        pathname: '/map',
+        pathname: '/drawingtypes',
         query: {
           ...router.query,
           editing: undefined,
@@ -208,7 +208,7 @@ const DrawingLineTypeTreeDev = ({
 
       // reset editing
       void router.push({
-        pathname: '/map',
+        pathname: '/drawingtypes',
         query: {
           ...router.query,
           editing: undefined,
@@ -231,7 +231,7 @@ const DrawingLineTypeTreeDev = ({
 
       // reset editing
       void router.push({
-        pathname: '/map',
+        pathname: '/drawingtypes',
         query: {
           ...router.query,
           editing: undefined,
@@ -269,7 +269,7 @@ const DrawingLineTypeTreeDev = ({
 
       // reset creating
       void router.push({
-        pathname: '/map',
+        pathname: '/drawingtypes',
         query: {
           ...router.query,
           creating: undefined,
@@ -305,7 +305,7 @@ const DrawingLineTypeTreeDev = ({
 
       // reset editing
       void router.push({
-        pathname: '/map',
+        pathname: '/drawingtypes',
         query: {
           ...router.query,
           editing: undefined,
@@ -396,7 +396,7 @@ const DrawingLineTypeTreeDev = ({
 
                       // reset editing
                       void router.push({
-                        pathname: '/map',
+                        pathname: '/drawingtypes',
                         query: {
                           ...router.query,
                           editing: undefined,
@@ -415,7 +415,7 @@ const DrawingLineTypeTreeDev = ({
                   icon={<CloseOutlined />}
                   onClick={() => {
                     void router.push({
-                      pathname: '/map',
+                      pathname: '/drawingtypes',
                       query: {
                         ...router.query,
                         editing: undefined,
@@ -454,7 +454,7 @@ const DrawingLineTypeTreeDev = ({
                   className={cx(editTextNode)}
                   onClick={() => {
                     void router.push({
-                      pathname: '/map',
+                      pathname: '/drawingtypes',
                       query: {
                         ...router.query,
                         editing: 'drawingType',
@@ -549,7 +549,7 @@ const DrawingLineTypeTreeDev = ({
                   icon={<PlusOutlined />}
                   onClick={() => {
                     void router.push({
-                      pathname: '/map',
+                      pathname: '/drawingtypes',
                       query: {
                         ...router.query,
                         creating: 'lineType',
@@ -608,7 +608,7 @@ const DrawingLineTypeTreeDev = ({
 
                     // reset editing
                     void router.push({
-                      pathname: '/map',
+                      pathname: '/drawingtypes',
                       query: {
                         ...router.query,
                         editing: undefined,
@@ -628,7 +628,7 @@ const DrawingLineTypeTreeDev = ({
                 icon={<CloseOutlined />}
                 onClick={() => {
                   void router.push({
-                    pathname: '/map',
+                    pathname: '/drawingtypes',
                     query: {
                       ...router.query,
                       editing: undefined,
@@ -664,7 +664,7 @@ const DrawingLineTypeTreeDev = ({
                 className={cx(editTextNode)}
                 onClick={() => {
                   void router.push({
-                    pathname: '/map',
+                    pathname: '/drawingtypes',
                     query: {
                       ...router.query,
                       editing: 'lineType',
@@ -764,7 +764,7 @@ const DrawingLineTypeTreeDev = ({
                     }
 
                     void router.push({
-                      pathname: '/map',
+                      pathname: '/drawingtypes',
                       query: {
                         ...router.query,
                         creating: 'component',
@@ -813,7 +813,7 @@ const DrawingLineTypeTreeDev = ({
                               value={componentId as string}
                               onChange={(value) => {
                                 void router.push({
-                                  pathname: '/map',
+                                  pathname: '/drawingtypes',
                                   query: {
                                     ...router.query,
                                     componentId: value,
@@ -835,7 +835,7 @@ const DrawingLineTypeTreeDev = ({
                           defaultValue={1}
                           onChange={(value) => {
                             void router.push({
-                              pathname: '/map',
+                              pathname: '/drawingtypes',
                               query: {
                                 ...router.query,
                                 count: value,
@@ -853,7 +853,7 @@ const DrawingLineTypeTreeDev = ({
                           const componentType = String(e.target.value as string)
 
                           void router.push({
-                            pathname: '/map',
+                            pathname: '/drawingtypes',
                             query: {
                               ...router.query,
                               componentType,
@@ -883,7 +883,7 @@ const DrawingLineTypeTreeDev = ({
                           icon={<CloseOutlined />}
                           onClick={() => {
                             void router.push({
-                              pathname: '/map',
+                              pathname: '/drawingtypes',
                               query: {
                                 ...router.query,
                                 creating: undefined,
@@ -960,7 +960,7 @@ const DrawingLineTypeTreeDev = ({
                                       }
 
                                       void router.push({
-                                        pathname: '/map',
+                                        pathname: '/drawingtypes',
                                         query: {
                                           ...router.query,
                                           editingComponent: value,
@@ -989,7 +989,7 @@ const DrawingLineTypeTreeDev = ({
                                 defaultValue={lineTypeComponent.count}
                                 onChange={(value) => {
                                   void router.push({
-                                    pathname: '/map',
+                                    pathname: '/drawingtypes',
                                     query: {
                                       ...router.query,
                                       count: value,
@@ -1006,7 +1006,7 @@ const DrawingLineTypeTreeDev = ({
 
                                     // reset editing
                                     void router.push({
-                                      pathname: '/map',
+                                      pathname: '/drawingtypes',
                                       query: {
                                         ...router.query,
                                         editing: undefined,
@@ -1032,7 +1032,7 @@ const DrawingLineTypeTreeDev = ({
                                 )
 
                                 void router.push({
-                                  pathname: '/map',
+                                  pathname: '/drawingtypes',
                                   query: {
                                     ...router.query,
                                     componentType,
@@ -1065,7 +1065,7 @@ const DrawingLineTypeTreeDev = ({
                               icon={<CloseOutlined />}
                               onClick={() => {
                                 void router.push({
-                                  pathname: '/map',
+                                  pathname: '/drawingtypes',
                                   query: {
                                     ...router.query,
                                     editing: undefined,
@@ -1115,7 +1115,7 @@ const DrawingLineTypeTreeDev = ({
                           className={cx(editTextNode)}
                           onClick={() => {
                             void router.push({
-                              pathname: '/map',
+                              pathname: '/drawingtypes',
                               query: {
                                 ...router.query,
                                 editing: 'component',
@@ -1256,7 +1256,7 @@ const DrawingLineTypeTreeDev = ({
 
                         // reset creating
                         void router.push({
-                          pathname: '/map',
+                          pathname: '/drawingtypes',
                           query: {
                             ...router.query,
                             creating: undefined,

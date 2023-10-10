@@ -64,7 +64,7 @@ export const DrawingType = () => {
 
       // redirect
       void router.push({
-        pathname: '/map',
+        pathname: '/drawingtypes',
         query: {
           tab,
         },
@@ -83,7 +83,7 @@ export const DrawingType = () => {
 
       // redirect
       void router.push({
-        pathname: '/map',
+        pathname: '/drawingtypes',
         query: { tab },
       })
     },
@@ -115,7 +115,7 @@ export const DrawingType = () => {
           style={{
             textAlign: 'center',
           }}>
-          <Typography.Title level={4}>Manage Drawing Type Map</Typography.Title>
+          <Typography.Title level={4}>Manage Drawing Types</Typography.Title>
         </Col>
 
         {/* Input for a new server*/}
@@ -163,7 +163,7 @@ export const DrawingType = () => {
                         type="text"
                         onClick={() => {
                           void router.push({
-                            pathname: '/map',
+                            pathname: '/drawingtypes',
                             query: {
                               tab,
                               edit: 'true',
@@ -188,7 +188,7 @@ export const DrawingType = () => {
                     destroyOnClose
                     onCancel={() => {
                       void router.push({
-                        pathname: '/map',
+                        pathname: '/drawingtypes',
                         query: {
                           tab,
                         },
@@ -214,7 +214,7 @@ export const DrawingType = () => {
                         key="cancel"
                         onClick={() => {
                           void router.push({
-                            pathname: '/map',
+                            pathname: '/drawingtypes',
                             query: {
                               tab,
                             },

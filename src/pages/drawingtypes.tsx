@@ -2,44 +2,42 @@ import { Container } from '@mui/material'
 import { Tabs } from 'antd'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import ComponentList from '~/components/Map/ComponentList'
-import { DrawingType } from '~/components/Map/DrawingType'
-import { DrawingTypeDev } from '~/components/Map/DrawingTypeDev'
-import { LineType } from '~/components/Map/LineType'
+import ComponentList from '~/components/DrawingTypes/ComponentList'
+import { DrawingTypeDev } from '~/components/DrawingTypes/DrawingTypeDev'
 
-export default function Map() {
+export default function DrawingTypes() {
   // router
   const router = useRouter()
   const { tab } = router.query
 
   // const
   const items = [
+    // {
+    //   label: 'Drawing Types',
+    //   key: '1',
+    //   children: <DrawingType />,
+    // },
+    // {
+    //   label: 'Line Types',
+    //   key: '2',
+    //   children: <LineType />,
+    // },
     {
       label: 'Drawing Types',
       key: '1',
-      children: <DrawingType />,
-    },
-    {
-      label: 'Line Types',
-      key: '2',
-      children: <LineType />,
+      children: <DrawingTypeDev />,
     },
     {
       label: 'Components',
-      key: '3',
+      key: '2',
       children: <ComponentList />,
-    },
-    {
-      label: 'Drawing Types',
-      key: '4',
-      children: <DrawingTypeDev />,
     },
   ]
 
   // handlers
   const onTabClick = (key: string) => {
     void router.push({
-      pathname: '/map',
+      pathname: '/drawingtypes',
       query: { tab: key },
     })
   }

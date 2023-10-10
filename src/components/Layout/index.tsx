@@ -16,7 +16,7 @@ import {
   theme,
   type MenuProps,
 } from 'antd'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { useMemo } from 'react'
 import { api } from '~/utils/api'
@@ -111,8 +111,8 @@ const App = ({ children }: { children: React.ReactNode }) => {
         icon: <FileSearchOutlined />,
       }),
       getItem({
-        label: 'Drawing Type Map',
-        key: 'map',
+        label: 'Drawing Types',
+        key: 'drawingtypes',
         icon: <ClusterOutlined />,
         query: {
           tab: '1',
@@ -297,6 +297,15 @@ const App = ({ children }: { children: React.ReactNode }) => {
                   }}>
                   admin
                 </Button>
+                {session?.user?.role === 'ADMIN' && (
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      void signOut()
+                    }}>
+                    sign out
+                  </Button>
+                )}
               </Space>
             </Col>
           </Row>

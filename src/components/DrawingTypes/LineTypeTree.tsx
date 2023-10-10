@@ -71,7 +71,7 @@ const LineTypeTree = () => {
     })
 
     void router.push({
-      pathname: '/map',
+      pathname: '/drawingtypes',
       query: {
         tab,
         id,
@@ -204,7 +204,7 @@ const LineTypeTree = () => {
   // effects: default query
   React.useEffect(() => {
     void router.push({
-      pathname: '/map',
+      pathname: '/drawingtypes',
       query: {
         tab,
         edit,
@@ -232,7 +232,7 @@ const LineTypeTree = () => {
             value={componentId as string}
             onChange={(value) => {
               void router.push({
-                pathname: '/map',
+                pathname: '/drawingtypes',
                 query: {
                   tab,
                   edit,
@@ -255,7 +255,7 @@ const LineTypeTree = () => {
             value={componentType as string}
             onChange={(value) => {
               void router.push({
-                pathname: '/map',
+                pathname: '/drawingtypes',
                 query: {
                   tab,
                   edit,

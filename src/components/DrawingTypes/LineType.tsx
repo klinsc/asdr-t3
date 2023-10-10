@@ -61,7 +61,7 @@ export const LineType = () => {
       void lineTypeGetAll.refetch()
 
       void router.push({
-        pathname: '/map',
+        pathname: '/drawingtypes',
         query: {
           tab,
           drawingTypeId: drawingTypeId as string,
@@ -102,7 +102,7 @@ export const LineType = () => {
     const storageDrawingTypeId = localStorage.getItem('drawingTypeId')
     if (storageDrawingTypeId) {
       void router.push({
-        pathname: '/map',
+        pathname: '/drawingtypes',
         query: {
           tab,
           drawingTypeId: storageDrawingTypeId,
@@ -122,7 +122,7 @@ export const LineType = () => {
           style={{
             textAlign: 'center',
           }}>
-          <Typography.Title level={4}>Manage Line Type Map</Typography.Title>
+          <Typography.Title level={4}>Manage Line Types</Typography.Title>
         </Col>
 
         {/* Input for a new line type */}
@@ -143,7 +143,7 @@ export const LineType = () => {
                 localStorage.setItem('drawingTypeId', value as string)
 
                 void router.push({
-                  pathname: '/map',
+                  pathname: '/drawingtypes',
                   query: {
                     tab,
                     drawingTypeId: value,
@@ -189,7 +189,7 @@ export const LineType = () => {
                         type="text"
                         onClick={() => {
                           void router.push({
-                            pathname: '/map',
+                            pathname: '/drawingtypes',
                             query: {
                               tab,
                               edit: 'true',
@@ -212,7 +212,7 @@ export const LineType = () => {
                     destroyOnClose
                     onCancel={() => {
                       void router.push({
-                        pathname: '/map',
+                        pathname: '/drawingtypes',
                         query: {
                           tab,
                           drawingTypeId: drawingTypeId as string,
@@ -238,7 +238,7 @@ export const LineType = () => {
                         key="cancel"
                         onClick={() => {
                           void router.push({
-                            pathname: '/map',
+                            pathname: '/drawingtypes',
                             query: {
                               tab,
                             },
