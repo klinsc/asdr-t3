@@ -27,10 +27,10 @@ import {
   type InputRef,
   type RadioChangeEvent,
 } from 'antd'
-import type { DataNode } from 'antd/es/tree'
+import type { DataNode, TreeProps } from 'antd/es/tree'
 import { useRouter } from 'next/router'
 import { type NodeMouseEventParams } from 'rc-tree/lib/contextTypes'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { api } from '~/utils/api'
 
 const editTextNode = css`
@@ -71,6 +71,7 @@ const DrawingLineTypeTreeDev = ({
   // states: infoOnMouseEnter
   const [infoOnMouseEnter, setInfoOnMouseEnter] =
     useState<NodeMouseEventParams>()
+  const [gData, setGData] = useState<DataNode[]>([])
 
   // refs: colRef
   const colRef = useRef<HTMLDivElement>(null)
@@ -1274,10 +1275,113 @@ const DrawingLineTypeTreeDev = ({
     },
   ]
 
+  const onDragEnter: TreeProps['onDragEnter'] = (info) => {
+    console.log(info)
+    // expandedKeys, set it when controlled is needed
+    // setExpandedKeys(info.expandedKeys)
+  }
+
+  const onDrop: TreeProps['onDrop'] = (info) => {
+    console.log(info)
+    const dropKey = info.node.key
+    const dragKey = info.dragNode.key
+    const dropPos = info.node.pos.split('-')
+    const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1])
+    const loop = (
+      data: DataNode[],
+      key: React.Key,
+      callback: (node: DataNode, i: number, data: DataNode[]) => void,
+    ) => {
+      for (let i = 0; i < data.length; i++) {
+        const item = data[i]
+        if (!item) return
+
+        if (item.key === key) {
+          return callback(item, i, data)
+        }
+        if (item.children) {
+          loop(item.children!, key, callback)
+        }
+      }
+    }
+    const data = [...gData]
+
+    // Find dragObject
+    let dragObj: DataNode
+    loop(data, dragKey, (item, index, arr) => {
+      arr.splice(index, 1)
+      dragObj = item
+    })
+
+    if (!info.dropToGap) {
+      // Drop on the content
+      loop(data, dropKey, (item) => {
+        item.children = item.children ?? []
+        // where to insert. New item was inserted to the start of the array in this example, but can be anywhere
+        item.children.unshift(dragObj)
+      })
+    } else if (
+      // ((info.node as any).props.children ?? []).length > 0 && // Has children
+      // (info.node as any).props.expanded && // Is expanded
+      // dropPosition === 1 // On the bottom gap
+
+      // Has children
+      info.node.children &&
+      info.node.children.length > 0 &&
+      // Is expanded
+      info.node.expanded &&
+      // On the bottom gap
+      dropPosition === 1
+    ) {
+      loop(data, dropKey, (item) => {
+        item.children = item.children ?? []
+        // where to insert. New item was inserted to the start of the array in this example, but can be anywhere
+        item.children.unshift(dragObj)
+        // in previous version, we use item.children.push(dragObj) to insert the
+        // item to the tail of the children
+      })
+    } else {
+      let ar: DataNode[] = []
+      let i: number
+      loop(data, dropKey, (_item, index, arr) => {
+        ar = arr
+        i = index
+      })
+      if (dropPosition === -1) {
+        ar.splice(i!, 0, dragObj!)
+      } else {
+        ar.splice(i! + 1, 0, dragObj!)
+      }
+    }
+    setGData(data)
+  }
+
+  // effects: set gData when getAllLineTypes.data is changed
+  useEffect(() => {
+    if (!getAllLineTypes.data) return
+    setGData(treeData)
+  }, [getAllLineTypes.data])
+
   return (
     <>
       {/* messageAPI */}
       {contextHolder}
+      <Row>
+        <Col span={24} ref={colRef}>
+          {getAllLineTypes.data ? (
+            <Tree
+              className="draggable-tree"
+              draggable
+              blockNode
+              onDragEnter={onDragEnter}
+              onDrop={onDrop}
+              treeData={gData}
+            />
+          ) : (
+            <Table dataSource={[]} key={'dummyTabl'} />
+          )}
+        </Col>
+      </Row>
 
       {/* Tree */}
       <Row>
