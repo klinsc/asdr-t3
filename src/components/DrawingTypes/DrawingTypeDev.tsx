@@ -18,7 +18,7 @@ import DrawingLineTypeTreeDev from './DrawingLineTypeTreeDev'
 export const DrawingTypeDev = () => {
   // router
   const router = useRouter()
-  const { tab, edit, id } = router.query
+  const { tab, create, edit, id } = router.query
 
   // hooks
   const nameRef = useRef<InputRef>(null)
@@ -41,6 +41,18 @@ export const DrawingTypeDev = () => {
 
       // refetch
       void drawingTypeGetAll.refetch()
+
+      // redirect
+      void router.push(
+        {
+          pathname: '/drawingtypes',
+          query: {
+            tab,
+          },
+        },
+        undefined,
+        { scroll: false },
+      )
     },
     onError: (error) => {
       void messageApi.error(error.message)
@@ -63,29 +75,37 @@ export const DrawingTypeDev = () => {
       void drawingTypeGetAll.refetch()
 
       // redirect
-      void router.push({
-        pathname: '/drawingtypes',
-        query: {
-          tab,
+      void router.push(
+        {
+          pathname: '/drawingtypes',
+          query: {
+            tab,
+          },
         },
-      })
+        undefined,
+        { scroll: false },
+      )
     },
     onError: (error) => {
       void messageApi.error(error.message)
     },
   })
   const drawingTypeDelete = api.drawingType.delete.useMutation({
-    onSuccess: () => {
-      void messageApi.success('Delete drawing type successfully')
+    onSuccess: async () => {
+      await messageApi.success('Delete drawing type successfully')
 
       // refetch
-      void drawingTypeGetAll.refetch()
+      await drawingTypeGetAll.refetch()
 
       // redirect
-      void router.push({
-        pathname: '/drawingtypes',
-        query: { tab },
-      })
+      await router.push(
+        {
+          pathname: '/drawingtypes',
+          query: { tab },
+        },
+        undefined,
+        { scroll: false },
+      )
     },
     onError: (error) => {
       void messageApi.error(error.message)
@@ -93,32 +113,97 @@ export const DrawingTypeDev = () => {
   })
 
   // handlers
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!nameRef?.current?.input?.value)
       return messageApi.error('Please fill in all fields')
     const name = nameRef?.current?.input.value
     const description = descriptionRef?.current?.input?.value
 
-    drawingTypeCreate.mutate({
+    void drawingTypeCreate.mutate({
       name,
       description,
     })
   }
 
-  // handlers: add a new drawing type
-  const handleAdd = () => {
-    void router.push({
-      pathname: '/drawingtypes',
-      query: {
-        ...router.query,
-        add: 'true',
+  // handlers: create a new drawing type
+  const handleCreate = () => {
+    void router.push(
+      {
+        pathname: '/drawingtypes',
+        query: {
+          ...router.query,
+          create: 'true',
+        },
       },
-    })
+      undefined,
+      { scroll: false },
+    )
   }
 
   return (
     <>
       {contextHolder}
+
+      {/* Creating Modal */}
+      <Modal
+        title="Create new drawing type"
+        open={tab === '1' && create === 'true'}
+        destroyOnClose
+        onCancel={() => {
+          void router.push(
+            {
+              pathname: '/drawingtypes',
+              query: {
+                tab,
+              },
+            },
+            undefined,
+            { scroll: false },
+          )
+        }}
+        // Footer buttons
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => {
+              void router.push(
+                {
+                  pathname: '/drawingtypes',
+                  query: {
+                    tab,
+                  },
+                },
+                undefined,
+                { scroll: false },
+              )
+            }}>
+            Cancel
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() => {
+              void handleSubmit()
+            }}>
+            Create
+          </Button>,
+        ]}>
+        {/* Creating modal content */}
+        <Space direction="vertical">
+          <Input
+            autoFocus
+            placeholder="Drawing type ,i.e., Main & Transfer"
+            addonBefore="Name"
+            ref={nameRef}
+          />
+          <Input
+            placeholder="The most popular drawing type map of electrical power substation"
+            addonBefore="Description"
+            ref={descriptionRef}
+          />
+        </Space>
+      </Modal>
+
       <Row gutter={[16, 16]} align={'top'} justify={'start'}>
         {/* Add a new predicting server */}
         <Col
@@ -126,7 +211,7 @@ export const DrawingTypeDev = () => {
           style={{
             textAlign: 'right',
           }}>
-          <Button type="primary" onClick={() => void handleAdd()}>
+          <Button type="primary" onClick={() => void handleCreate()}>
             Add
           </Button>
         </Col>
@@ -150,12 +235,16 @@ export const DrawingTypeDev = () => {
                   open={edit === 'true' && id === drawingType.id}
                   destroyOnClose
                   onCancel={() => {
-                    void router.push({
-                      pathname: '/drawingtypes',
-                      query: {
-                        tab,
+                    void router.push(
+                      {
+                        pathname: '/drawingtypes',
+                        query: {
+                          tab,
+                        },
                       },
-                    })
+                      undefined,
+                      { scroll: false },
+                    )
                   }}
                   // Footer buttons
                   footer={[
@@ -176,12 +265,16 @@ export const DrawingTypeDev = () => {
                     <Button
                       key="cancel"
                       onClick={() => {
-                        void router.push({
-                          pathname: '/drawingtypes',
-                          query: {
-                            tab,
+                        void router.push(
+                          {
+                            pathname: '/drawingtypes',
+                            query: {
+                              tab,
+                            },
                           },
-                        })
+                          undefined,
+                          { scroll: false },
+                        )
                       }}>
                       Cancel
                     </Button>,
