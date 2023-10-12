@@ -13,7 +13,7 @@ import {
 import { useRouter } from 'next/router'
 import { useRef } from 'react'
 import { api } from '~/utils/api'
-import DrawingLineTypeTreeDev from './DrawingLineTypeTreeDev'
+import DrawingLineTypeTreeDevX from './DrawingLineTypeTreeDevX'
 
 export const DrawingTypeDev = () => {
   // router
@@ -223,7 +223,7 @@ export const DrawingTypeDev = () => {
               <Col span={8} key={drawingType.id}>
                 <Card>
                   {/* A line type tree of this drawing type */}
-                  <DrawingLineTypeTreeDev
+                  <DrawingLineTypeTreeDevX
                     drawingTypeId={drawingType.id}
                     drawingTypeGetAll={drawingTypeGetAll}
                   />
