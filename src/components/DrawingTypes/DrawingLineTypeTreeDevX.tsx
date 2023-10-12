@@ -1388,7 +1388,8 @@ const DrawingLineTypeTreeDev = ({
         <Col span={24} ref={colRef}>
           {getAllLineTypes.data ? (
             <Tree
-              selectable={false}
+              className="draggable-tree"
+              draggable
               showLine
               defaultExpandAll
               onDrop={onDrop}
