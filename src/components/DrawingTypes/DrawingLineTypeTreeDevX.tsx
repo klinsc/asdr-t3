@@ -52,7 +52,7 @@ interface DrawingLineTypeTreeProps {
   drawingTypeGetAll: ReturnType<typeof api.drawingType.getAll.useQuery>
 }
 
-const DrawingLineTypeTreeDev = ({
+const DrawingLineTypeTreeDevX = ({
   drawingTypeId,
   drawingTypeGetAll,
 }: DrawingLineTypeTreeProps) => {
@@ -1430,4 +1430,4 @@ const DrawingLineTypeTreeDev = ({
   )
 }
 
-export default DrawingLineTypeTreeDev
+export default DrawingLineTypeTreeDevX
