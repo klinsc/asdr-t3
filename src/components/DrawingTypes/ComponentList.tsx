@@ -626,6 +626,14 @@ export default function ComponentList() {
                         })
                       }
 
+                      // rearrange index of labels, start from 0
+                      for (let i = 0; i < newLabels.length; i++) {
+                        const label = newLabels[i]
+                        if (!label) continue
+
+                        label.index = i
+                      }
+
                       setLabels(newLabels)
                     }
 
