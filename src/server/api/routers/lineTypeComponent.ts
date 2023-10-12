@@ -409,6 +409,7 @@ export const lineTypeComponentRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      // get old lineTypeComponent
       const lineTypeComponentToMove =
         await ctx.prisma.lineTypeComponent.findUnique({
           where: {
@@ -419,21 +420,26 @@ export const lineTypeComponentRouter = createTRPCRouter({
         throw new Error('lineTypeComponentToMove not found')
       }
 
-      // get all lineTypeComponents in lineType
+      // get all lineTypeComponents in old lineType where index is greater than lineTypeComponentToMove index
       const lineTypeComponents = await ctx.prisma.lineTypeComponent.findMany({
         where: {
           lineTypeId: lineTypeComponentToMove.lineTypeId,
+          index: {
+            gt: lineTypeComponentToMove.index,
+          },
         },
       })
 
-      // shift all lineTypeComponents with 1
+      // update all old lineTypeComponents with index greater than lineTypeComponentToMove index
+      // to have index - 1
       const lineTypeComponentsToUpdate = lineTypeComponents.map(
         (lineTypeComponent) => ({
           ...lineTypeComponent,
-          index: lineTypeComponent.index + 1,
+          index: lineTypeComponent.index - 1,
         }),
       )
 
+      // run query to update all old lineTypeComponents
       await Promise.all(
         lineTypeComponentsToUpdate.map((lineTypeComponent) => {
           return ctx.prisma.lineTypeComponent.update({
@@ -447,14 +453,52 @@ export const lineTypeComponentRouter = createTRPCRouter({
         }),
       )
 
+      // get all lineTypeComponents in new lineType where index is greater than newIndex
+      const newLineTypeComponents = await ctx.prisma.lineTypeComponent.findMany(
+        {
+          where: {
+            lineTypeId: input.newLineTypeId,
+            index: {
+              gte: input.newIndex,
+            },
+          },
+        },
+      )
+
+      // update all new lineTypeComponents with index greater than newIndex
+      // to have index + 1
+      const newLineTypeComponentsToUpdate = newLineTypeComponents.map(
+        (lineTypeComponent) => ({
+          ...lineTypeComponent,
+          index: lineTypeComponent.index + 1,
+        }),
+      )
+
+      // run query to update all new lineTypeComponents
+      await Promise.all(
+        newLineTypeComponentsToUpdate.map((lineTypeComponent) => {
+          return ctx.prisma.lineTypeComponent.update({
+            where: {
+              id: lineTypeComponent.id,
+            },
+            data: {
+              index: lineTypeComponent.index,
+            },
+          })
+        }),
+      )
+
+      // update lineTypeComponentToMove index and lineTypeId
       await ctx.prisma.lineTypeComponent.update({
         where: {
           id: lineTypeComponentToMove.id,
         },
         data: {
-          lineTypeId: input.newLineTypeId,
           index: input.newIndex,
+          lineTypeId: input.newLineTypeId,
         },
       })
+
+      return
     }),
 })
