@@ -1391,6 +1391,26 @@ const DrawingLineTypeTreeDev = ({
               selectable={false}
               showLine
               defaultExpandAll
+              onDrop={onDrop}
+              disabled={
+                updateDrawingType.isLoading ||
+                updateLineType.isLoading ||
+                upLineType.isLoading ||
+                downLineType.isLoading ||
+                duplicateLineType.isLoading ||
+                deleteLineType.isLoading ||
+                duplicateDrawingType.isLoading ||
+                deleteDrawingType.isLoading ||
+                createLineType.isLoading ||
+                createLineTypeComponent.isLoading ||
+                updateLineTypeComponent.isLoading ||
+                upLineTypeComponent.isLoading ||
+                downLineTypeComponent.isLoading ||
+                duplicateLineTypeComponent.isLoading ||
+                deleteLineTypeComponent.isLoading ||
+                moveLineTypeComponentToSameLineType.isLoading ||
+                moveLineTypeComponentToDifferentLineType.isLoading
+              }
               treeData={treeData}
               style={{
                 width: '100%',
