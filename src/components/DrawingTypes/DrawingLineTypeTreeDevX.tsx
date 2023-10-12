@@ -71,7 +71,6 @@ const DrawingLineTypeTreeDevX = ({
   // states: infoOnMouseEnter
   const [infoOnMouseEnter, setInfoOnMouseEnter] =
     useState<NodeMouseEventParams>()
-  const [gData, setGData] = useState<DataNode[]>([])
 
   // refs: colRef
   const colRef = useRef<HTMLDivElement>(null)
