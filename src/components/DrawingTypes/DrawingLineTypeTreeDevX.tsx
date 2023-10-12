@@ -1307,6 +1307,28 @@ const DrawingLineTypeTreeDevX = ({
     },
   ]
 
+  const onDragEnter: TreeProps['onDragEnter'] = (info) => {
+    // // check if the dragPos is in 4th level (lineTypeComponent)
+    // const dropPos = info.node.pos
+    // // const dropPosition = info.node.pos.split('-')
+    // const dropLevel = dropPos.split('-').length
+    // // // check if dropLevel is 4th level (lineTypeComponent)
+    // // if (dropLevel === 4) setAllowDrop(true)
+    // // else setAllowDrop(false)
+  }
+
+  const allowDrop: TreeProps['allowDrop'] = ({ dropNode }) => {
+    // check if the dragPos is in 4th level (lineTypeComponent)
+    const isLevel4 = getAllLineTypes.data?.find((lineType) =>
+      lineType.lineTypeComponents.some(
+        (lineTypeComponent) => lineTypeComponent.id === dropNode.key,
+      ),
+    )
+
+    if (isLevel4) return true
+    else return false
+  }
+
   // define onDrop with trpc
   const onDrop: TreeProps['onDrop'] = (info) => {
     const dragPos = info.dragNode.pos
@@ -1490,8 +1512,9 @@ const DrawingLineTypeTreeDevX = ({
             <Tree
               className="draggable-tree"
               draggable
-              showLine
+              // showLine
               defaultExpandAll
+              allowDrop={allowDrop}
               onDrop={onDrop}
               disabled={
                 updateDrawingType.isLoading ||
@@ -1516,6 +1539,7 @@ const DrawingLineTypeTreeDevX = ({
               style={{
                 width: '100%',
               }}
+              onDragEnter={onDragEnter}
               onMouseEnter={(info) => {
                 setInfoOnMouseEnter(info)
                 return
