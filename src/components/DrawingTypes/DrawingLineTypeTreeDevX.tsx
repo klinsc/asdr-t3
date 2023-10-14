@@ -1307,16 +1307,6 @@ const DrawingLineTypeTreeDevX = ({
     },
   ]
 
-  const onDragEnter: TreeProps['onDragEnter'] = (info) => {
-    // // check if the dragPos is in 4th level (lineTypeComponent)
-    // const dropPos = info.node.pos
-    // // const dropPosition = info.node.pos.split('-')
-    // const dropLevel = dropPos.split('-').length
-    // // // check if dropLevel is 4th level (lineTypeComponent)
-    // // if (dropLevel === 4) setAllowDrop(true)
-    // // else setAllowDrop(false)
-  }
-
   const allowDrop: TreeProps['allowDrop'] = ({ dropNode }) => {
     // check if the dragPos is in 4th level (lineTypeComponent)
     const isLevel4 = getAllLineTypes.data?.find((lineType) =>
@@ -1331,13 +1321,15 @@ const DrawingLineTypeTreeDevX = ({
 
   // define onDrop with trpc
   const onDrop: TreeProps['onDrop'] = (info) => {
+    // drag node
     const dragPos = info.dragNode.pos
     const dragPosition = info.dragNode.pos.split('-')
     const dragLevel = dragPos.split('-').length
+
+    // drop node
     const dropPos = info.node.pos
     const dropPosition = info.node.pos.split('-')
     const dropLevel = dropPos.split('-').length
-    debugger
 
     // check if the dragPos is in 4th level (lineTypeComponent)
     if (dragLevel === 4) {
@@ -1347,15 +1339,14 @@ const DrawingLineTypeTreeDevX = ({
         dragPosition[1] === dropPosition[1] &&
         dragPosition[2] === dropPosition[2]
       ) {
+        // get lineTypeComponents of this lineType
         const thisLineTypeComponents = getAllLineTypes.data?.find((lineType) =>
           lineType.lineTypeComponents.some(
             (lineTypeComponent) => lineTypeComponent.id === info.dragNode.key,
           ),
         )?.lineTypeComponents
-
         if (!thisLineTypeComponents || thisLineTypeComponents.length === 0) {
-          void messageApi.error('Line type component not found')
-          return
+          return void messageApi.error('Line type component not found')
         }
 
         // if drop onBottom of the same lineType
@@ -1368,11 +1359,10 @@ const DrawingLineTypeTreeDevX = ({
 
           const newIndex = Number(dropPos.split('-')[3]) ?? -1
           if (newIndex === -1) {
-            void messageApi.error('New index not found')
-            return
+            return void messageApi.error('New index not found')
           }
 
-          void moveLineTypeComponentToSameLineType.mutate({
+          return moveLineTypeComponentToSameLineType.mutate({
             lineTypeComponentId: info.dragNode.key as string,
             newIndex,
           })
@@ -1380,10 +1370,10 @@ const DrawingLineTypeTreeDevX = ({
         // check if the dropPos is in 4th level (lineTypeComponent) && between 2 lineTypeComponents
         else if (dropLevel === 4) {
           debugger
+
           let newIndex = Number(dropPos.split('-')[3]) ?? -1
           if (newIndex === -1) {
-            void messageApi.error('New index not found')
-            return
+            return void messageApi.error('New index not found')
           }
 
           const oldIndex = Number(dragPos.split('-')[3]) ?? -1
@@ -1394,7 +1384,7 @@ const DrawingLineTypeTreeDevX = ({
             newIndex = newIndex + 1
           }
 
-          void moveLineTypeComponentToSameLineType.mutate({
+          return moveLineTypeComponentToSameLineType.mutate({
             lineTypeComponentId: info.dragNode.key as string,
             newIndex,
           })
@@ -1403,7 +1393,7 @@ const DrawingLineTypeTreeDevX = ({
         else if (dropLevel === 3 && info.dropToGap === false) {
           debugger
 
-          void moveLineTypeComponentToSameLineType.mutate({
+          return moveLineTypeComponentToSameLineType.mutate({
             lineTypeComponentId: info.dragNode.key as string,
             newIndex: 0,
           })
@@ -1411,6 +1401,7 @@ const DrawingLineTypeTreeDevX = ({
         // check if the dropPos is onTop of the different lineType
         else if (dropLevel === 3) {
           debugger
+          return
         }
       }
       // check if the dropPos is onTop of the different lineType
@@ -1421,13 +1412,13 @@ const DrawingLineTypeTreeDevX = ({
       ) {
         // only level 4th drop
         if (dropLevel === 4) {
+          // get lineTypeComponents of this lineType
           const dropLineTypeComponents = getAllLineTypes.data?.find(
             (lineType) =>
               lineType.lineTypeComponents.some(
                 (lineTypeComponent) => lineTypeComponent.id === info.node.key,
               ),
           )?.lineTypeComponents
-
           if (!dropLineTypeComponents || dropLineTypeComponents.length === 0) {
             void messageApi.error('Line type component not found')
             return
@@ -1452,7 +1443,7 @@ const DrawingLineTypeTreeDevX = ({
               return
             }
 
-            void moveLineTypeComponentToDifferentLineType.mutate({
+            return moveLineTypeComponentToDifferentLineType.mutate({
               lineTypeComponentId: info.dragNode.key as string,
               newIndex,
               newLineTypeId,
@@ -1467,7 +1458,7 @@ const DrawingLineTypeTreeDevX = ({
               return
             }
 
-            void moveLineTypeComponentToDifferentLineType.mutate({
+            return moveLineTypeComponentToDifferentLineType.mutate({
               lineTypeComponentId: info.dragNode.key as string,
               newIndex,
               newLineTypeId,
@@ -1482,7 +1473,7 @@ const DrawingLineTypeTreeDevX = ({
           if (info.dropToGap === false) {
             debugger
 
-            void moveLineTypeComponentToDifferentLineType.mutate({
+            return moveLineTypeComponentToDifferentLineType.mutate({
               lineTypeComponentId: info.dragNode.key as string,
               newIndex: 0,
               newLineTypeId,
@@ -1539,7 +1530,6 @@ const DrawingLineTypeTreeDevX = ({
               style={{
                 width: '100%',
               }}
-              onDragEnter={onDragEnter}
               onMouseEnter={(info) => {
                 setInfoOnMouseEnter(info)
                 return
