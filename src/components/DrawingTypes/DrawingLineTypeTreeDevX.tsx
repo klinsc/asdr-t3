@@ -733,7 +733,7 @@ const DrawingLineTypeTreeDevX = ({
                       : 'hidden',
                 }}>
                 {/* Up button */}
-                <Button
+                {/* <Button
                   type="text"
                   shape="circle"
                   size="small"
@@ -741,9 +741,9 @@ const DrawingLineTypeTreeDevX = ({
                   onClick={() => {
                     void upLineType.mutate({ id: lineType.id })
                   }}
-                />
+                /> */}
                 {/* Down button */}
-                <Button
+                {/* <Button
                   type="text"
                   shape="circle"
                   size="small"
@@ -751,7 +751,7 @@ const DrawingLineTypeTreeDevX = ({
                   onClick={() => {
                     void downLineType.mutate({ id: lineType.id })
                   }}
-                />
+                /> */}
                 {/* Delete button */}
                 <Button
                   type="text"
@@ -1191,7 +1191,7 @@ const DrawingLineTypeTreeDevX = ({
                                 : 'hidden',
                           }}>
                           {/* Up button */}
-                          <Button
+                          {/* <Button
                             type="text"
                             shape="circle"
                             size="small"
@@ -1201,9 +1201,9 @@ const DrawingLineTypeTreeDevX = ({
                                 lineTypeComponentId: lineTypeComponent.id,
                               })
                             }}
-                          />
+                          /> */}
                           {/* Down button */}
-                          <Button
+                          {/* <Button
                             type="text"
                             shape="circle"
                             size="small"
@@ -1213,7 +1213,7 @@ const DrawingLineTypeTreeDevX = ({
                                 lineTypeComponentId: lineTypeComponent.id,
                               })
                             }}
-                          />
+                          /> */}
                           {/* Delete button */}
                           <Button
                             type="text"
