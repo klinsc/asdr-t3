@@ -13,6 +13,9 @@ const theme: ThemeConfig = {
       // triggerBg: '#fff',
       // triggerColor: '#0A72EF',
     },
+    Tree: {
+      nodeSelectedBg: '#fff',
+    },
   },
 }
 

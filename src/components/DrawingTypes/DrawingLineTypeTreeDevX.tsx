@@ -630,7 +630,7 @@ const DrawingLineTypeTreeDevX = ({
             // width: colRef.current?.offsetWidth
             //   ? colRef.current?.offsetWidth - 48
             //   : 0,
-            width: 323 - 48,
+            width: 323 - 64,
           }}>
           {/* Edit button */}
           {editing === 'lineType' && lineTypeId === lineType.id ? (
@@ -1660,7 +1660,8 @@ const DrawingLineTypeTreeDevX = ({
                 duplicateLineTypeComponent.isLoading ||
                 deleteLineTypeComponent.isLoading ||
                 moveLineTypeComponentToSameLineType.isLoading ||
-                moveLineTypeComponentToDifferentLineType.isLoading
+                moveLineTypeComponentToDifferentLineType.isLoading ||
+                moveLineTypeToSameDrawingType.isLoading
               }
               treeData={treeData}
               style={{
