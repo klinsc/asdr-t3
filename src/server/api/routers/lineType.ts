@@ -297,4 +297,100 @@ export const lineTypeRouter = createTRPCRouter({
 
       return newLineType
     }),
+
+  moveSameDrawingType: publicProcedure
+    .input(z.object({ id: z.string(), newIndex: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      const lineType = await ctx.prisma.lineType.findUnique({
+        where: {
+          id: input.id,
+        },
+      })
+
+      if (!lineType) {
+        throw new Error('lineType not found')
+      }
+
+      const drawingTypeId = lineType.drawingTypeId
+
+      // get all lineTypes in drawingType
+      const lineTypes = await ctx.prisma.lineType.findMany({
+        where: {
+          drawingTypeId,
+        },
+      })
+
+      const newIndex = input.newIndex
+      const oldIndex = lineType.index
+
+      // if newIndex is greater than oldIndex
+      // update all lineTypes with index greater than oldIndex and less than newIndex
+      // to have index - 1
+      if (newIndex > oldIndex) {
+        const lineTypesToUpdate = lineTypes.filter(
+          (lineType) => lineType.index > oldIndex && lineType.index <= newIndex,
+        )
+
+        const lineTypesToUpdateWithNewIndex = lineTypesToUpdate.map(
+          (lineType) => ({
+            ...lineType,
+            index: lineType.index - 1,
+          }),
+        )
+
+        await Promise.all(
+          lineTypesToUpdateWithNewIndex.map((lineType) => {
+            return ctx.prisma.lineType.update({
+              where: {
+                id: lineType.id,
+              },
+              data: {
+                index: lineType.index,
+              },
+            })
+          }),
+        )
+      }
+
+      // if newIndex is less than oldIndex
+      // update all lineTypes with index greater than newIndex and less than oldIndex
+      // to have index + 1
+      if (newIndex < oldIndex) {
+        const lineTypesToUpdate = lineTypes.filter(
+          (lineType) => lineType.index >= newIndex && lineType.index < oldIndex,
+        )
+
+        const lineTypesToUpdateWithNewIndex = lineTypesToUpdate.map(
+          (lineType) => ({
+            ...lineType,
+            index: lineType.index + 1,
+          }),
+        )
+
+        await Promise.all(
+          lineTypesToUpdateWithNewIndex.map((lineType) => {
+            return ctx.prisma.lineType.update({
+              where: {
+                id: lineType.id,
+              },
+              data: {
+                index: lineType.index,
+              },
+            })
+          }),
+        )
+      }
+
+      // update lineType index
+      await ctx.prisma.lineType.update({
+        where: {
+          id: lineType.id,
+        },
+        data: {
+          index: input.newIndex,
+        },
+      })
+
+      return
+    }),
 })

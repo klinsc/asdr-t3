@@ -388,6 +388,22 @@ const DrawingLineTypeTreeDevX = ({
       void messageApi.error(error.message)
     },
   })
+  // trpcs: moveLineTypeToSameDrawingType
+  const moveLineTypeToSameDrawingType =
+    api.lineType.moveSameDrawingType.useMutation({
+      onSuccess: () => {
+        void messageApi.success(
+          'Move line type to the same drawing type successfully',
+        )
+
+        // refetch: getDrawingType, getAllLineTypes
+        void getDrawingType.refetch()
+        void getAllLineTypes.refetch()
+      },
+      onError: (error) => {
+        void messageApi.error(error.message)
+      },
+    })
 
   // trpcs: getAll Components
   const getAllComponents = api.component.getAll.useQuery()
@@ -1262,7 +1278,7 @@ const DrawingLineTypeTreeDevX = ({
   const treeData: DataNode[] = [
     {
       title: getDrawingType.data ? drawingTypeNode() : 'Drawing Type',
-      key: '0',
+      key: getDrawingType.data?.id ?? '0',
       children:
         creating === 'lineType' && drawingTypeId
           ? [
@@ -1307,16 +1323,65 @@ const DrawingLineTypeTreeDevX = ({
     },
   ]
 
-  const allowDrop: TreeProps['allowDrop'] = ({ dropNode }) => {
-    // check if the dragPos is in 4th level (lineTypeComponent)
-    const isLevel4 = getAllLineTypes.data?.find((lineType) =>
+  const allowDrop: TreeProps['allowDrop'] = ({
+    dragNode,
+    dropNode,
+    dropPosition,
+  }) => {
+    console.info('dragNode', dragNode)
+    console.info('dropNode', dropNode)
+    console.info('dropPosition', dropPosition)
+
+    // get drag node level
+    // check if drag node is lineType
+    const isLineType = getAllLineTypes.data?.some(
+      (lineType) => lineType.id === dragNode.key,
+    )
+    // check if drag node is lineTypeComponent
+    const isLineTypeComponent = getAllLineTypes.data?.some((lineType) =>
+      lineType.lineTypeComponents.some(
+        (lineTypeComponent) => lineTypeComponent.id === dragNode.key,
+      ),
+    )
+    // // check if are not lineType or lineTypeComponent
+    // if (!isLineType && !isLineTypeComponent) return false
+
+    // get drop node level
+    // check if drop node is lineType
+    const isDropLineType = getAllLineTypes.data?.some(
+      (lineType) => lineType.id === dropNode.key,
+    )
+    // check if drop node is lineTypeComponent
+    const isDropLineTypeComponent = getAllLineTypes.data?.some((lineType) =>
       lineType.lineTypeComponents.some(
         (lineTypeComponent) => lineTypeComponent.id === dropNode.key,
       ),
     )
+    // // check if drop node is drawingType
+    // const isDropDrawingType = getDrawingType.data?.id === dropNode.key
 
-    if (isLevel4) return true
-    else return false
+    // // check if are not lineType or lineTypeComponent or drawingType
+    // if (!isDropLineType && !isDropLineTypeComponent && !isDropDrawingType)
+    //   return false
+
+    // // check if drag node and drop node are the same
+    // if (dragNode.key === dropNode.key) return false
+
+    // // check if drop above the current drawingType
+    // if (isDropDrawingType && dropPosition === -1) return false
+
+    // if (isLineType && isDropDrawingType) return true
+
+    // check if drop onTop of the same drawingType
+    // if (isLineType && isDropLineType) return true
+
+    // check if drag node and drop node are the same level
+    if (isLineType && isDropLineType) return true
+    if (isLineTypeComponent && isDropLineTypeComponent) return true
+
+    // return false
+
+    return false
   }
 
   // define onDrop with trpc
@@ -1488,6 +1553,77 @@ const DrawingLineTypeTreeDevX = ({
     }
     // check if the dragPos is in 3rd level (lineType)
     else if (dragLevel === 3) {
+      // get lineTypes
+      const lineTypes = getAllLineTypes.data?.find(
+        (lineType) => lineType.id === info.dragNode.key,
+      )
+      if (!lineTypes) {
+        void messageApi.error('Line types not found')
+        return
+      }
+
+      // check if the dropPos is onTop of the same drawingType
+      if (
+        dragPosition[0] === dropPosition[0] &&
+        dragPosition[1] === dropPosition[1]
+      ) {
+        // if drop onBottom of the same drawingType
+        if (
+          dropLevel === 3 &&
+          getAllLineTypes?.data &&
+          Number(dropPosition[2]) === getAllLineTypes.data.length - 1
+        ) {
+          debugger
+
+          const newIndex = getAllLineTypes.data.length - 1
+          if (newIndex === -1) {
+            void messageApi.error('New index not found')
+            return
+          }
+
+          return moveLineTypeToSameDrawingType.mutate({
+            id: info.dragNode.key as string,
+            newIndex,
+          })
+        }
+        // check if the dropPos is in 3rd level (lineType) && between 2 lineTypes
+        else if (dropLevel === 3) {
+          debugger
+
+          let newIndex = Number(dropPos.split('-')[2]) ?? -1
+          if (newIndex === -1) {
+            void messageApi.error('New index not found')
+            return
+          }
+
+          const oldIndex = Number(dragPos.split('-')[2]) ?? -1
+
+          // check if newIndex is more than oldIndex
+          if (newIndex > oldIndex) {
+          } else if (newIndex < oldIndex) {
+            newIndex = newIndex + 1
+          }
+
+          return moveLineTypeToSameDrawingType.mutate({
+            id: info.dragNode.key as string,
+            newIndex,
+          })
+        }
+        // check if the dropPos is onTop of the same drawingType
+        else if (dropLevel === 2 && info.dropToGap === false) {
+          debugger
+
+          return moveLineTypeToSameDrawingType.mutate({
+            id: info.dragNode.key as string,
+            newIndex: 0,
+          })
+        }
+        // check if the dropPos is onTop of the different drawingType
+        else if (dropLevel === 2) {
+          debugger
+          return
+        }
+      }
     }
   }
 
@@ -1503,7 +1639,7 @@ const DrawingLineTypeTreeDevX = ({
             <Tree
               className="draggable-tree"
               draggable
-              // showLine
+              selectable={false}
               defaultExpandAll
               allowDrop={allowDrop}
               onDrop={onDrop}
