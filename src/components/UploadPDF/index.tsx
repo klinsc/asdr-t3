@@ -49,6 +49,7 @@ const UploadPDF = ({
         headers: {
           enctype: 'multipart/form-data',
           responseType: 'arraybuffer',
+          'ngrok-skip-browser-warning': 'true',
         },
         body: formData,
       })

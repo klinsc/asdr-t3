@@ -18,6 +18,9 @@ export async function fetchTimeout({
   try {
     const res = await fetch(`${url}health`, {
       method: 'GET',
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+      },
     })
     if (server.selected && res.status === 200) {
       status = 'success'

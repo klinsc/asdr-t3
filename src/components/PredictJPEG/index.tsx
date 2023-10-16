@@ -68,6 +68,7 @@ const PredictJPEG = ({
           headers: {
             enctype: 'multipart/form-data',
             responseType: 'application/json',
+            'ngrok-skip-browser-warning': 'true',
           },
           body: formData,
         },
