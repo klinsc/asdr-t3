@@ -1,6 +1,4 @@
 import {
-  CaretDownOutlined,
-  CaretUpOutlined,
   CheckOutlined,
   CloseOutlined,
   CopyOutlined,
@@ -543,7 +541,9 @@ const DrawingLineTypeTreeDevX = ({
                   }}
                   style={{
                     visibility:
-                      infoOnMouseEnter?.node.key === '0' ? 'visible' : 'hidden',
+                      infoOnMouseEnter?.node.key === getDrawingType.data?.id
+                        ? 'visible'
+                        : 'hidden',
                   }}
                 />
 
@@ -585,7 +585,9 @@ const DrawingLineTypeTreeDevX = ({
                   }}
                   style={{
                     visibility:
-                      infoOnMouseEnter?.node.key === '0' ? 'visible' : 'hidden',
+                      infoOnMouseEnter?.node.key === getDrawingType.data?.id
+                        ? 'visible'
+                        : 'hidden',
                   }}
                 />
 
@@ -607,7 +609,9 @@ const DrawingLineTypeTreeDevX = ({
                   }}
                   style={{
                     visibility:
-                      infoOnMouseEnter?.node.key === '0' ? 'visible' : 'hidden',
+                      infoOnMouseEnter?.node.key === getDrawingType.data?.id
+                        ? 'visible'
+                        : 'hidden',
                   }}
                 />
               </>

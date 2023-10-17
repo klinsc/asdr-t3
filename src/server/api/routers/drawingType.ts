@@ -180,4 +180,59 @@ export const drawingTypeRouter = createTRPCRouter({
 
       return
     }),
+
+  createTemplate: publicProcedure
+    .input(
+      z.array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          count: z.number(),
+        }),
+      ),
+    )
+    .mutation(async ({ input, ctx }) => {
+      let newDrawingName = 'new drawingType'
+
+      // get existing drawingType with name like 'new drawingType'
+      const drawingTypes = await ctx.prisma.drawingType.findMany({
+        where: {
+          name: {
+            startsWith: newDrawingName,
+          },
+        },
+      })
+      if (drawingTypes.length > 0) {
+        // if exists, increment name
+        newDrawingName = `${newDrawingName} (${drawingTypes.length + 1})`
+      }
+
+      // create drawingType, name 'new drawingType'
+      const drawingType = await ctx.prisma.drawingType.create({
+        data: {
+          name: newDrawingName,
+        },
+      })
+
+      // create lineType, name 'new lineType'
+      const lineType = await ctx.prisma.lineType.create({
+        data: {
+          name: 'new lineType',
+          drawingTypeId: drawingType.id,
+          index: 0,
+        },
+      })
+
+      // create lineTypeComponents
+      await ctx.prisma.lineTypeComponent.createMany({
+        data: input.map((component, index) => ({
+          lineTypeId: lineType.id,
+          componentId: component.id,
+          index,
+          count: component.count,
+        })),
+      })
+
+      return
+    }),
 })

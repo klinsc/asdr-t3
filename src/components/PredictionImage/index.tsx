@@ -1,5 +1,15 @@
-import { Button, Col, Row, Tabs, type TabsProps } from 'antd'
+import {
+  Button,
+  Col,
+  Modal,
+  Row,
+  Tabs,
+  Typography,
+  message,
+  type TabsProps
+} from 'antd'
 import type Konva from 'konva'
+import { useRouter } from 'next/router'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Image as KonvaImage,
@@ -10,7 +20,12 @@ import {
   Text,
 } from 'react-konva'
 import useImage from 'use-image'
-import { type BoundingBox } from '~/models/drawings.model'
+import {
+  type BoundingBox,
+  type DrawingComponent,
+} from '~/models/drawings.model'
+import { api } from '~/utils/api'
+import DrawingComponentTable from '../PredictionTable/DrawingComponentTable'
 
 export interface RectangleProps {
   key: string
@@ -202,17 +217,63 @@ interface PredictionImageProps {
   imageFile: File | null
   jsonResult: BoundingBox[]
   predictionTable: JSX.Element
+  drawingComponents: DrawingComponent[]
 }
 
 const PredictionImage = ({
   imageFile,
   jsonResult,
   predictionTable,
+  drawingComponents,
 }: // predictedImageColRef
 PredictionImageProps) => {
-  // hooks
+  // router
+  const router = useRouter()
+  const { creating } = router.query
+
+  const [messageAPI, contextHolder] = message.useMessage()
+
+  // states
   // const [selectedId, selectShape] = useState<string | null>(null)
+
+  // refs
   const predictedImageColRef = useRef<HTMLDivElement>(null)
+
+  // trpc: create new drawing type
+  const createDrawingTemplate = api.drawingType.createTemplate.useMutation({
+    onSuccess: () => {
+      void messageAPI.success('Create Drawing Type Success')
+    },
+    onError: (error) => {
+      void messageAPI.error(error.message)
+    },
+  })
+
+  // handler: handleModalOpen
+  const handleModalOpen = () => {
+    void router.push({
+      pathname: router.pathname,
+      query: { creating: 'true' },
+    })
+  }
+
+  // handler: handleModalCancle
+  const handleModalCancle = () => {
+    void router.push({
+      pathname: router.pathname,
+      query: {},
+    })
+  }
+
+  // handler: handleModalOk
+  const handleModalOk = async () => {
+    await createDrawingTemplate.mutateAsync(drawingComponents)
+
+    await router.push({
+      pathname: router.pathname,
+      query: {},
+    })
+  }
 
   // update rectangles when jsonResult changes
   const initialRectangles = useMemo(() => {
@@ -248,6 +309,9 @@ PredictionImageProps) => {
 
       // get width size of predictedImageColRef.current
       const width = predictedImageColRef.current?.offsetWidth ?? 0
+
+      // scroll Y by 96, to get image to the center
+      window.scrollTo(0, 96)
 
       // set stage size
       setStageSize({ width, height: (width * img.height) / img.width })
@@ -380,6 +444,7 @@ PredictionImageProps) => {
       key: '1',
       children: (
         <Row>
+          {/* Wrapper for Konva stage */}
           <Col span={24} ref={predictedImageColRef}>
             <Stage
               onLoaded={() => {
@@ -427,8 +492,51 @@ PredictionImageProps) => {
             </Stage>
           </Col>
 
-          <Col span={24}>
-            <Button onClick={fitImage}>Fit to screen</Button>
+          {/* Wrapper for absolute div */}
+          <Col
+            span={24}
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+            }}>
+            {/* Start new row */}
+            <Row
+              style={{
+                width: '100%',
+                height: '100%',
+                padding: '10px',
+              }}>
+              {/* leftTop as goal items */}
+              <Col
+                span={12}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                }}>
+                {/* Popover button displaying (Mock) */}
+                <Button>2 components missing</Button>
+              </Col>
+              {/* rightTop as tools */}
+              <Col
+                span={12}
+                style={{
+                  textAlign: 'right',
+                }}>
+                <Row gutter={[0, 4]}>
+                  <Col span={24}>
+                    <Button size="small" onClick={fitImage}>
+                      Fit to screen
+                    </Button>
+                  </Col>
+                  <Col span={24}>
+                    <Button size="small" onClick={() => handleModalOpen()}>
+                      Use as a new template
+                    </Button>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
           </Col>
         </Row>
       ),
@@ -442,18 +550,41 @@ PredictionImageProps) => {
 
   return (
     <>
+      {contextHolder}
+
       <Row>
         <Col span={24}>
           <Tabs onChange={onTabsChange} type="card" items={tabsItems} />
         </Col>
-
-        {/* <Col>
-          <Space direction="vertical">
-            <Button onClick={fitImage}>Fit to screen</Button>
-            <LabelTable rectangles={rectangles} setRectangles={setRectangles} />
-          </Space>
-        </Col> */}
       </Row>
+
+      <Modal
+        open={creating === 'true'}
+        onCancel={() => handleModalCancle()}
+        onOk={() => void handleModalOk()}
+        confirmLoading={createDrawingTemplate.isLoading}
+        title={
+          <>
+            <Typography.Title
+              level={4}
+              style={{
+                margin: 0,
+              }}>
+              Use as a new template
+            </Typography.Title>
+            <Typography.Text type="secondary">
+              Create a new drawing type from these components
+            </Typography.Text>
+          </>
+        }
+        centered>
+        <DrawingComponentTable
+          drawingComponents={drawingComponents}
+          bordered={false}
+          size="small"
+          pageSize={20}
+        />
+      </Modal>
     </>
   )
 }

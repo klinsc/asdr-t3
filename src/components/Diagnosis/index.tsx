@@ -159,6 +159,7 @@ export default function Home() {
                     jsonUrl={jsonUrl}
                   />
                 }
+                drawingComponents={drawingComponents}
               />
             </Col>
           </>

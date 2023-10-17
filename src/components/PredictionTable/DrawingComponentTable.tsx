@@ -5,6 +5,10 @@ import type { DrawingComponent } from '~/models/drawings.model'
 
 interface DrawingComponentTableProps {
   drawingComponents: DrawingComponent[]
+  size?: 'small' | 'middle' | 'large'
+  bordered?: boolean
+  pageSize?: number
+  titled?: boolean
 }
 
 const DrawingComponentTable = (props: DrawingComponentTableProps) => {
@@ -49,10 +53,18 @@ const DrawingComponentTable = (props: DrawingComponentTableProps) => {
 
   return (
     <Table
-      bordered
+      size={props.size ?? 'middle'}
+      bordered={props.bordered ?? true}
+      pagination={{
+        pageSize: props.pageSize ?? 10,
+      }}
       onChange={handleChange}
       caption={
-        <Typography.Title level={5}>Drawing Components</Typography.Title>
+        props.titled ? (
+          <Typography.Title level={5}>Drawing Components</Typography.Title>
+        ) : (
+          <></>
+        )
       }
       columns={columns}
       dataSource={props.drawingComponents}
