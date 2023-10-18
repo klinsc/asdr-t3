@@ -629,13 +629,15 @@ const DrawingLineTypeTreeDevX = ({
         <Space
           align="center"
           size="small"
-          style={{
-            // subtract 24px x tree nodes
-            // width: colRef.current?.offsetWidth
-            //   ? colRef.current?.offsetWidth - 48
-            //   : 0,
-            width: 323 - 64,
-          }}>
+          style={
+            {
+              // subtract 24px x tree nodes
+              // width: colRef.current?.offsetWidth
+              //   ? colRef.current?.offsetWidth - 48
+              //   : 0,
+              // width: 323 - 64,
+            }
+          }>
           {/* Edit button */}
           {editing === 'lineType' && lineTypeId === lineType.id ? (
             <>

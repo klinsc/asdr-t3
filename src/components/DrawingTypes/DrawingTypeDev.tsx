@@ -220,7 +220,7 @@ export const DrawingTypeDev = () => {
         <>
           {drawingTypeGetAll?.data && drawingTypeGetAll?.data?.length > 0 ? (
             drawingTypeGetAll.data.map((drawingType) => (
-              <Col span={8} key={drawingType.id}>
+              <Col span={12} key={drawingType.id}>
                 <Card>
                   {/* A line type tree of this drawing type */}
                   <DrawingLineTypeTreeDevX
