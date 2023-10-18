@@ -1383,6 +1383,9 @@ const DrawingLineTypeTreeDevX = ({
     if (isLineType && isDropLineType) return true
     if (isLineTypeComponent && isDropLineTypeComponent) return true
 
+    // check if drag node is lineTypeComponent and drop node is lineType
+    if (isLineTypeComponent && isDropLineType) return true
+
     // return false
 
     return false
