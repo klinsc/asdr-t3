@@ -5,7 +5,17 @@ import {
   UploadOutlined,
 } from '@ant-design/icons'
 import { Container } from '@mui/material'
-import { Card, Col, Row, Select, Steps, Typography, theme } from 'antd'
+import {
+  Card,
+  Col,
+  Row,
+  Select,
+  Skeleton,
+  Space,
+  Steps,
+  Typography,
+  theme,
+} from 'antd'
 import Head from 'next/head'
 import { useCallback, useMemo, useState } from 'react'
 import PredictJPEG from '~/components/PredictJPEG'
@@ -19,6 +29,7 @@ import type {
   MissingComponent,
   RemainingComponent,
 } from '~/models/drawings.model'
+import { api } from '~/utils/api'
 
 export default function Home() {
   // hooks
@@ -55,6 +66,9 @@ export default function Home() {
     setCurrent(current)
   }
 
+  // trpc: getAllDrawings
+  const getAllDrawings = api.drawingType.getAll.useQuery()
+
   const steps = useMemo(
     () => [
       {
@@ -72,16 +86,29 @@ export default function Home() {
               <Typography.Title level={4}>
                 Select the type of drawing
               </Typography.Title>
-              <Select
-                defaultValue="mt"
-                onChange={handleChange}
-                options={[
-                  { value: 'mt', label: 'Main & Transfer' },
-                  { value: 'h', label: 'H-config' },
-                  { value: 'bh', label: 'Breaker & a Half' },
-                  { value: 'dbsb', label: 'Double Bus Single Breaker' },
-                ]}
-              />
+
+              {getAllDrawings.data ? (
+                <Select
+                  defaultValue={getAllDrawings.data?.[0]?.id}
+                  onChange={handleChange}
+                  options={
+                    getAllDrawings.data?.map((drawing) => ({
+                      label: drawing.name,
+                      value: drawing.id,
+                    })) ?? []
+                  }
+                />
+              ) : (
+                <Space>
+                  <Skeleton
+                    title={{
+                      width: 200,
+                    }}
+                    paragraph={false}
+                    active
+                  />
+                </Space>
+              )}
             </Col>
 
             {/* Upload a PDF file*/}
@@ -170,6 +197,7 @@ export default function Home() {
       csvUrl,
       current,
       drawingComponents,
+      getAllDrawings.data,
       imageFile,
       isLoading,
       jsonResult,
