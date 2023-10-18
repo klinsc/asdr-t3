@@ -303,18 +303,14 @@ export const lineTypeRouter = createTRPCRouter({
         },
       })
 
-      await Promise.all(
-        lineTypeComponents.map(async (lineTypeComponent) => {
-          await ctx.prisma.lineTypeComponent.create({
-            data: {
-              lineTypeId: newLineType.id,
-              componentId: lineTypeComponent.componentId,
-              index: lineTypeComponent.index,
-              count: lineTypeComponent.count,
-            },
-          })
-        }),
-      )
+      await ctx.prisma.lineTypeComponent.createMany({
+        data: lineTypeComponents.map((lineTypeComponent) => ({
+          lineTypeId: newLineType.id,
+          componentId: lineTypeComponent.componentId,
+          index: lineTypeComponent.index,
+          count: lineTypeComponent.count,
+        })),
+      })
 
       return newLineType
     }),
@@ -359,18 +355,16 @@ export const lineTypeRouter = createTRPCRouter({
           }),
         )
 
-        await Promise.all(
-          lineTypesToUpdateWithNewIndex.map((lineType) => {
-            return ctx.prisma.lineType.update({
-              where: {
-                id: lineType.id,
-              },
-              data: {
-                index: lineType.index,
-              },
-            })
-          }),
-        )
+        for (const lineType of lineTypesToUpdateWithNewIndex) {
+          await ctx.prisma.lineType.update({
+            where: {
+              id: lineType.id,
+            },
+            data: {
+              index: lineType.index,
+            },
+          })
+        }
       }
 
       // if newIndex is less than oldIndex
@@ -388,18 +382,16 @@ export const lineTypeRouter = createTRPCRouter({
           }),
         )
 
-        await Promise.all(
-          lineTypesToUpdateWithNewIndex.map((lineType) => {
-            return ctx.prisma.lineType.update({
-              where: {
-                id: lineType.id,
-              },
-              data: {
-                index: lineType.index,
-              },
-            })
-          }),
-        )
+        for (const lineType of lineTypesToUpdateWithNewIndex) {
+          await ctx.prisma.lineType.update({
+            where: {
+              id: lineType.id,
+            },
+            data: {
+              index: lineType.index,
+            },
+          })
+        }
       }
 
       // update lineType index
