@@ -124,12 +124,32 @@ export const lineTypeRouter = createTRPCRouter({
 
   delete: publicProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(({ input, ctx }) => {
-      return ctx.prisma.lineType.delete({
+    .mutation(async ({ input, ctx }) => {
+      // check if lineType exists
+      const lineType = await ctx.prisma.lineType.findUnique({
         where: {
           id: input.id,
         },
       })
+      if (!lineType) {
+        throw new Error('lineType not found')
+      }
+
+      // delete lineTypeComponents with lineTypeId
+      await ctx.prisma.lineTypeComponent.deleteMany({
+        where: {
+          lineTypeId: input.id,
+        },
+      })
+
+      // delete lineType
+      await ctx.prisma.lineType.delete({
+        where: {
+          id: input.id,
+        },
+      })
+
+      return
     }),
 
   upIndex: publicProcedure
