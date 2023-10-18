@@ -6,7 +6,7 @@ import {
   Tabs,
   Typography,
   message,
-  type TabsProps
+  type TabsProps,
 } from 'antd'
 import type Konva from 'konva'
 import { useRouter } from 'next/router'
@@ -443,9 +443,17 @@ PredictionImageProps) => {
       label: 'Image Result',
       key: '1',
       children: (
-        <Row>
+        <Row
+          style={{
+            pointerEvents: 'none',
+          }}>
           {/* Wrapper for Konva stage */}
-          <Col span={24} ref={predictedImageColRef}>
+          <Col
+            span={24}
+            ref={predictedImageColRef}
+            style={{
+              pointerEvents: 'auto',
+            }}>
             <Stage
               onLoaded={() => {
                 fitImage()
@@ -515,7 +523,12 @@ PredictionImageProps) => {
                   justifyContent: 'flex-start',
                 }}>
                 {/* Popover button displaying (Mock) */}
-                <Button>2 components missing</Button>
+                <Button
+                  style={{
+                    pointerEvents: 'auto',
+                  }}>
+                  2 components missing
+                </Button>
               </Col>
               {/* rightTop as tools */}
               <Col
@@ -525,12 +538,22 @@ PredictionImageProps) => {
                 }}>
                 <Row gutter={[0, 4]}>
                   <Col span={24}>
-                    <Button size="small" onClick={fitImage}>
+                    <Button
+                      size="small"
+                      onClick={fitImage}
+                      style={{
+                        pointerEvents: 'auto',
+                      }}>
                       Fit to screen
                     </Button>
                   </Col>
                   <Col span={24}>
-                    <Button size="small" onClick={() => handleModalOpen()}>
+                    <Button
+                      size="small"
+                      onClick={() => handleModalOpen()}
+                      style={{
+                        pointerEvents: 'auto',
+                      }}>
                       Use as a new template
                     </Button>
                   </Col>
