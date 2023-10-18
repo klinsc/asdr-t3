@@ -747,6 +747,46 @@ const DrawingLineTypeTreeDevX = ({
                       { scroll: false },
                     )
                   }}
+                  onKeyDown={(e) => {
+                    // check if the key is escape
+                    if (e.key === 'Escape') {
+                      // refetch
+                      void getDrawingType.refetch()
+
+                      // reset editing
+                      void router.push(
+                        {
+                          pathname: '/drawingtypes',
+                          query: {
+                            ...router.query,
+                            editing: undefined,
+                            lineTypeId: undefined,
+                            count: undefined,
+                          },
+                        },
+                        undefined,
+                        { scroll: false },
+                      )
+                    }
+
+                    // check if the key is enter
+                    if (e.key === 'Enter') {
+                      // check if the value is the same as the current name
+                      if (
+                        editingLineTypeRef.current?.input?.value ===
+                          lineType.name &&
+                        Number(count) === lineType.count
+                      )
+                        return
+
+                      // update
+                      void updateLineType.mutate({
+                        id: lineType.id,
+                        name: editingLineTypeRef.current?.input?.value,
+                        count: Number(count),
+                      })
+                    }
+                  }}
                 />
               </Space.Compact>
               {/* Close button */}
@@ -1101,6 +1141,10 @@ const DrawingLineTypeTreeDevX = ({
                                     autoFocus
                                     defaultValue={editingComponent}
                                     value={editingComponent}
+                                    style={{
+                                      width: '200px',
+                                      textAlign: 'start',
+                                    }}
                                     onChange={(value) => {
                                       // check if there is the same component name in the line type
                                       const isSameComponentName =
@@ -1141,6 +1185,57 @@ const DrawingLineTypeTreeDevX = ({
                                           ),
                                       }),
                                     )}
+                                    onKeyDown={(
+                                      e: React.KeyboardEvent<HTMLInputElement>,
+                                    ) => {
+                                      // check if the key is escape
+                                      if (e.key === 'Escape') {
+                                        // refetch
+                                        void getDrawingType.refetch()
+
+                                        // reset editing
+                                        void router.push(
+                                          {
+                                            pathname: '/drawingtypes',
+                                            query: {
+                                              ...router.query,
+                                              editing: undefined,
+                                              lineTypeId: undefined,
+                                              componentId: undefined,
+                                              editingComponent: undefined,
+                                              componentType: undefined,
+                                              count: undefined,
+                                            },
+                                          },
+                                          undefined,
+                                          { scroll: false },
+                                        )
+                                      }
+
+                                      // check if the key is enter
+                                      if (e.key === 'Enter') {
+                                        // check if the value is the same as the current name
+                                        if (
+                                          editingComponent ===
+                                            lineTypeComponent.Component.name &&
+                                          Number(count) ===
+                                            lineTypeComponent.count
+                                        )
+                                          return
+
+                                        // update
+                                        void updateLineTypeComponent.mutate({
+                                          lineTypeComponentId:
+                                            lineTypeComponent.id,
+                                          lineTypeId: lineType.id,
+                                          componentId:
+                                            lineTypeComponent.Component.id,
+                                          componentType:
+                                            lineTypeComponent.componentType,
+                                          count: lineTypeComponent.count,
+                                        })
+                                      }
+                                    }}
                                   />
                                 }
                                 prefix="x"
@@ -1494,8 +1589,8 @@ const DrawingLineTypeTreeDevX = ({
         (lineTypeComponent) => lineTypeComponent.id === dropNode.key,
       ),
     )
-    // // check if drop node is drawingType
-    // const isDropDrawingType = getDrawingType.data?.id === dropNode.key
+    // check if drop node is drawingType
+    const isDropDrawingType = getDrawingType.data?.id === dropNode.key
 
     // // check if are not lineType or lineTypeComponent or drawingType
     // if (!isDropLineType && !isDropLineTypeComponent && !isDropDrawingType)
@@ -1518,6 +1613,9 @@ const DrawingLineTypeTreeDevX = ({
 
     // check if drag node is lineTypeComponent and drop node is lineType
     if (isLineTypeComponent && isDropLineType) return true
+
+    // check if drag node is lineTypeComponent and drop node is drawingType
+    if (isLineTypeComponent && isDropDrawingType) return true
 
     // return false
 
