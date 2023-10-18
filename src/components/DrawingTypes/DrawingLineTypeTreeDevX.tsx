@@ -96,15 +96,19 @@ const DrawingLineTypeTreeDevX = ({
       void getAllLineTypes.refetch()
 
       // reset creating
-      void router.push({
-        pathname: '/drawingtypes',
-        query: {
-          ...router.query,
-          creating: undefined,
-          drawingTypeId: undefined,
-          componentType: undefined,
+      void router.push(
+        {
+          pathname: '/drawingtypes',
+          query: {
+            ...router.query,
+            creating: undefined,
+            drawingTypeId: undefined,
+            componentType: undefined,
+          },
         },
-      })
+        undefined,
+        { scroll: false },
+      )
     },
     onError: (error) => {
       void messageApi.error(error.message)
@@ -120,18 +124,22 @@ const DrawingLineTypeTreeDevX = ({
       void getAllLineTypes.refetch()
 
       // reset editing
-      void router.push({
-        pathname: '/drawingtypes',
-        query: {
-          ...router.query,
-          editing: undefined,
-          lineTypeId: undefined,
-          componentId: undefined,
-          editingComponent: undefined,
-          componentType: undefined,
-          count: undefined,
+      void router.push(
+        {
+          pathname: '/drawingtypes',
+          query: {
+            ...router.query,
+            editing: undefined,
+            lineTypeId: undefined,
+            componentId: undefined,
+            editingComponent: undefined,
+            componentType: undefined,
+            count: undefined,
+          },
         },
-      })
+        undefined,
+        { scroll: false },
+      )
     },
     onError: (error) => {
       void messageApi.error(error.message)
@@ -237,14 +245,18 @@ const DrawingLineTypeTreeDevX = ({
       void getDrawingType.refetch()
 
       // reset editing
-      void router.push({
-        pathname: '/drawingtypes',
-        query: {
-          ...router.query,
-          editing: undefined,
-          drawingTypeId: undefined,
+      void router.push(
+        {
+          pathname: '/drawingtypes',
+          query: {
+            ...router.query,
+            editing: undefined,
+            drawingTypeId: undefined,
+          },
         },
-      })
+        undefined,
+        { scroll: false },
+      )
     },
     onError: (error) => {
       void messageApi.error(error.message)
@@ -260,14 +272,18 @@ const DrawingLineTypeTreeDevX = ({
       void drawingTypeGetAll.refetch()
 
       // reset editing
-      void router.push({
-        pathname: '/drawingtypes',
-        query: {
-          ...router.query,
-          editing: undefined,
-          drawingTypeId: undefined,
+      void router.push(
+        {
+          pathname: '/drawingtypes',
+          query: {
+            ...router.query,
+            editing: undefined,
+            drawingTypeId: undefined,
+          },
         },
-      })
+        undefined,
+        { scroll: false },
+      )
     },
     onError: (error) => {
       void messageApi.error(error.message)
@@ -298,14 +314,18 @@ const DrawingLineTypeTreeDevX = ({
       void getAllLineTypes.refetch()
 
       // reset creating
-      void router.push({
-        pathname: '/drawingtypes',
-        query: {
-          ...router.query,
-          creating: undefined,
-          drawingTypeId: undefined,
+      void router.push(
+        {
+          pathname: '/drawingtypes',
+          query: {
+            ...router.query,
+            creating: undefined,
+            drawingTypeId: undefined,
+          },
         },
-      })
+        undefined,
+        { scroll: false },
+      )
     },
     onError: (error) => {
       void messageApi.error(error.message)
@@ -334,14 +354,18 @@ const DrawingLineTypeTreeDevX = ({
       void getAllLineTypes.refetch()
 
       // reset editing
-      void router.push({
-        pathname: '/drawingtypes',
-        query: {
-          ...router.query,
-          editing: undefined,
-          lineTypeId: undefined,
+      void router.push(
+        {
+          pathname: '/drawingtypes',
+          query: {
+            ...router.query,
+            editing: undefined,
+            lineTypeId: undefined,
+          },
         },
-      })
+        undefined,
+        { scroll: false },
+      )
     },
     onError: (error) => {
       void messageApi.error(error.message)
@@ -441,14 +465,18 @@ const DrawingLineTypeTreeDevX = ({
                       void getDrawingType.refetch()
 
                       // reset editing
-                      void router.push({
-                        pathname: '/drawingtypes',
-                        query: {
-                          ...router.query,
-                          editing: undefined,
-                          drawingTypeId: undefined,
+                      void router.push(
+                        {
+                          pathname: '/drawingtypes',
+                          query: {
+                            ...router.query,
+                            editing: undefined,
+                            drawingTypeId: undefined,
+                          },
                         },
-                      })
+                        undefined,
+                        { scroll: false },
+                      )
                     }
                   }}
                   ref={editingDrawingTypeRef}
@@ -460,14 +488,18 @@ const DrawingLineTypeTreeDevX = ({
                   size="small"
                   icon={<CloseOutlined />}
                   onClick={() => {
-                    void router.push({
-                      pathname: '/drawingtypes',
-                      query: {
-                        ...router.query,
-                        editing: undefined,
-                        drawingTypeId: undefined,
+                    void router.push(
+                      {
+                        pathname: '/drawingtypes',
+                        query: {
+                          ...router.query,
+                          editing: undefined,
+                          drawingTypeId: undefined,
+                        },
                       },
-                    })
+                      undefined,
+                      { scroll: false },
+                    )
                   }}
                 />
                 {/* Update button */}
@@ -499,14 +531,18 @@ const DrawingLineTypeTreeDevX = ({
                 <Typography.Text
                   className={cx(editTextNode)}
                   onClick={() => {
-                    void router.push({
-                      pathname: '/drawingtypes',
-                      query: {
-                        ...router.query,
-                        editing: 'drawingType',
-                        drawingTypeId: getDrawingType.data?.id,
+                    void router.push(
+                      {
+                        pathname: '/drawingtypes',
+                        query: {
+                          ...router.query,
+                          editing: 'drawingType',
+                          drawingTypeId: getDrawingType.data?.id,
+                        },
                       },
-                    })
+                      undefined,
+                      { scroll: false },
+                    )
                   }}>
                   {getDrawingType.data?.name}
                 </Typography.Text>
@@ -598,14 +634,18 @@ const DrawingLineTypeTreeDevX = ({
                   size="small"
                   icon={<PlusOutlined />}
                   onClick={() => {
-                    void router.push({
-                      pathname: '/drawingtypes',
-                      query: {
-                        ...router.query,
-                        creating: 'lineType',
-                        drawingTypeId: getDrawingType.data?.id,
+                    void router.push(
+                      {
+                        pathname: '/drawingtypes',
+                        query: {
+                          ...router.query,
+                          creating: 'lineType',
+                          drawingTypeId: getDrawingType.data?.id,
+                        },
                       },
-                    })
+                      undefined,
+                      { scroll: false },
+                    )
                   }}
                   style={{
                     visibility:
@@ -662,14 +702,18 @@ const DrawingLineTypeTreeDevX = ({
                     void getDrawingType.refetch()
 
                     // reset editing
-                    void router.push({
-                      pathname: '/drawingtypes',
-                      query: {
-                        ...router.query,
-                        editing: undefined,
-                        lineTypeId: undefined,
+                    void router.push(
+                      {
+                        pathname: '/drawingtypes',
+                        query: {
+                          ...router.query,
+                          editing: undefined,
+                          lineTypeId: undefined,
+                        },
                       },
-                    })
+                      undefined,
+                      { scroll: false },
+                    )
                   }
                 }}
                 // ref
@@ -718,14 +762,18 @@ const DrawingLineTypeTreeDevX = ({
               <Typography.Text
                 className={cx(editTextNode)}
                 onClick={() => {
-                  void router.push({
-                    pathname: '/drawingtypes',
-                    query: {
-                      ...router.query,
-                      editing: 'lineType',
-                      lineTypeId: lineType.id,
+                  void router.push(
+                    {
+                      pathname: '/drawingtypes',
+                      query: {
+                        ...router.query,
+                        editing: 'lineType',
+                        lineTypeId: lineType.id,
+                      },
                     },
-                  })
+                    undefined,
+                    { scroll: false },
+                  )
                 }}>
                 {lineType.name}
               </Typography.Text>
@@ -818,17 +866,21 @@ const DrawingLineTypeTreeDevX = ({
                       return
                     }
 
-                    void router.push({
-                      pathname: '/drawingtypes',
-                      query: {
-                        ...router.query,
-                        creating: 'component',
-                        lineTypeId: lineType.id,
-                        componentId: components?.[0].id,
-                        componentType: '1',
-                        count: '1',
+                    void router.push(
+                      {
+                        pathname: '/drawingtypes',
+                        query: {
+                          ...router.query,
+                          creating: 'component',
+                          lineTypeId: lineType.id,
+                          componentId: components?.[0].id,
+                          componentType: '1',
+                          count: '1',
+                        },
                       },
-                    })
+                      undefined,
+                      { scroll: false },
+                    )
                   }}
                 />
               </Space.Compact>
@@ -867,13 +919,17 @@ const DrawingLineTypeTreeDevX = ({
                               autoFocus
                               value={componentId as string}
                               onChange={(value) => {
-                                void router.push({
-                                  pathname: '/drawingtypes',
-                                  query: {
-                                    ...router.query,
-                                    componentId: value,
+                                void router.push(
+                                  {
+                                    pathname: '/drawingtypes',
+                                    query: {
+                                      ...router.query,
+                                      componentId: value,
+                                    },
                                   },
-                                })
+                                  undefined,
+                                  { scroll: false },
+                                )
                               }}>
                               {getAllComponents.data?.map((component) => (
                                 <Select.Option
@@ -889,13 +945,17 @@ const DrawingLineTypeTreeDevX = ({
                           max={20}
                           defaultValue={1}
                           onChange={(value) => {
-                            void router.push({
-                              pathname: '/drawingtypes',
-                              query: {
-                                ...router.query,
-                                count: value,
+                            void router.push(
+                              {
+                                pathname: '/drawingtypes',
+                                query: {
+                                  ...router.query,
+                                  count: value,
+                                },
                               },
-                            })
+                              undefined,
+                              { scroll: false },
+                            )
                           }}
                         />
                       </Space.Compact>
@@ -907,13 +967,17 @@ const DrawingLineTypeTreeDevX = ({
                         onChange={(e: RadioChangeEvent) => {
                           const componentType = String(e.target.value as string)
 
-                          void router.push({
-                            pathname: '/drawingtypes',
-                            query: {
-                              ...router.query,
-                              componentType,
+                          void router.push(
+                            {
+                              pathname: '/drawingtypes',
+                              query: {
+                                ...router.query,
+                                componentType,
+                              },
                             },
-                          })
+                            undefined,
+                            { scroll: false },
+                          )
                         }}
                         value={componentType as string}>
                         {
@@ -937,15 +1001,19 @@ const DrawingLineTypeTreeDevX = ({
                           size="small"
                           icon={<CloseOutlined />}
                           onClick={() => {
-                            void router.push({
-                              pathname: '/drawingtypes',
-                              query: {
-                                ...router.query,
-                                creating: undefined,
-                                lineTypeId: undefined,
-                                componentType: undefined,
+                            void router.push(
+                              {
+                                pathname: '/drawingtypes',
+                                query: {
+                                  ...router.query,
+                                  creating: undefined,
+                                  lineTypeId: undefined,
+                                  componentType: undefined,
+                                },
                               },
-                            })
+                              undefined,
+                              { scroll: false },
+                            )
                           }}
                         />
 
@@ -1014,13 +1082,17 @@ const DrawingLineTypeTreeDevX = ({
                                         return
                                       }
 
-                                      void router.push({
-                                        pathname: '/drawingtypes',
-                                        query: {
-                                          ...router.query,
-                                          editingComponent: value,
+                                      void router.push(
+                                        {
+                                          pathname: '/drawingtypes',
+                                          query: {
+                                            ...router.query,
+                                            editingComponent: value,
+                                          },
                                         },
-                                      })
+                                        undefined,
+                                        { scroll: false },
+                                      )
                                     }}
                                     options={getAllComponents.data?.map(
                                       (component) => ({
@@ -1043,13 +1115,17 @@ const DrawingLineTypeTreeDevX = ({
                                 max={20}
                                 defaultValue={lineTypeComponent.count}
                                 onChange={(value) => {
-                                  void router.push({
-                                    pathname: '/drawingtypes',
-                                    query: {
-                                      ...router.query,
-                                      count: value,
+                                  void router.push(
+                                    {
+                                      pathname: '/drawingtypes',
+                                      query: {
+                                        ...router.query,
+                                        count: value,
+                                      },
                                     },
-                                  })
+                                    undefined,
+                                    { scroll: false },
+                                  )
                                 }}
                                 onKeyDown={(
                                   e: React.KeyboardEvent<HTMLInputElement>,
@@ -1060,18 +1136,22 @@ const DrawingLineTypeTreeDevX = ({
                                     void getDrawingType.refetch()
 
                                     // reset editing
-                                    void router.push({
-                                      pathname: '/drawingtypes',
-                                      query: {
-                                        ...router.query,
-                                        editing: undefined,
-                                        lineTypeId: undefined,
-                                        componentId: undefined,
-                                        editingComponent: undefined,
-                                        componentType: undefined,
-                                        count: undefined,
+                                    void router.push(
+                                      {
+                                        pathname: '/drawingtypes',
+                                        query: {
+                                          ...router.query,
+                                          editing: undefined,
+                                          lineTypeId: undefined,
+                                          componentId: undefined,
+                                          editingComponent: undefined,
+                                          componentType: undefined,
+                                          count: undefined,
+                                        },
                                       },
-                                    })
+                                      undefined,
+                                      { scroll: false },
+                                    )
                                   }
                                 }}
                               />
@@ -1086,13 +1166,17 @@ const DrawingLineTypeTreeDevX = ({
                                   e.target.value as string,
                                 )
 
-                                void router.push({
-                                  pathname: '/drawingtypes',
-                                  query: {
-                                    ...router.query,
-                                    componentType,
+                                void router.push(
+                                  {
+                                    pathname: '/drawingtypes',
+                                    query: {
+                                      ...router.query,
+                                      componentType,
+                                    },
                                   },
-                                })
+                                  undefined,
+                                  { scroll: false },
+                                )
                               }}
                               value={componentType as string}>
                               {
@@ -1119,18 +1203,22 @@ const DrawingLineTypeTreeDevX = ({
                               size="small"
                               icon={<CloseOutlined />}
                               onClick={() => {
-                                void router.push({
-                                  pathname: '/drawingtypes',
-                                  query: {
-                                    ...router.query,
-                                    editing: undefined,
-                                    lineTypeId: undefined,
-                                    componentId: undefined,
-                                    editingComponent: undefined,
-                                    componentType: undefined,
-                                    count: undefined,
+                                void router.push(
+                                  {
+                                    pathname: '/drawingtypes',
+                                    query: {
+                                      ...router.query,
+                                      editing: undefined,
+                                      lineTypeId: undefined,
+                                      componentId: undefined,
+                                      editingComponent: undefined,
+                                      componentType: undefined,
+                                      count: undefined,
+                                    },
                                   },
-                                })
+                                  undefined,
+                                  { scroll: false },
+                                )
                               }}
                             />
 
@@ -1169,19 +1257,24 @@ const DrawingLineTypeTreeDevX = ({
                         <Typography.Text
                           className={cx(editTextNode)}
                           onClick={() => {
-                            void router.push({
-                              pathname: '/drawingtypes',
-                              query: {
-                                ...router.query,
-                                editing: 'component',
-                                lineTypeId: lineType.id,
-                                componentId: lineTypeComponent.id,
-                                editingComponent:
-                                  lineTypeComponent.Component.name,
-                                componentType: lineTypeComponent.componentType,
-                                count: lineTypeComponent.count,
+                            void router.push(
+                              {
+                                pathname: '/drawingtypes',
+                                query: {
+                                  ...router.query,
+                                  editing: 'component',
+                                  lineTypeId: lineType.id,
+                                  componentId: lineTypeComponent.id,
+                                  editingComponent:
+                                    lineTypeComponent.Component.name,
+                                  componentType:
+                                    lineTypeComponent.componentType,
+                                  count: lineTypeComponent.count,
+                                },
                               },
-                            })
+                              undefined,
+                              { scroll: false },
+                            )
                           }}>
                           {`${lineTypeComponent.Component.name} x${lineTypeComponent.count}`}
                         </Typography.Text>
@@ -1310,14 +1403,18 @@ const DrawingLineTypeTreeDevX = ({
                         void getDrawingType.refetch()
 
                         // reset creating
-                        void router.push({
-                          pathname: '/drawingtypes',
-                          query: {
-                            ...router.query,
-                            creating: undefined,
-                            drawingTypeId: undefined,
+                        void router.push(
+                          {
+                            pathname: '/drawingtypes',
+                            query: {
+                              ...router.query,
+                              creating: undefined,
+                              drawingTypeId: undefined,
+                            },
                           },
-                        })
+                          undefined,
+                          { scroll: false },
+                        )
                       }
                     }}
                   />
