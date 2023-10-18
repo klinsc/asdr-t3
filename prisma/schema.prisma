@@ -115,6 +115,7 @@ model LineType {
   index             Int
   name              String
   description       String?
+  count             Int                 @default(1)
   drawingTypeId     String
   DrawingType       DrawingType         @relation(fields: [drawingTypeId], references: [id])
   LineTypeComponent LineTypeComponent[]
