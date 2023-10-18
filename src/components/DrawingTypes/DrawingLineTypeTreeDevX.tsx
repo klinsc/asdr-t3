@@ -1554,6 +1554,11 @@ const DrawingLineTypeTreeDevX = ({
           // check if the dropPos is onTop of the different lineType
           else {
             debugger
+            return moveLineTypeComponentToDifferentLineType.mutate({
+              lineTypeComponentId: info.dragNode.key as string,
+              newIndex: 0,
+              newLineTypeId: info.node.key as string,
+            })
           }
         }
       }
