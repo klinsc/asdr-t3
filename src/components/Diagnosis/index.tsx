@@ -229,6 +229,7 @@ export default function Home() {
       csvUrl,
       current,
       drawingComponents,
+      drawingTypeId,
       getAllDrawings.data,
       imageFile,
       isLoading,
