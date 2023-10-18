@@ -310,6 +310,7 @@ export const lineTypeRouter = createTRPCRouter({
               lineTypeId: newLineType.id,
               componentId: lineTypeComponent.componentId,
               index: lineTypeComponent.index,
+              count: lineTypeComponent.count,
             },
           })
         }),
