@@ -24,6 +24,7 @@ interface PredictJPEGProps {
   setJsonUrl: (jsonUrl: string) => void
   next: () => void
   setJsonResult: (jsonResult: BoundingBox[]) => void
+  drawingTypeId: string
 }
 
 const PredictJPEG = ({
@@ -38,6 +39,7 @@ const PredictJPEG = ({
   // setJsonUrl,
   next,
   setJsonResult,
+  drawingTypeId,
 }: PredictJPEGProps) => {
   // hooks
   const [checkbox, setCheckbox] = useState(false)
@@ -62,7 +64,7 @@ const PredictJPEG = ({
       const response = await fetch(
         `${
           serverGetSelected?.data?.url
-        }test-predict?test=${checkbox.toString()}`,
+        }test-predict?test=${checkbox.toString()}&=drawingTypeId=${drawingTypeId}`,
         {
           method: 'POST',
           headers: {

@@ -17,7 +17,8 @@ import {
   theme,
 } from 'antd'
 import Head from 'next/head'
-import { useCallback, useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import PredictJPEG from '~/components/PredictJPEG'
 import PredictionImage from '~/components/PredictionImage'
 import PredictionTable from '~/components/PredictionTable'
@@ -32,6 +33,10 @@ import type {
 import { api } from '~/utils/api'
 
 export default function Home() {
+  // router
+  const router = useRouter()
+  const { drawingTypeId } = router.query
+
   // hooks
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [lineTypes, setLineTypes] = useState<LineType[]>([])
@@ -60,7 +65,16 @@ export default function Home() {
   //   setCurrent(current - 1)
   // }
   const handleChange = (value: string) => {
-    console.log(`selected ${value}`)
+    void router.push(
+      {
+        pathname: router.pathname,
+        query: {
+          drawingTypeId: value,
+        },
+      },
+      undefined,
+      { scroll: false },
+    )
   }
   const handleChangeStep = (current: number) => {
     setCurrent(current)
@@ -68,6 +82,23 @@ export default function Home() {
 
   // trpc: getAllDrawings
   const getAllDrawings = api.drawingType.getAll.useQuery()
+
+  // effect: setDefault drawingTypeId, if getAllDrawings.data is not empty
+  useEffect(() => {
+    if (getAllDrawings.data) {
+      void router.push(
+        {
+          pathname: router.pathname,
+          query: {
+            drawingTypeId: getAllDrawings.data?.[0]?.id,
+          },
+        },
+        undefined,
+        { scroll: false },
+      )
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getAllDrawings.data])
 
   const steps = useMemo(
     () => [
@@ -156,6 +187,7 @@ export default function Home() {
                 setJsonUrl={setJsonUrl}
                 next={next}
                 setJsonResult={setJsonResult}
+                drawingTypeId={drawingTypeId as string}
               />
             </Col>
           </>
