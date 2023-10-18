@@ -28,3 +28,7 @@ a {
 .ant-tree-switcher.ant-tree-switcher_close {
   align-self: center;
 }
+
+.ant-input-number-input {
+  width: 10ch !important;
+}
