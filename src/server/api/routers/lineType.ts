@@ -108,6 +108,7 @@ export const lineTypeRouter = createTRPCRouter({
         id: z.string(),
         name: z.string().optional(),
         description: z.string().optional(),
+        count: z.number(),
       }),
     )
     .mutation(({ input, ctx }) => {
@@ -118,6 +119,7 @@ export const lineTypeRouter = createTRPCRouter({
         data: {
           name: input.name,
           description: input.description,
+          count: input.count,
         },
       })
     }),

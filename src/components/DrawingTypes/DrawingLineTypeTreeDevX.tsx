@@ -361,6 +361,7 @@ const DrawingLineTypeTreeDevX = ({
             ...router.query,
             editing: undefined,
             lineTypeId: undefined,
+            count: undefined,
           },
         },
         undefined,
@@ -681,44 +682,73 @@ const DrawingLineTypeTreeDevX = ({
           {/* Edit button */}
           {editing === 'lineType' && lineTypeId === lineType.id ? (
             <>
-              <Input
-                size="small"
-                autoFocus
-                defaultValue={lineType.name}
-                onPressEnter={(e) => {
-                  // check if the value is the same as the current name
-                  if (e.currentTarget.value === lineType.name) return
+              <Space.Compact>
+                {/* Input for lineType name */}
+                <Input
+                  size="small"
+                  autoFocus
+                  defaultValue={lineType.name}
+                  onPressEnter={(e) => {
+                    // check if the value is the same as the current name
+                    if (e.currentTarget.value === lineType.name) return
 
-                  // update
-                  void updateLineType.mutate({
-                    id: lineType.id,
-                    name: e.currentTarget.value,
-                  })
-                }}
-                onKeyDown={(e) => {
-                  // check if the key is escape
-                  if (e.key === 'Escape') {
-                    // refetch
-                    void getDrawingType.refetch()
+                    // update
+                    void updateLineType.mutate({
+                      id: lineType.id,
+                      name: e.currentTarget.value,
+                      count: Number(count),
+                    })
+                  }}
+                  onKeyDown={(e) => {
+                    // check if the key is escape
+                    if (e.key === 'Escape') {
+                      // refetch
+                      void getDrawingType.refetch()
 
-                    // reset editing
+                      // reset editing
+                      void router.push(
+                        {
+                          pathname: '/drawingtypes',
+                          query: {
+                            ...router.query,
+                            editing: undefined,
+                            lineTypeId: undefined,
+                          },
+                        },
+                        undefined,
+                        { scroll: false },
+                      )
+                    }
+                  }}
+                  // ref
+                  ref={editingLineTypeRef}
+                />
+                {/* Input for lineType count */}
+                <InputNumber
+                  size="small"
+                  min={1}
+                  max={20}
+                  prefix="x"
+                  defaultValue={lineType.count}
+                  onChange={(value) => {
+                    // check if the value is the same as the current name
+                    if (!value || value === lineType.count) return
+
+                    // update count in query
                     void router.push(
                       {
                         pathname: '/drawingtypes',
                         query: {
                           ...router.query,
-                          editing: undefined,
-                          lineTypeId: undefined,
+                          count: value,
                         },
                       },
                       undefined,
                       { scroll: false },
                     )
-                  }
-                }}
-                // ref
-                ref={editingLineTypeRef}
-              />
+                  }}
+                />
+              </Space.Compact>
               {/* Close button */}
               <Button
                 type="text"
@@ -732,6 +762,7 @@ const DrawingLineTypeTreeDevX = ({
                       ...router.query,
                       editing: undefined,
                       lineTypeId: undefined,
+                      count: undefined,
                     },
                   })
                 }}
@@ -743,9 +774,11 @@ const DrawingLineTypeTreeDevX = ({
                 size="small"
                 icon={<CheckOutlined />}
                 onClick={() => {
-                  // check if the value is the same as the current name
+                  // check if the value is the same as the current name and count
                   if (
-                    editingLineTypeRef.current?.input?.value === lineType.name
+                    editingLineTypeRef.current?.input?.value ===
+                      lineType.name &&
+                    Number(count) === lineType.count
                   )
                     return
 
@@ -753,6 +786,7 @@ const DrawingLineTypeTreeDevX = ({
                   void updateLineType.mutate({
                     id: lineType.id,
                     name: editingLineTypeRef.current?.input?.value,
+                    count: Number(count),
                   })
                 }}
               />
@@ -775,7 +809,7 @@ const DrawingLineTypeTreeDevX = ({
                     { scroll: false },
                   )
                 }}>
-                {lineType.name}
+                {`${lineType.name} x${lineType.count}`}
               </Typography.Text>
               {/* onHover Buttons */}
               <Space.Compact
