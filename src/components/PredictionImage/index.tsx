@@ -69,7 +69,7 @@ const Rectangle = ({
     <Fragment>
       <Label
         x={shapeProps.x}
-        y={shapeProps.y - 20}
+        y={shapeProps.y - 40}
         // opacity={isSelected ? 1 : 1}
         // draggable
         visible={shapeProps.visible}
@@ -83,7 +83,7 @@ const Rectangle = ({
       >
         <Text
           text={shapeProps.name}
-          fill="black"
+          fill={shapeProps.fill}
           fontSize={26}
           stroke={shapeProps.fill}
           strokeWidth={2}
