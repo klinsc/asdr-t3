@@ -65,6 +65,9 @@ export default function Home() {
   //   setCurrent(current - 1)
   // }
   const handleChange = (value: string) => {
+    // save drawingTypeId to localStorage
+    localStorage.setItem('diagnose-drawingTypeId', value)
+
     void router.push(
       {
         pathname: router.pathname,
@@ -85,12 +88,18 @@ export default function Home() {
 
   // effect: setDefault drawingTypeId, if getAllDrawings.data is not empty
   useEffect(() => {
-    if (getAllDrawings.data) {
+    if (getAllDrawings.data && !drawingTypeId) {
+      const savedDrawingTypeId = localStorage.getItem('diagnose-drawingTypeId')
+
       void router.push(
         {
           pathname: router.pathname,
           query: {
-            drawingTypeId: getAllDrawings.data?.[0]?.id,
+            drawingTypeId: getAllDrawings.data.some(
+              (drawing) => drawing.id === savedDrawingTypeId,
+            )
+              ? savedDrawingTypeId
+              : getAllDrawings.data?.[0]?.id,
           },
         },
         undefined,
@@ -120,7 +129,9 @@ export default function Home() {
 
               {getAllDrawings.data ? (
                 <Select
-                  defaultValue={getAllDrawings.data?.[0]?.id}
+                  value={
+                    (drawingTypeId as string) ?? getAllDrawings.data?.[0]?.id
+                  }
                   onChange={handleChange}
                   options={
                     getAllDrawings.data?.map((drawing) => ({

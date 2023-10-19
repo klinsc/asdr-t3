@@ -64,7 +64,7 @@ const PredictJPEG = ({
       const response = await fetch(
         `${
           serverGetSelected?.data?.url
-        }test-predict?test=${checkbox.toString()}&=drawingTypeId=${drawingTypeId}`,
+        }test-predict?test=${checkbox.toString()}&drawingTypeId=${drawingTypeId}`,
         {
           method: 'POST',
           headers: {
