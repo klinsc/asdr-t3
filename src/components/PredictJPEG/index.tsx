@@ -78,29 +78,29 @@ const PredictJPEG = ({
       // debugger
       const json = (await response.json()) as {
         line_types: string
-        drawing_components: string
+        predicted_components: string
         missing_components: string
         remaining_components: string
         json_result: string
       }
       if (response.status !== 200) throw new Error('Prediction failed!')
-
+      debugger
       // parse json
-      const lineTypes = JSON.parse(json.line_types) as LineType[]
-      const drawingComponents = JSON.parse(
-        json.drawing_components,
+      // const lineTypes = JSON.parse(json.line_types) as LineType[]
+      const predicted_components = JSON.parse(
+        json.predicted_components,
       ) as DrawingComponent[]
-      const missingComponents = JSON.parse(
+      const missing_components = JSON.parse(
         json.missing_components,
       ) as MissingComponent[]
       const remainingComponents = JSON.parse(
         json.remaining_components,
       ) as RemainingComponent[]
       const jsonResult = JSON.parse(json.json_result) as BoundingBox[]
-      // debugger
-      setLineTypes(lineTypes)
-      setDrawingComponents(drawingComponents)
-      setMissingComponents(missingComponents)
+      debugger
+      // setLineTypes(lineTypes)
+      setDrawingComponents(predicted_components)
+      setMissingComponents(missing_components)
       setRemainingComponents(remainingComponents)
       setJsonResult(jsonResult)
 

@@ -35,9 +35,9 @@ const App = ({ children }: { children: React.ReactNode }) => {
 
   // trpcs
   const healthServer = api.health.getAll.useQuery(undefined, {
-    staleTime: 10000,
-    refetchInterval: 10000,
-    refetchOnWindowFocus: false,
+    staleTime: 60000,
+    refetchInterval: 60000,
+    refetchOnWindowFocus: true,
     refetchOnMount: false,
   })
 
