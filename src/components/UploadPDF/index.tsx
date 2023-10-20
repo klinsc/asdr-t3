@@ -19,13 +19,13 @@ interface UploadPDFProps {
   setIsLoading: (isLoading: boolean) => void
 }
 
-const UploadPDF = ({
+export default function UploadPDF({
   imageFile,
   setImageFile,
   next,
   isLoading,
   setIsLoading,
-}: UploadPDFProps) => {
+}: UploadPDFProps) {
   // hooks
   const [fileList, setFileList] = useState<UploadFile[]>([])
 
@@ -106,17 +106,12 @@ const UploadPDF = ({
           <Button
             icon={<UploadOutlined />}
             loading={isLoading}
-            type={
-              fileList.length === 0 && imageFile?.length === 0
-                ? 'primary'
-                : 'default'
-            }>
-            Select File
+            size="large"
+            type={'primary'}>
+            Select File or Drag it here
           </Button>
         </Upload>
       </Space>
     </>
   )
 }
-
-export default UploadPDF

@@ -7,6 +7,7 @@ import {
 import { Container } from '@mui/material'
 import {
   Card,
+  Checkbox,
   Col,
   Row,
   Select,
@@ -35,7 +36,7 @@ import { api } from '~/utils/api'
 export default function Home() {
   // router
   const router = useRouter()
-  const { drawingTypeId } = router.query
+  const { drawingTypeId, preview } = router.query
 
   // hooks
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -164,6 +165,31 @@ export default function Home() {
                 isLoading={isLoading}
                 setIsLoading={setIsLoading}
               />
+            </Col>
+
+            {/* Check box, if users want to see preview image */}
+            <Col
+              span={24}
+              style={{
+                textAlign: 'center',
+              }}>
+              <Checkbox
+                checked={preview === 'true' ? true : false}
+                onChange={(e) =>
+                  void router.push(
+                    {
+                      pathname: router.pathname,
+                      query: {
+                        drawingTypeId: drawingTypeId,
+                        preview: e.target.checked,
+                      },
+                    },
+                    undefined,
+                    { scroll: false },
+                  )
+                }>
+                Preview image
+              </Checkbox>
             </Col>
           </>
         ),
