@@ -44,16 +44,19 @@ export default function Home() {
   const [drawingComponents, setDrawingComponents] = useState<
     DrawingComponent[]
   >([])
+  const [foundComponents, setFoundComponents] = useState<BoundingBox[]>([])
   const [missingComponents, setMissingComponents] = useState<BoundingBox[]>([])
-  const [remainingComponents, setRemainingComponents] = useState<
-    RemainingComponent[]
-  >([])
+  const [remainingComponents, setRemainingComponents] = useState<BoundingBox[]>(
+    [],
+  )
   const { token } = theme.useToken()
   const [current, setCurrent] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [csvUrl, setCsvUrl] = useState('')
   const [jsonUrl, setJsonUrl] = useState('')
-  const [jsonResult, setJsonResult] = useState<BoundingBox[]>([])
+  const [predictedComponents, setPredictedComponents] = useState<BoundingBox[]>(
+    [],
+  )
   // const predictedImageColRef = useRef<HTMLDivElement>(null)
 
   // handlers
@@ -214,6 +217,7 @@ export default function Home() {
                 imageFile={imageFile}
                 setLineTypes={setLineTypes}
                 setDrawingComponents={setDrawingComponents}
+                setFoundComponents={setFoundComponents}
                 setMissingComponents={setMissingComponents}
                 setRemainingComponents={setRemainingComponents}
                 isLoading={isLoading}
@@ -221,7 +225,7 @@ export default function Home() {
                 setCsvUrl={setCsvUrl}
                 setJsonUrl={setJsonUrl}
                 next={next}
-                setJsonResult={setJsonResult}
+                setPredictedComponents={setPredictedComponents}
                 drawingTypeId={drawingTypeId as string}
               />
             </Col>
@@ -242,13 +246,15 @@ export default function Home() {
               }}>
               <PredictionImage
                 imageFile={imageFile}
-                jsonResult={jsonResult}
+                predictedComponents={predictedComponents}
+                foundComponents={foundComponents}
+                remainingComponents={remainingComponents}
                 predictionTable={
                   <PredictionTable
                     lineTypes={lineTypes}
                     drawingComponents={drawingComponents}
-                    missingComponents={missingComponents}
                     remainingComponents={remainingComponents}
+                    missingComponents={missingComponents}
                     csvUrl={csvUrl}
                     jsonUrl={jsonUrl}
                   />
@@ -262,19 +268,21 @@ export default function Home() {
       },
     ],
     [
-      csvUrl,
       current,
-      drawingComponents,
-      drawingTypeId,
-      getAllDrawings.data,
-      imageFile,
       isLoading,
-      jsonResult,
-      jsonUrl,
-      lineTypes,
-      missingComponents,
-      next,
+      getAllDrawings.data,
+      drawingTypeId,
+      imageFile,
+      preview,
+      predictedComponents,
+      foundComponents,
       remainingComponents,
+      lineTypes,
+      drawingComponents,
+      missingComponents,
+      csvUrl,
+      jsonUrl,
+      router,
     ],
   )
   const items = steps.map((item) => ({ key: item.title, title: item.title }))

@@ -3,12 +3,11 @@ import {
   Col,
   Modal,
   Row,
+  Segmented,
   Tabs,
   Typography,
   message,
   type TabsProps,
-  Popover,
-  Segmented,
 } from 'antd'
 import type Konva from 'konva'
 import { useRouter } from 'next/router'
@@ -218,23 +217,27 @@ function touchEnabled() {
 
 interface PredictionImageProps {
   imageFile: File | null
-  jsonResult: BoundingBox[]
+  predictedComponents: BoundingBox[]
+  remainingComponents: BoundingBox[]
+  foundComponents: BoundingBox[]
   predictionTable: JSX.Element
   drawingComponents: DrawingComponent[]
   missingComponents: BoundingBox[]
 }
 
-const PredictionImage = ({
+export default function PredictionImage({
   imageFile,
-  jsonResult,
+  predictedComponents,
+  remainingComponents,
+  foundComponents,
   predictionTable,
   drawingComponents,
   missingComponents,
 }: // predictedImageColRef
-PredictionImageProps) => {
+PredictionImageProps) {
   // router
   const router = useRouter()
-  const { creating } = router.query
+  const { creating, display } = router.query
 
   const [messageAPI, contextHolder] = message.useMessage()
 
@@ -281,10 +284,54 @@ PredictionImageProps) => {
   }
 
   // update rectangles when jsonResult changes
-  const initialRectangles = useMemo(() => {
-    return jsonResult.map((result, i) => {
-      const rgb = hexToRgb(result.color) ?? 'rgba(0, 0, 0, 0.5)'
+  const rectangles = useMemo(() => {
+    // display drawing components
+    if (display === 'all') {
+      return predictedComponents.map((result, i) => {
+        const rgb = hexToRgb(result.color) ?? 'rgba(0, 0, 0, 0.5)'
+        return {
+          key: i.toString(),
+          x: result.xmin,
+          y: result.ymin,
+          width: result.xmax - result.xmin,
+          height: result.ymax - result.ymin,
+          // fill with green opacity .3
+          // fill: 'rgba(0, 0, 255, 0.3)',
+          fill: rgb ?? 'rgba(0, 0, 0, 0.5)',
+          stroke: result.color,
+          strokeWidth: 5,
+          id: result.id,
+          name: result.name,
+          visible: true,
+        }
+      })
+    }
 
+    // display remaining components
+    if (display === 'remaining') {
+      return remainingComponents.map((result, i) => {
+        const rgb = hexToRgb(result.color) ?? 'rgba(0, 0, 0, 0.5)'
+        return {
+          key: i.toString(),
+          x: result.xmin,
+          y: result.ymin,
+          width: result.xmax - result.xmin,
+          height: result.ymax - result.ymin,
+          // fill with green opacity .3
+          // fill: 'rgba(0, 0, 255, 0.3)',
+          fill: rgb ?? 'rgba(0, 0, 0, 0.5)',
+          stroke: result.color,
+          strokeWidth: 5,
+          id: result.id,
+          name: result.name,
+          visible: true,
+        }
+      })
+    }
+
+    // display default list, found components
+    return foundComponents.map((result, i) => {
+      const rgb = hexToRgb(result.color) ?? 'rgba(0, 0, 0, 0.5)'
       return {
         key: i.toString(),
         x: result.xmin,
@@ -301,8 +348,7 @@ PredictionImageProps) => {
         visible: true,
       }
     })
-  }, [jsonResult])
-  const [rectangles, setRectangles] = useState(initialRectangles)
+  }, [predictedComponents, foundComponents, remainingComponents, display])
 
   // get image size from imageFile
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 })
@@ -556,6 +602,19 @@ PredictionImageProps) => {
                       size="small"
                       defaultValue="Correct"
                       options={['Correct', 'Remaining', 'All']}
+                      onChange={(value) => {
+                        const valueString = value.toString().toLocaleLowerCase()
+                        void router.push(
+                          {
+                            pathname: router.pathname,
+                            query: { display: valueString },
+                          },
+                          undefined,
+                          {
+                            scroll: false,
+                          },
+                        )
+                      }}
                     />
                   </Col>
                 </Row>
@@ -634,8 +693,6 @@ PredictionImageProps) => {
     </>
   )
 }
-
-export default PredictionImage
 
 // https://github.com/konvajs/konva
 // https://colinwren.medium.com/adding-zoom-and-panning-to-your-react-konva-stage-3e0a38c31d38

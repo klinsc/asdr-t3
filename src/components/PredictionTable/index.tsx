@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react'
 import type {
   BoundingBox,
   DrawingComponent,
-  LineType, RemainingComponent
+  LineType,
+  RemainingComponent,
 } from '~/models/drawings.model'
 import DrawingComponentTable from './DrawingComponentTable'
 import MissingComponentTable from './MissingComponentTable'
@@ -13,7 +14,7 @@ interface PredictionTableProps {
   lineTypes: LineType[]
   drawingComponents: DrawingComponent[]
   missingComponents: BoundingBox[]
-  remainingComponents: RemainingComponent[]
+  remainingComponents: BoundingBox[]
   csvUrl: string
   jsonUrl: string
 }
@@ -112,7 +113,7 @@ const PredictionTable = ({
           style={{
             display: hidden[0] ? 'block' : 'none',
           }}>
-          <DrawingComponentTable drawingComponents={drawingComponents} />
+          {/* <DrawingComponentTable drawingComponents={drawingComponents} /> */}
         </Col>
         {/* <Col
           span={8}
@@ -121,19 +122,19 @@ const PredictionTable = ({
           }}>
           <LineTypeTable lineTypes={lineTypes} />
         </Col> */}
-        <Col
+        {/* <Col
           span={8}
           style={{
             display: hidden[2] ? 'block' : 'none',
           }}>
           <RemainingComponentTable remainingComponents={remainingComponents} />
-        </Col>
-        <Col
+        </Col> */}
+        {/* <Col
           style={{
             display: hidden[3] ? 'block' : 'none',
           }}>
           <MissingComponentTable missingComponents={missingComponents} />
-        </Col>
+        </Col> */}
       </Row>
     </>
   )

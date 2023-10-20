@@ -1,6 +1,8 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Image, Space, Typography, message } from 'antd'
 import type { RcFile } from 'antd/es/upload'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
 import type {
   BoundingBox,
@@ -14,14 +16,15 @@ interface PredictJPEGProps {
   imageFile: File | null
   setLineTypes: (lineTypes: LineType[]) => void
   setDrawingComponents: (drawingComponents: DrawingComponent[]) => void
+  setFoundComponents: (foundComponents: BoundingBox[]) => void
   setMissingComponents: (missingComponents: BoundingBox[]) => void
-  setRemainingComponents: (remainingComponents: RemainingComponent[]) => void
+  setRemainingComponents: (remainingComponents: BoundingBox[]) => void
   isLoading: boolean
   setIsLoading: (isLoading: boolean) => void
   setCsvUrl: (csvUrl: string) => void
   setJsonUrl: (jsonUrl: string) => void
   next: () => void
-  setJsonResult: (jsonResult: BoundingBox[]) => void
+  setPredictedComponents: (jsonResult: BoundingBox[]) => void
   drawingTypeId: string
 }
 
@@ -29,6 +32,7 @@ const PredictJPEG = ({
   imageFile,
   // setLineTypes,
   setDrawingComponents,
+  setFoundComponents,
   setMissingComponents,
   setRemainingComponents,
   isLoading,
@@ -36,11 +40,12 @@ const PredictJPEG = ({
   // setCsvUrl,
   // setJsonUrl,
   next,
-  setJsonResult,
+  setPredictedComponents,
   drawingTypeId,
 }: PredictJPEGProps) => {
-  // hooks
-  // const [checkbox, setCheckbox] = useState(false)
+  // router
+  const router = useRouter()
+  const { preview } = router.query
 
   // messageAPI
   const [messageAPI, contextHolder] = message.useMessage()
@@ -78,6 +83,7 @@ const PredictJPEG = ({
         missing_components: string
         remaining_components: string
         json_result: string
+        found_components: string
       }
       if (response.status !== 200) throw new Error('Prediction failed!')
       debugger
@@ -91,14 +97,31 @@ const PredictJPEG = ({
       ) as BoundingBox[]
       const remainingComponents = JSON.parse(
         json.remaining_components,
-      ) as RemainingComponent[]
-      const jsonResult = JSON.parse(json.json_result) as BoundingBox[]
+      ) as BoundingBox[]
+      const predictedComponents = JSON.parse(
+        json.predicted_components,
+      ) as BoundingBox[]
+      const foundComponents = JSON.parse(json.found_components) as BoundingBox[]
+
+      console.log('predicted_components')
+      console.table(predicted_components)
+
+      console.log('found_components')
+      console.table(foundComponents)
+
+      console.log('remainingComponents')
+      console.table(remainingComponents)
+
+      console.log('missing_components')
+      console.table(missing_components)
+
       debugger
       // setLineTypes(lineTypes)
       setDrawingComponents(predicted_components)
+      setFoundComponents(foundComponents)
       setMissingComponents(missing_components)
       setRemainingComponents(remainingComponents)
-      setJsonResult(jsonResult)
+      setPredictedComponents(predictedComponents)
 
       // temporary: disabled csv and json
 
@@ -150,6 +173,14 @@ const PredictJPEG = ({
       next()
     }
   }
+
+  // effect: to predict automatically if preview is true
+  useEffect(() => {
+    if (preview === 'true' && imageFile) {
+      void handlePredict()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageFile, preview])
 
   return (
     <>
