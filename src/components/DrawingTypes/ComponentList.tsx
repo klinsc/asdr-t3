@@ -216,6 +216,7 @@ export default function ComponentList() {
       key: 'name',
       title: 'Name',
       dataIndex: 'name',
+      width: 200,
       render: (text, record, index) => (
         <Row>
           <Col span={24}>

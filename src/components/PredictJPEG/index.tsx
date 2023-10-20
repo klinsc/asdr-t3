@@ -7,6 +7,7 @@ import { useEffect } from 'react'
 import type {
   BoundingBox,
   DrawingComponent,
+  Hulls,
   LineType,
 } from '~/models/drawings.model'
 import { api } from '~/utils/api'
@@ -83,6 +84,7 @@ const PredictJPEG = ({
         remaining_components: string
         json_result: string
         found_components: string
+        hulls: string
       }
       if (response.status !== 200) throw new Error('Prediction failed!')
       debugger
@@ -101,6 +103,7 @@ const PredictJPEG = ({
         json.predicted_components,
       ) as BoundingBox[]
       const foundComponents = JSON.parse(json.found_components) as BoundingBox[]
+      const hulls = JSON.parse(json.hulls) as Hulls
 
       console.log('predicted_components')
       console.table(predicted_components)
@@ -113,6 +116,9 @@ const PredictJPEG = ({
 
       console.log('missing_components')
       console.table(missing_components)
+
+      console.log('hulls')
+      console.table(hulls)
 
       debugger
       // setLineTypes(lineTypes)

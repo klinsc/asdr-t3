@@ -21,7 +21,7 @@ export interface RemainingComponent {
 }
 
 export interface BoundingBox {
-  id: string
+  key: string
   xmin: number
   ymin: number
   xmax: number
@@ -30,4 +30,15 @@ export interface BoundingBox {
   class: number
   name: string
   color: string
+  lineTypeId: string
+}
+
+export interface Hull {
+  x: number
+  y: number
+}
+
+export interface Hulls {
+  lineTypeId: string
+  hull: Hull[]
 }
