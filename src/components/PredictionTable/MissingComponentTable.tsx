@@ -1,10 +1,10 @@
 import { Table, Typography } from 'antd'
 import type { ColumnsType, TableProps } from 'antd/es/table'
 import { useMemo } from 'react'
-import type { MissingComponent } from '~/models/drawings.model'
+import type { BoundingBox, MissingComponent } from '~/models/drawings.model'
 
 interface MissingComponentTableProps {
-  missingComponents: MissingComponent[]
+  missingComponents: BoundingBox[]
 }
 
 const MissingComponentTable = (props: MissingComponentTableProps) => {
@@ -37,13 +37,13 @@ const MissingComponentTable = (props: MissingComponentTableProps) => {
         title: 'Line Type',
         dataIndex: 'line_type',
         key: 'line_type',
-        filters: props.missingComponents
-          .map((component) => ({
-            text: component.line_type,
-            value: component.line_type,
-          }))
-          // remove the same line type
-          .filter((value, index, self) => self.findIndex((v) => v.value === value.value) === index),
+        // filters: props.missingComponents
+        //   .map((component) => ({
+        //     text: component.line_type,
+        //     value: component.line_type,
+        //   }))
+        //   // remove the same line type
+        //   .filter((value, index, self) => self.findIndex((v) => v.value === value.value) === index),
         onFilter: (value, record) => record.name.startsWith(String(value)),
         sorter: (a, b) => a.name.length - b.name.length,
         sortDirections: ['ascend', 'descend'],
@@ -65,7 +65,7 @@ const MissingComponentTable = (props: MissingComponentTableProps) => {
       onChange={handleChange}
       caption={<Typography.Title level={5}>Missing Components</Typography.Title>}
       columns={columns}
-      dataSource={props.missingComponents}
+      // dataSource={props.missingComponents}
     />
   )
 }

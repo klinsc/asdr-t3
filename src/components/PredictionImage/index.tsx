@@ -7,6 +7,7 @@ import {
   Typography,
   message,
   type TabsProps,
+  Popover,
 } from 'antd'
 import type Konva from 'konva'
 import { useRouter } from 'next/router'
@@ -26,6 +27,7 @@ import {
 } from '~/models/drawings.model'
 import { api } from '~/utils/api'
 import DrawingComponentTable from '../PredictionTable/DrawingComponentTable'
+import MissingComponents from './MissingComponents'
 
 export interface RectangleProps {
   key: string
@@ -218,6 +220,7 @@ interface PredictionImageProps {
   jsonResult: BoundingBox[]
   predictionTable: JSX.Element
   drawingComponents: DrawingComponent[]
+  missingComponents: BoundingBox[]
 }
 
 const PredictionImage = ({
@@ -225,6 +228,7 @@ const PredictionImage = ({
   jsonResult,
   predictionTable,
   drawingComponents,
+  missingComponents,
 }: // predictedImageColRef
 PredictionImageProps) => {
   // router
@@ -523,12 +527,7 @@ PredictionImageProps) => {
                   justifyContent: 'flex-start',
                 }}>
                 {/* Popover button displaying (Mock) */}
-                <Button
-                  style={{
-                    pointerEvents: 'auto',
-                  }}>
-                  2 components missing
-                </Button>
+                <MissingComponents missingComponents={missingComponents}/>
               </Col>
               {/* rightTop as tools */}
               <Col

@@ -44,7 +44,7 @@ export default function Home() {
     DrawingComponent[]
   >([])
   const [missingComponents, setMissingComponents] = useState<
-    MissingComponent[]
+    BoundingBox[]
   >([])
   const [remainingComponents, setRemainingComponents] = useState<
     RemainingComponent[]
@@ -230,6 +230,7 @@ export default function Home() {
                   />
                 }
                 drawingComponents={drawingComponents}
+                missingComponents={missingComponents}
               />
             </Col>
           </>

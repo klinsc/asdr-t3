@@ -16,7 +16,7 @@ interface PredictJPEGProps {
   imageFile: File | null
   setLineTypes: (lineTypes: LineType[]) => void
   setDrawingComponents: (drawingComponents: DrawingComponent[]) => void
-  setMissingComponents: (missingComponents: MissingComponent[]) => void
+  setMissingComponents: (missingComponents: BoundingBox[]) => void
   setRemainingComponents: (remainingComponents: RemainingComponent[]) => void
   isLoading: boolean
   setIsLoading: (isLoading: boolean) => void
@@ -92,7 +92,7 @@ const PredictJPEG = ({
       ) as DrawingComponent[]
       const missing_components = JSON.parse(
         json.missing_components,
-      ) as MissingComponent[]
+      ) as BoundingBox[]
       const remainingComponents = JSON.parse(
         json.remaining_components,
       ) as RemainingComponent[]

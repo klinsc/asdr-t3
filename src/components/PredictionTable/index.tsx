@@ -1,20 +1,18 @@
-import { Button, Checkbox, Col, Row, Space } from 'antd'
+import { Checkbox, Col, Row, Space } from 'antd'
 import { useEffect, useState } from 'react'
 import type {
+  BoundingBox,
   DrawingComponent,
-  LineType,
-  MissingComponent,
-  RemainingComponent,
+  LineType, RemainingComponent
 } from '~/models/drawings.model'
 import DrawingComponentTable from './DrawingComponentTable'
-import LineTypeTable from './LineTypeTable'
 import MissingComponentTable from './MissingComponentTable'
 import RemainingComponentTable from './RemainingComponentTable'
 
 interface PredictionTableProps {
   lineTypes: LineType[]
   drawingComponents: DrawingComponent[]
-  missingComponents: MissingComponent[]
+  missingComponents: BoundingBox[]
   remainingComponents: RemainingComponent[]
   csvUrl: string
   jsonUrl: string
@@ -116,13 +114,13 @@ const PredictionTable = ({
           }}>
           <DrawingComponentTable drawingComponents={drawingComponents} />
         </Col>
-        <Col
+        {/* <Col
           span={8}
           style={{
             display: hidden[1] ? 'block' : 'none',
           }}>
           <LineTypeTable lineTypes={lineTypes} />
-        </Col>
+        </Col> */}
         <Col
           span={8}
           style={{
