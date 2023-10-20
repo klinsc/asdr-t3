@@ -2,13 +2,12 @@ import { SearchOutlined } from '@ant-design/icons'
 import { Button, Image, Space, Typography, message } from 'antd'
 import type { RcFile } from 'antd/es/upload'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import type {
   BoundingBox,
   DrawingComponent,
   LineType,
-  RemainingComponent,
 } from '~/models/drawings.model'
 import { api } from '~/utils/api'
 
@@ -65,7 +64,7 @@ const PredictJPEG = ({
       formData.append('files[]', imageFile as RcFile)
       // You can use any AJAX library you like
       const response = await fetch(
-        `${serverGetSelected?.data?.url}test-predict?drawingTypeId=${drawingTypeId}`,
+        `${serverGetSelected?.data?.url}predict?drawingTypeId=${drawingTypeId}`,
         {
           method: 'POST',
           headers: {
