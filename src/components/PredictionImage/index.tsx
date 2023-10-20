@@ -237,7 +237,7 @@ export default function PredictionImage({
 PredictionImageProps) {
   // router
   const router = useRouter()
-  const { creating, display } = router.query
+  const { creating, display, colorby } = router.query
 
   const [messageAPI, contextHolder] = message.useMessage()
 
@@ -261,7 +261,10 @@ PredictionImageProps) {
   const handleModalOpen = () => {
     void router.push({
       pathname: router.pathname,
-      query: { creating: 'true' },
+      query: {
+        ...router.query,
+        creating: 'true',
+      },
     })
   }
 
@@ -269,7 +272,10 @@ PredictionImageProps) {
   const handleModalCancle = () => {
     void router.push({
       pathname: router.pathname,
-      query: {},
+      query: {
+        ...router.query,
+        creating: undefined,
+      },
     })
   }
 
@@ -279,28 +285,64 @@ PredictionImageProps) {
 
     await router.push({
       pathname: router.pathname,
-      query: {},
+      query: {
+        ...router.query,
+        creating: undefined,
+      },
     })
   }
 
   // update rectangles when jsonResult changes
   const rectangles = useMemo(() => {
+    // with opacity .5 in green
+    const foundColor = '#73d13d80'
+    // with opacity .5 in yellow
+    const remainingColor = '#4096ff80'
+
     // display drawing components
     if (display === 'all') {
       return predictedComponents.map((result, i) => {
-        const rgb = hexToRgb(result.color) ?? 'rgba(0, 0, 0, 0.5)'
+        if (colorby === 'display') {
+          const isFound = foundComponents.some(
+            (component) => component.key === result.key,
+          )
+          const isRemaining = remainingComponents.some(
+            (component) => component.key === result.key,
+          )
+
+          const fill = isFound
+            ? foundColor
+            : isRemaining
+            ? remainingColor
+            : 'rgba(0, 0, 0, 0.5)'
+
+          return {
+            key: i.toString(),
+            x: result.xmin,
+            y: result.ymin,
+            width: result.xmax - result.xmin,
+            height: result.ymax - result.ymin,
+            fill: fill,
+            stroke: fill,
+            strokeWidth: 5,
+            id: result.key,
+            name: result.name,
+            visible: true,
+          }
+        }
+
+        const fill = hexToRgb(result.color) ?? 'rgba(0, 0, 0, 0.5)'
+
         return {
           key: i.toString(),
           x: result.xmin,
           y: result.ymin,
           width: result.xmax - result.xmin,
           height: result.ymax - result.ymin,
-          // fill with green opacity .3
-          // fill: 'rgba(0, 0, 255, 0.3)',
-          fill: rgb ?? 'rgba(0, 0, 0, 0.5)',
-          stroke: result.color,
+          fill: fill,
+          stroke: fill,
           strokeWidth: 5,
-          id: result.id,
+          id: result.key,
           name: result.name,
           visible: true,
         }
@@ -310,19 +352,20 @@ PredictionImageProps) {
     // display remaining components
     if (display === 'remaining') {
       return remainingComponents.map((result, i) => {
-        const rgb = hexToRgb(result.color) ?? 'rgba(0, 0, 0, 0.5)'
+        const fill =
+          colorby === 'display'
+            ? remainingColor
+            : hexToRgb(result.color) ?? 'rgba(0, 0, 0, 0.5)'
         return {
           key: i.toString(),
           x: result.xmin,
           y: result.ymin,
           width: result.xmax - result.xmin,
           height: result.ymax - result.ymin,
-          // fill with green opacity .3
-          // fill: 'rgba(0, 0, 255, 0.3)',
-          fill: rgb ?? 'rgba(0, 0, 0, 0.5)',
-          stroke: result.color,
+          fill: fill,
+          stroke: fill,
           strokeWidth: 5,
-          id: result.id,
+          id: result.key,
           name: result.name,
           visible: true,
         }
@@ -331,24 +374,31 @@ PredictionImageProps) {
 
     // display default list, found components
     return foundComponents.map((result, i) => {
-      const rgb = hexToRgb(result.color) ?? 'rgba(0, 0, 0, 0.5)'
+      const fill =
+        colorby === 'display'
+          ? foundColor
+          : hexToRgb(result.color) ?? 'rgba(0, 0, 0, 0.5)'
       return {
         key: i.toString(),
         x: result.xmin,
         y: result.ymin,
         width: result.xmax - result.xmin,
         height: result.ymax - result.ymin,
-        // fill with green opacity .3
-        // fill: 'rgba(0, 0, 255, 0.3)',
-        fill: rgb ?? 'rgba(0, 0, 0, 0.5)',
-        stroke: result.color,
+        fill: fill,
+        stroke: fill,
         strokeWidth: 5,
-        id: result.id,
+        id: result.key,
         name: result.name,
         visible: true,
       }
     })
-  }, [predictedComponents, foundComponents, remainingComponents, display])
+  }, [
+    display,
+    foundComponents,
+    predictedComponents,
+    remainingComponents,
+    colorby,
+  ])
 
   // get image size from imageFile
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 })
@@ -607,7 +657,38 @@ PredictionImageProps) {
                         void router.push(
                           {
                             pathname: router.pathname,
-                            query: { display: valueString },
+                            query: {
+                              ...router.query,
+                              display: valueString,
+                            },
+                          },
+                          undefined,
+                          {
+                            scroll: false,
+                          },
+                        )
+                      }}
+                    />
+                  </Col>
+
+                  {/* Color by class or display*/}
+                  <Col span={24}>
+                    <Segmented
+                      style={{
+                        pointerEvents: 'auto',
+                      }}
+                      size="small"
+                      defaultValue="Class"
+                      options={['Class', 'Display']}
+                      onChange={(value) => {
+                        const valueString = value.toString().toLocaleLowerCase()
+                        void router.push(
+                          {
+                            pathname: router.pathname,
+                            query: {
+                              ...router.query,
+                              colorby: valueString,
+                            },
                           },
                           undefined,
                           {
