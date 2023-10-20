@@ -37,7 +37,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
   const healthServer = api.health.getAll.useQuery(undefined, {
     staleTime: 60000,
     refetchInterval: 60000,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchOnMount: false,
   })
 
