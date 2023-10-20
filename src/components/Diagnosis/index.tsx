@@ -43,9 +43,7 @@ export default function Home() {
   const [drawingComponents, setDrawingComponents] = useState<
     DrawingComponent[]
   >([])
-  const [missingComponents, setMissingComponents] = useState<
-    BoundingBox[]
-  >([])
+  const [missingComponents, setMissingComponents] = useState<BoundingBox[]>([])
   const [remainingComponents, setRemainingComponents] = useState<
     RemainingComponent[]
   >([])

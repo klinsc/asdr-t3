@@ -8,6 +8,7 @@ import {
   message,
   type TabsProps,
   Popover,
+  Segmented,
 } from 'antd'
 import type Konva from 'konva'
 import { useRouter } from 'next/router'
@@ -527,7 +528,7 @@ PredictionImageProps) => {
                   justifyContent: 'flex-start',
                 }}>
                 {/* Popover button displaying (Mock) */}
-                <MissingComponents missingComponents={missingComponents}/>
+                <MissingComponents missingComponents={missingComponents} />
               </Col>
               {/* rightTop as tools */}
               <Col
@@ -546,6 +547,29 @@ PredictionImageProps) => {
                       Fit to screen
                     </Button>
                   </Col>
+
+                  <Col span={24}>
+                    <Segmented
+                      style={{
+                        pointerEvents: 'auto',
+                      }}
+                      size="small"
+                      defaultValue="Correct"
+                      options={['Correct', 'Remaining', 'All']}
+                    />
+                  </Col>
+                </Row>
+              </Col>
+
+              {/* leftBottom as tools */}
+              <Col
+                span={12}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column-reverse',
+                  alignItems: 'flex-start',
+                }}>
+                <Row gutter={[0, 4]}>
                   <Col span={24}>
                     <Button
                       size="small"

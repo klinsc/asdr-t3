@@ -1,13 +1,11 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, Checkbox, message, Space, Typography, Image } from 'antd'
+import { Button, Image, Space, Typography, message } from 'antd'
 import type { RcFile } from 'antd/es/upload'
-// import Image from 'next/image'
-import { useState } from 'react'
+
 import type {
   BoundingBox,
   DrawingComponent,
   LineType,
-  MissingComponent,
   RemainingComponent,
 } from '~/models/drawings.model'
 import { api } from '~/utils/api'
@@ -29,7 +27,7 @@ interface PredictJPEGProps {
 
 const PredictJPEG = ({
   imageFile,
-  setLineTypes,
+  // setLineTypes,
   setDrawingComponents,
   setMissingComponents,
   setRemainingComponents,
@@ -42,7 +40,7 @@ const PredictJPEG = ({
   drawingTypeId,
 }: PredictJPEGProps) => {
   // hooks
-  const [checkbox, setCheckbox] = useState(false)
+  // const [checkbox, setCheckbox] = useState(false)
 
   // messageAPI
   const [messageAPI, contextHolder] = message.useMessage()
@@ -50,10 +48,10 @@ const PredictJPEG = ({
   // trpcs
   const serverGetSelected = api.mlServer.getSelected.useQuery()
 
-  // handlers
-  const handleCheckbox = () => {
-    setCheckbox(!checkbox)
-  }
+  // // handlers
+  // const handleCheckbox = () => {
+  //   setCheckbox(!checkbox)
+  // }
 
   const handlePredict = async () => {
     try {
@@ -62,9 +60,7 @@ const PredictJPEG = ({
       formData.append('files[]', imageFile as RcFile)
       // You can use any AJAX library you like
       const response = await fetch(
-        `${
-          serverGetSelected?.data?.url
-        }test-predict?test=${checkbox.toString()}&drawingTypeId=${drawingTypeId}`,
+        `${serverGetSelected?.data?.url}test-predict?drawingTypeId=${drawingTypeId}`,
         {
           method: 'POST',
           headers: {
@@ -171,9 +167,9 @@ const PredictJPEG = ({
           }}>
           Predict
         </Button>
-        <Checkbox onClick={handleCheckbox} checked={checkbox}>
+        {/* <Checkbox onClick={handleCheckbox} checked={checkbox}>
           Test mode
-        </Checkbox>
+        </Checkbox> */}
 
         {/* <Image
         unoptimized

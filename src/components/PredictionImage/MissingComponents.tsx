@@ -1,17 +1,13 @@
-import { Button, Popover, theme } from 'antd'
-import type { LineType } from '@prisma/client'
+import { Button, Popover, Typography, theme } from 'antd'
 import { useMemo } from 'react'
 import { type BoundingBox } from '~/models/drawings.model'
 
 interface MissingComponentsProps {
-  missingComponents: BoundingBox & LineType[]
+  missingComponents: BoundingBox[]
 }
 
 export default function MissingComponents(props: MissingComponentsProps) {
   const { token } = theme.useToken()
-
-  // trpc: getLineTypes
-  // const getLineTypes =
 
   const content = useMemo(() => {
     // group by component name
@@ -19,7 +15,7 @@ export default function MissingComponents(props: MissingComponentsProps) {
       name: string
       count: number
     }[]
-    debugger
+    // debugger
     for (const component of props.missingComponents) {
       const index = groupedComponents.findIndex(
         (c) => c.name === component.name,
@@ -39,20 +35,25 @@ export default function MissingComponents(props: MissingComponentsProps) {
     return (
       <div>
         {groupedComponents.map((component) => (
-          <div
+          <Typography.Paragraph
             key={component.name}
+            type="danger"
             style={{
-              color: 'red',
-              fontWeight: 'bold',
-              fontSize: '16px',
-            }}>{`${component.name} x${component.count}`}</div>
+              marginBottom: 0,
+            }}>
+            {`${component.name} x${component.count}`}
+          </Typography.Paragraph>
         ))}
       </div>
     )
   }, [props.missingComponents])
 
   return (
-    <Popover placement="bottomLeft" content={content} trigger="click">
+    <Popover
+      placement="bottomLeft"
+      content={content}
+      trigger="click"
+      color={token.colorErrorBg}>
       <Button
         type="primary"
         danger
