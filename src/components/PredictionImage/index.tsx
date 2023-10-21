@@ -1,3 +1,4 @@
+import { BgColorsOutlined, FilterOutlined } from '@ant-design/icons'
 import {
   Button,
   Col,
@@ -16,6 +17,7 @@ import {
   Image as KonvaImage,
   Label,
   Layer,
+  Line,
   Rect,
   Stage,
   Text,
@@ -24,10 +26,12 @@ import useImage from 'use-image'
 import {
   type BoundingBox,
   type DrawingComponent,
+  type Hull,
 } from '~/models/drawings.model'
 import { api } from '~/utils/api'
 import DrawingComponentTable from '../PredictionTable/DrawingComponentTable'
 import MissingComponents from './MissingComponents'
+import { evaluate_cmap } from '~/utils/js-colormaps'
 
 export interface RectangleProps {
   key: string
@@ -215,6 +219,18 @@ function touchEnabled() {
   )
 }
 
+function Hulls(props: { points: { x: number; y: number }[] }) {
+  return (
+    <Line
+      points={props.points.flatMap((point) => [point.x, point.y])}
+      stroke="red"
+      strokeWidth={2}
+      lineCap="round"
+      lineJoin="round"
+    />
+  )
+}
+
 interface PredictionImageProps {
   imageFile: File | null
   predictedComponents: BoundingBox[]
@@ -223,6 +239,8 @@ interface PredictionImageProps {
   predictionTable: JSX.Element
   drawingComponents: DrawingComponent[]
   missingComponents: BoundingBox[]
+  hulls: Hull[]
+  clusteredFoundComponents: BoundingBox[]
 }
 
 export default function PredictionImage({
@@ -233,6 +251,8 @@ export default function PredictionImage({
   predictionTable,
   drawingComponents,
   missingComponents,
+  hulls,
+  clusteredFoundComponents,
 }: // predictedImageColRef
 PredictionImageProps) {
   // router
@@ -298,6 +318,15 @@ PredictionImageProps) {
     const foundColor = '#73d13d80'
     // with opacity .5 in yellow
     const remainingColor = '#4096ff80'
+
+    const evaluateColors = clusteredFoundComponents.map((component, index) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+      const rgb = evaluate_cmap(component.cluster, 'viridis', false)
+      return {
+        cluster: component.cluster,
+        fill: `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)`,
+      }
+    })
 
     // display drawing components
     if (display === 'all') {
@@ -372,6 +401,27 @@ PredictionImageProps) {
       })
     }
 
+    if (colorby === 'cluster') {
+      return clusteredFoundComponents.map((result, i) => {
+        const fill =
+          evaluateColors.find((color) => color.cluster === result.cluster)
+            ?.fill ?? 'rgba(0, 0, 0, 0.5)'
+        return {
+          key: i.toString(),
+          x: result.xmin,
+          y: result.ymin,
+          width: result.xmax - result.xmin,
+          height: result.ymax - result.ymin,
+          fill: fill,
+          stroke: fill,
+          strokeWidth: 5,
+          id: result.key,
+          name: result.name,
+          visible: true,
+        }
+      })
+    }
+
     // display default list, found components
     return foundComponents.map((result, i) => {
       const fill =
@@ -393,11 +443,12 @@ PredictionImageProps) {
       }
     })
   }, [
+    clusteredFoundComponents,
     display,
     foundComponents,
     predictedComponents,
-    remainingComponents,
     colorby,
+    remainingComponents,
   ])
 
   // get image size from imageFile
@@ -597,6 +648,12 @@ PredictionImageProps) {
                     />
                   )
                 })}
+
+                {/* hulls */}
+                {/* {hulls.map((hull, i) => {
+                  return <Hulls key={i} points={hull.points} />
+                })} */}
+                {/* <Hulls points={hulls?.[3]?.points ?? []} /> */}
               </Layer>
             </Stage>
           </Col>
@@ -650,8 +707,32 @@ PredictionImageProps) {
                         pointerEvents: 'auto',
                       }}
                       size="small"
-                      defaultValue="Correct"
-                      options={['Correct', 'Remaining', 'All']}
+                      defaultValue="Found"
+                      options={[
+                        {
+                          label: 'Found',
+                          value: 'Found',
+                          icon:
+                            display === 'found' ? (
+                              <FilterOutlined />
+                            ) : undefined,
+                        },
+
+                        {
+                          value: 'Remaining',
+                          label: 'Remaining',
+                          icon:
+                            display === 'remaining' ? (
+                              <FilterOutlined />
+                            ) : undefined,
+                        },
+                        {
+                          value: 'All',
+                          label: 'All',
+                          icon:
+                            display === 'all' ? <FilterOutlined /> : undefined,
+                        },
+                      ]}
                       onChange={(value) => {
                         const valueString = value.toString().toLocaleLowerCase()
                         void router.push(
@@ -679,7 +760,33 @@ PredictionImageProps) {
                       }}
                       size="small"
                       defaultValue="Class"
-                      options={['Class', 'Display']}
+                      // options={['Class', 'Display']}
+                      options={[
+                        {
+                          label: 'Class',
+                          value: 'Class',
+                          icon:
+                            colorby === 'class' ? (
+                              <BgColorsOutlined />
+                            ) : undefined,
+                        },
+                        {
+                          value: 'Display',
+                          label: 'Display',
+                          icon:
+                            colorby === 'display' ? (
+                              <BgColorsOutlined />
+                            ) : undefined,
+                        },
+                        {
+                          value: 'Cluster',
+                          label: 'Cluster',
+                          icon:
+                            colorby === 'cluster' ? (
+                              <BgColorsOutlined />
+                            ) : undefined,
+                        },
+                      ]}
                       onChange={(value) => {
                         const valueString = value.toString().toLocaleLowerCase()
                         void router.push(

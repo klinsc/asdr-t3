@@ -27,6 +27,7 @@ import UploadPDF from '~/components/UploadPDF'
 import type {
   BoundingBox,
   DrawingComponent,
+  Hull,
   LineType,
   MissingComponent,
   RemainingComponent,
@@ -57,6 +58,10 @@ export default function Home() {
   const [predictedComponents, setPredictedComponents] = useState<BoundingBox[]>(
     [],
   )
+  const [hulls, setHulls] = useState<Hull[]>([])
+  const [clusteredFoundComponents, setClusteredFoundComponents] = useState<
+    BoundingBox[]
+  >([])
   // const predictedImageColRef = useRef<HTMLDivElement>(null)
 
   // handlers
@@ -92,6 +97,7 @@ export default function Home() {
   useEffect(() => {
     if (getAllDrawings.data && !drawingTypeId) {
       const savedDrawingTypeId = localStorage.getItem('diagnose-drawingTypeId')
+      const isSkipPreview = localStorage.getItem('diagnose-preview') === 'true'
 
       void router.push(
         {
@@ -102,6 +108,7 @@ export default function Home() {
             )
               ? savedDrawingTypeId
               : getAllDrawings.data?.[0]?.id,
+            preview: isSkipPreview,
           },
         },
         undefined,
@@ -178,20 +185,24 @@ export default function Home() {
               }}>
               <Checkbox
                 checked={preview === 'true' ? true : false}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const checked = e.target.checked
                   void router.push(
                     {
                       pathname: router.pathname,
                       query: {
                         drawingTypeId: drawingTypeId,
-                        preview: e.target.checked,
+                        preview: checked,
                       },
                     },
                     undefined,
                     { scroll: false },
                   )
-                }>
-                Preview image
+
+                  // save to localStorage
+                  localStorage.setItem('diagnose-preview', String(checked))
+                }}>
+                Skip preview image
               </Checkbox>
             </Col>
           </>
@@ -220,6 +231,8 @@ export default function Home() {
                 setFoundComponents={setFoundComponents}
                 setMissingComponents={setMissingComponents}
                 setRemainingComponents={setRemainingComponents}
+                setClusteredFoundComponents={setClusteredFoundComponents}
+                setHulls={setHulls}
                 isLoading={isLoading}
                 setIsLoading={setIsLoading}
                 setCsvUrl={setCsvUrl}
@@ -249,6 +262,8 @@ export default function Home() {
                 predictedComponents={predictedComponents}
                 foundComponents={foundComponents}
                 remainingComponents={remainingComponents}
+                hulls={hulls}
+                clusteredFoundComponents={clusteredFoundComponents}
                 predictionTable={
                   <PredictionTable
                     lineTypes={lineTypes}
@@ -277,6 +292,8 @@ export default function Home() {
       predictedComponents,
       foundComponents,
       remainingComponents,
+      hulls,
+      clusteredFoundComponents,
       lineTypes,
       drawingComponents,
       missingComponents,

@@ -31,14 +31,17 @@ export interface BoundingBox {
   name: string
   color: string
   lineTypeId: string
+  cluster: number
+  clusterLineTypeId: string
 }
 
-export interface Hull {
+export interface Point {
   x: number
   y: number
 }
 
-export interface Hulls {
+export interface Hull {
+  key: string
   lineTypeId: string
-  hull: Hull[]
+  points: Point[]
 }

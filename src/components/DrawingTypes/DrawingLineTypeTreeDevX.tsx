@@ -690,7 +690,11 @@ const DrawingLineTypeTreeDevX = ({
                   defaultValue={lineType.name}
                   onPressEnter={(e) => {
                     // check if the value is the same as the current name
-                    if (e.currentTarget.value === lineType.name) return
+                    if (
+                      e.currentTarget.value === lineType.name &&
+                      Number(count) === lineType.count
+                    )
+                      return
 
                     // update
                     void updateLineType.mutate({
@@ -843,6 +847,7 @@ const DrawingLineTypeTreeDevX = ({
                         ...router.query,
                         editing: 'lineType',
                         lineTypeId: lineType.id,
+                        count: lineType.count,
                       },
                     },
                     undefined,
@@ -1818,7 +1823,7 @@ const DrawingLineTypeTreeDevX = ({
         ) {
           debugger
 
-          const newIndex = getAllLineTypes.data.length - 1
+          const newIndex = Number(dropPos.split('-')[2]) ?? -1
           if (newIndex === -1) {
             void messageApi.error('New index not found')
             return

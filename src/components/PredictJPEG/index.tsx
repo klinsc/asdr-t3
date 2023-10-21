@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 import type {
   BoundingBox,
   DrawingComponent,
-  Hulls,
+  Hull,
   LineType,
 } from '~/models/drawings.model'
 import { api } from '~/utils/api'
@@ -19,6 +19,8 @@ interface PredictJPEGProps {
   setFoundComponents: (foundComponents: BoundingBox[]) => void
   setMissingComponents: (missingComponents: BoundingBox[]) => void
   setRemainingComponents: (remainingComponents: BoundingBox[]) => void
+  setClusteredFoundComponents: (clusteredFoundComponents: BoundingBox[]) => void
+  setHulls: (hulls: Hull[]) => void
   isLoading: boolean
   setIsLoading: (isLoading: boolean) => void
   setCsvUrl: (csvUrl: string) => void
@@ -28,13 +30,15 @@ interface PredictJPEGProps {
   drawingTypeId: string
 }
 
-const PredictJPEG = ({
+export default function PredictJPEG({
   imageFile,
   // setLineTypes,
   setDrawingComponents,
   setFoundComponents,
   setMissingComponents,
   setRemainingComponents,
+  setHulls,
+  setClusteredFoundComponents,
   isLoading,
   setIsLoading,
   // setCsvUrl,
@@ -42,7 +46,7 @@ const PredictJPEG = ({
   next,
   setPredictedComponents,
   drawingTypeId,
-}: PredictJPEGProps) => {
+}: PredictJPEGProps) {
   // router
   const router = useRouter()
   const { preview } = router.query
@@ -85,6 +89,7 @@ const PredictJPEG = ({
         json_result: string
         found_components: string
         hulls: string
+        clustered_found_components: string
       }
       if (response.status !== 200) throw new Error('Prediction failed!')
       debugger
@@ -103,7 +108,10 @@ const PredictJPEG = ({
         json.predicted_components,
       ) as BoundingBox[]
       const foundComponents = JSON.parse(json.found_components) as BoundingBox[]
-      const hulls = JSON.parse(json.hulls) as Hulls
+      const hulls = JSON.parse(json.hulls) as Hull[]
+      const clusteredFoundComponents = JSON.parse(
+        json.clustered_found_components,
+      ) as BoundingBox[]
 
       console.log('predicted_components')
       console.table(predicted_components)
@@ -120,6 +128,9 @@ const PredictJPEG = ({
       console.log('hulls')
       console.table(hulls)
 
+      console.log('clustered_found_components')
+      console.table(clusteredFoundComponents)
+
       debugger
       // setLineTypes(lineTypes)
       setDrawingComponents(predicted_components)
@@ -127,6 +138,8 @@ const PredictJPEG = ({
       setMissingComponents(missing_components)
       setRemainingComponents(remainingComponents)
       setPredictedComponents(predictedComponents)
+      setHulls(hulls)
+      setClusteredFoundComponents(clusteredFoundComponents)
 
       // temporary: disabled csv and json
 
@@ -227,5 +240,3 @@ const PredictJPEG = ({
     </>
   )
 }
-
-export default PredictJPEG
