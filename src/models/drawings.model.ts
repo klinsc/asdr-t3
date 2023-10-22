@@ -33,6 +33,8 @@ export interface BoundingBox {
   lineTypeId: string
   cluster: number
   clusterLineTypeId: string
+  lineTypeIdNumber: string
+  lineTypeName: string
 }
 
 export interface Point {
@@ -44,4 +46,5 @@ export interface Hull {
   key: string
   lineTypeId: string
   points: Point[]
+  lineTypeName: string
 }

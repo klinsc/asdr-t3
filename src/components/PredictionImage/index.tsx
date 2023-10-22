@@ -256,13 +256,29 @@ function touchEnabled() {
 
 function Hulls(props: { points: { x: number; y: number }[] }) {
   return (
-    <Line
-      points={props.points.flatMap((point) => [point.x, point.y])}
-      stroke="red"
-      strokeWidth={2}
-      lineCap="round"
-      lineJoin="round"
-    />
+    <>
+      <Line
+        points={props.points.flatMap((point) => [point.x, point.y])}
+        stroke="red"
+        strokeWidth={2}
+        lineCap="round"
+        lineJoin="round"
+      />
+
+      {/* Close line */}
+      <Line
+        points={[
+          props.points[0]?.x ?? 0,
+          props.points[0]?.y ?? 0,
+          props.points[props.points.length - 1]?.x ?? 0,
+          props.points[props.points.length - 1]?.y ?? 0,
+        ]}
+        stroke="red"
+        strokeWidth={2}
+        lineCap="round"
+        lineJoin="round"
+      />
+    </>
   )
 }
 
@@ -690,9 +706,17 @@ PredictionImageProps) {
                 })}
 
                 {/* hulls */}
-                {/* {hulls.map((hull, i) => {
-                  return <Hulls key={i} points={hull.points} />
-                })} */}
+                {hulls.map((hull, i) => {
+                  if (
+                    missingComponents.find(
+                      (component) =>
+                        component.lineTypeName === hull.lineTypeName,
+                    )
+                  )
+                    return <Hulls key={i} points={hull.points} />
+
+                  return null
+                })}
                 {/* <Hulls points={hulls?.[3]?.points ?? []} /> */}
               </Layer>
             </Stage>
