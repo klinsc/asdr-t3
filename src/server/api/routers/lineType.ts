@@ -144,6 +144,32 @@ export const lineTypeRouter = createTRPCRouter({
         },
       })
 
+      // shift index of lineTypes with index greater than lineType.index
+      const lineTypes = await ctx.prisma.lineType.findMany({
+        where: {
+          drawingTypeId: lineType.drawingTypeId,
+          index: {
+            gt: lineType.index,
+          },
+        },
+      })
+
+      const lineTypesToUpdate = lineTypes.map((lineType) => ({
+        ...lineType,
+        index: lineType.index - 1,
+      }))
+
+      for (const lineType of lineTypesToUpdate) {
+        await ctx.prisma.lineType.update({
+          where: {
+            id: lineType.id,
+          },
+          data: {
+            index: lineType.index,
+          },
+        })
+      }
+
       // delete lineType
       await ctx.prisma.lineType.delete({
         where: {
@@ -296,12 +322,38 @@ export const lineTypeRouter = createTRPCRouter({
         },
       })
 
+      // shift index of lineTypes with index greater than lineType.index
+      const lineTypes = await ctx.prisma.lineType.findMany({
+        where: {
+          drawingTypeId: lineType.drawingTypeId,
+          index: {
+            gte: lineType.index + 1,
+          },
+        },
+      })
+
+      const lineTypesToUpdate = lineTypes.map((lineType) => ({
+        ...lineType,
+        index: lineType.index + 1,
+      }))
+      for (const lineType of lineTypesToUpdate) {
+        await ctx.prisma.lineType.update({
+          where: {
+            id: lineType.id,
+          },
+          data: {
+            index: lineType.index,
+          },
+        })
+      }
+
       const newLineType = await ctx.prisma.lineType.create({
         data: {
           name: lineType.name,
           description: lineType.description,
           drawingTypeId: lineType.drawingTypeId,
           index: lineType.index + 1,
+          count: lineType.count,
         },
       })
 
@@ -314,7 +366,7 @@ export const lineTypeRouter = createTRPCRouter({
         })),
       })
 
-      return newLineType
+      return
     }),
 
   moveSameDrawingType: publicProcedure
