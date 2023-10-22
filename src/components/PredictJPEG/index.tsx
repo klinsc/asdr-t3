@@ -92,7 +92,7 @@ export default function PredictJPEG({
         clustered_found_components: string
       }
       if (response.status !== 200) throw new Error('Prediction failed!')
-      debugger
+      // debugger
       // parse json
       // const lineTypes = JSON.parse(json.line_types) as LineType[]
       const predicted_components = JSON.parse(
