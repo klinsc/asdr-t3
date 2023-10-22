@@ -45,6 +45,7 @@ export interface RectangleProps {
   stroke: string
   strokeWidth: number
   visible: boolean
+  clusterLineTypeId: string
 }
 
 const Rectangle = ({
@@ -61,6 +62,17 @@ const Rectangle = ({
   const shapeRef = useRef<Konva.Rect>(null)
   // const trRef = useRef<Konva.Transformer>(null)
 
+  // line type id is any string before - in the clusterLineTypeId
+  const lineTypeId = shapeProps.clusterLineTypeId?.split('-')?.[0] ?? ''
+
+  // trpc: get line type by id
+  const { data: lineType } = api.lineType.getOne.useQuery(
+    { id: lineTypeId },
+    {
+      enabled: !!shapeProps.clusterLineTypeId,
+    },
+  )
+
   // useEffect(() => {
   //   if (isSelected) {
   //     if (!trRef?.current || !shapeRef?.current) return
@@ -73,6 +85,29 @@ const Rectangle = ({
 
   return (
     <Fragment>
+      <Label
+        x={shapeProps.x}
+        y={shapeProps.y - 60}
+        // opacity={isSelected ? 1 : 1}
+        // draggable
+        visible={shapeProps.visible}
+        // onDragEnd={(e) => {
+        //   onChange({
+        //     ...shapeProps,
+        //     x: e.target.x(),
+        //     y: e.target.y(),
+        //   })
+        // }}
+      >
+        <Text
+          text={lineType?.name ?? ''}
+          fill={shapeProps.fill}
+          fontSize={26}
+          stroke={shapeProps.fill}
+          strokeWidth={2}
+          padding={10}
+        />
+      </Label>
       <Label
         x={shapeProps.x}
         y={shapeProps.y - 40}
@@ -357,6 +392,7 @@ PredictionImageProps) {
             id: result.key,
             name: result.name,
             visible: true,
+            clusterLineTypeId: result.clusterLineTypeId,
           }
         }
 
@@ -374,6 +410,7 @@ PredictionImageProps) {
           id: result.key,
           name: result.name,
           visible: true,
+          clusterLineTypeId: result.clusterLineTypeId,
         }
       })
     }
@@ -397,6 +434,7 @@ PredictionImageProps) {
           id: result.key,
           name: result.name,
           visible: true,
+          clusterLineTypeId: result.clusterLineTypeId,
         }
       })
     }
@@ -418,6 +456,7 @@ PredictionImageProps) {
           id: result.key,
           name: result.name,
           visible: true,
+          clusterLineTypeId: result.clusterLineTypeId,
         }
       })
     }
@@ -440,6 +479,7 @@ PredictionImageProps) {
         id: result.key,
         name: result.name,
         visible: true,
+        clusterLineTypeId: result.clusterLineTypeId,
       }
     })
   }, [
