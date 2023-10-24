@@ -44,7 +44,7 @@ export interface Point {
 
 export interface Hull {
   key: string
-  lineTypeId: string
+  clusterLineTypeId: string
   points: Point[]
-  lineTypeName: string
+  clusterLineTypeName: string
 }

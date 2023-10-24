@@ -710,7 +710,7 @@ PredictionImageProps) {
                   if (
                     missingComponents.find(
                       (component) =>
-                        component.lineTypeName === hull.lineTypeName,
+                        component.lineTypeName === hull.clusterLineTypeName,
                     )
                   )
                     return <Hulls key={i} points={hull.points} />
