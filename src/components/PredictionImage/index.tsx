@@ -9,6 +9,8 @@ import {
   Typography,
   message,
   type TabsProps,
+  Checkbox,
+  Space,
 } from 'antd'
 import type Konva from 'konva'
 import { useRouter } from 'next/router'
@@ -261,6 +263,7 @@ function Hulls(props: { points: { x: number; y: number }[] }) {
         points={props.points.flatMap((point) => [point.x, point.y])}
         stroke="red"
         strokeWidth={2}
+        dash={[10, 5]}
         lineCap="round"
         lineJoin="round"
       />
@@ -275,6 +278,7 @@ function Hulls(props: { points: { x: number; y: number }[] }) {
         ]}
         stroke="red"
         strokeWidth={2}
+        dash={[10, 5]}
         lineCap="round"
         lineJoin="round"
       />
@@ -308,7 +312,7 @@ export default function PredictionImage({
 PredictionImageProps) {
   // router
   const router = useRouter()
-  const { creating, display, colorby } = router.query
+  const { creating, display, colorby, showError } = router.query
 
   const [messageAPI, contextHolder] = message.useMessage()
 
@@ -370,7 +374,7 @@ PredictionImageProps) {
     // with opacity .5 in yellow
     const remainingColor = '#4096ff80'
 
-    const evaluateColors = clusteredFoundComponents.map((component, index) => {
+    const evaluateColors = clusteredFoundComponents.map((component) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
       const rgb = evaluate_cmap(component.cluster, 'viridis', false)
       return {
@@ -711,7 +715,8 @@ PredictionImageProps) {
                     missingComponents.find(
                       (component) =>
                         component.lineTypeName === hull.clusterLineTypeName,
-                    )
+                    ) &&
+                    showError === 'true'
                   )
                     return <Hulls key={i} points={hull.points} />
 
@@ -744,8 +749,10 @@ PredictionImageProps) {
                   display: 'flex',
                   justifyContent: 'flex-start',
                 }}>
-                {/* Popover button displaying (Mock) */}
-                <MissingComponents missingComponents={missingComponents} />
+                <Space direction="vertical" size="small" align="start">
+                  {/* Display missing components */}
+                  <MissingComponents missingComponents={missingComponents} />
+                </Space>
               </Col>
               {/* rightTop as tools */}
               <Col
@@ -868,6 +875,36 @@ PredictionImageProps) {
                         )
                       }}
                     />
+                  </Col>
+
+                  {/* Show possible missing areas */}
+                  <Col span={24}>
+                    <Checkbox
+                      prefixCls="show-error-checkbox"
+                      style={{
+                        pointerEvents: 'auto',
+                        color: showError === 'true' ? '#000000E0' : '#000000A6',
+                        background: 'rgb(250, 250, 250,0.5)',
+                        backdropFilter: 'blur(1px)',
+                      }}
+                      checked={showError === 'true'}
+                      onChange={(e) => {
+                        void router.push(
+                          {
+                            pathname: router.pathname,
+                            query: {
+                              ...router.query,
+                              showError: e.target.checked.toString(),
+                            },
+                          },
+                          undefined,
+                          {
+                            scroll: false,
+                          },
+                        )
+                      }}>
+                      Show possible missing areas
+                    </Checkbox>
                   </Col>
                 </Row>
               </Col>

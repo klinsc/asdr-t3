@@ -28,3 +28,24 @@ a {
 .ant-tree-switcher.ant-tree-switcher_close {
   align-self: center;
 }
+
+/* .show-error-checkbox-wrapper-checked > .show-error > .show-error-inner {
+  background-color: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+}
+
+.show-error-checkbox-wrapper > .show-error > .show-error-inner:hover {
+  border-color: #ff4d4f !important;
+} */
+
+.show-error-content {
+  border-color: #ffccc7 !important;
+}
+
+.show-error-item {
+  border-color: #ffccc7 !important;
+}
+
+.show-error-expand-icon {
+  color: #ff4d4f !important;
+}

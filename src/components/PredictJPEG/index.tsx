@@ -131,7 +131,7 @@ export default function PredictJPEG({
       console.log('clustered_found_components')
       console.table(clusteredFoundComponents)
 
-      debugger
+      // debugger
       // setLineTypes(lineTypes)
       setDrawingComponents(predicted_components)
       setFoundComponents(foundComponents)
