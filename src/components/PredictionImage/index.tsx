@@ -41,7 +41,7 @@ export interface RectangleProps {
   y: number
   width: number
   height: number
-  fill: string
+  // fill: string
   id: string
   name: string
   stroke: string
@@ -103,9 +103,9 @@ const Rectangle = ({
       >
         <Text
           text={lineType?.name ?? ''}
-          fill={shapeProps.fill}
+          fill={shapeProps.stroke}
           fontSize={26}
-          stroke={shapeProps.fill}
+          stroke={shapeProps.stroke}
           strokeWidth={2}
           padding={10}
         />
@@ -126,9 +126,9 @@ const Rectangle = ({
       >
         <Text
           text={shapeProps.name}
-          fill={shapeProps.fill}
+          fill={shapeProps.stroke}
           fontSize={26}
-          stroke={shapeProps.fill}
+          stroke={shapeProps.stroke}
           strokeWidth={2}
           padding={10}
         />
@@ -197,7 +197,7 @@ function hexToRgb(hex: string) {
       `rgb(${parseInt(result[1] ?? '', 16)},${parseInt(
         result[2] ?? '',
         16,
-      )},${parseInt(result[3] ?? '', 16)},0.3)`
+      )},${parseInt(result[3] ?? '', 16)},1.0)`
     : null
 }
 
@@ -262,8 +262,8 @@ function Hulls(props: { points: { x: number; y: number }[] }) {
       <Line
         points={props.points.flatMap((point) => [point.x, point.y])}
         stroke="red"
-        strokeWidth={2}
-        dash={[10, 5]}
+        strokeWidth={5}
+        // dash={[10, 5]}
         lineCap="round"
         lineJoin="round"
       />
@@ -277,8 +277,8 @@ function Hulls(props: { points: { x: number; y: number }[] }) {
           props.points[props.points.length - 1]?.y ?? 0,
         ]}
         stroke="red"
-        strokeWidth={2}
-        dash={[10, 5]}
+        strokeWidth={5}
+        // dash={[10, 5]}
         lineCap="round"
         lineJoin="round"
       />
@@ -369,17 +369,17 @@ PredictionImageProps) {
 
   // update rectangles when jsonResult changes
   const rectangles = useMemo(() => {
-    // with opacity .5 in green
-    const foundColor = '#73d13d80'
+    // with opacity .5 in green == 80 code
+    const foundColor = '#73d13d'
     // with opacity .5 in yellow
-    const remainingColor = '#4096ff80'
+    const remainingColor = '#4096ff'
 
     const evaluateColors = clusteredFoundComponents.map((component) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
       const rgb = evaluate_cmap(component.cluster, 'viridis', false)
       return {
         cluster: component.cluster,
-        fill: `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)`,
+        fill: `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 1.0)`,
       }
     })
 
@@ -406,7 +406,7 @@ PredictionImageProps) {
             y: result.ymin,
             width: result.xmax - result.xmin,
             height: result.ymax - result.ymin,
-            fill: fill,
+            // fill: fill,
             stroke: fill,
             strokeWidth: 5,
             id: result.key,
@@ -424,7 +424,7 @@ PredictionImageProps) {
           y: result.ymin,
           width: result.xmax - result.xmin,
           height: result.ymax - result.ymin,
-          fill: fill,
+          // fill: fill,
           stroke: fill,
           strokeWidth: 5,
           id: result.key,
@@ -448,7 +448,7 @@ PredictionImageProps) {
           y: result.ymin,
           width: result.xmax - result.xmin,
           height: result.ymax - result.ymin,
-          fill: fill,
+          // fill: fill,
           stroke: fill,
           strokeWidth: 5,
           id: result.key,
@@ -470,7 +470,7 @@ PredictionImageProps) {
           y: result.ymin,
           width: result.xmax - result.xmin,
           height: result.ymax - result.ymin,
-          fill: fill,
+          // fill: fill,
           stroke: fill,
           strokeWidth: 5,
           id: result.key,
@@ -493,7 +493,7 @@ PredictionImageProps) {
         y: result.ymin,
         width: result.xmax - result.xmin,
         height: result.ymax - result.ymin,
-        fill: fill,
+        // fill: fill,
         stroke: fill,
         strokeWidth: 5,
         id: result.key,
