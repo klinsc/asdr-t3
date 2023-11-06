@@ -108,7 +108,11 @@ export default function UploadPDF({
             loading={isLoading}
             size="large"
             type={'primary'}>
-            Select File or Drag it here
+            Select a &nbsp;
+            <strong>
+              <i>PDF</i>
+            </strong>
+            &nbsp; File or Drag it here
           </Button>
         </Upload>
       </Space>
