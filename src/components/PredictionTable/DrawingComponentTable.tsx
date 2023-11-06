@@ -37,19 +37,35 @@ const DrawingComponentTable = (props: DrawingComponentTableProps) => {
               self.findIndex((v) => v.value === value.value) === index,
           ),
         onFilter: (value, record) => record.name.startsWith(String(value)),
-        sorter: (a, b) => a.name.length - b.name.length,
+        sorter: (a, b) => a.name.localeCompare(b.name),
         sortDirections: ['ascend', 'descend'],
       },
       {
         title: 'Count',
         dataIndex: 'count',
         key: 'count',
-        sorter: (a, b) => a.name.length - b.name.length,
+        sorter: (a, b) => a.count - b.count,
         sortDirections: ['ascend', 'descend'],
       },
     ],
     [props.drawingComponents],
   )
+
+  const data = useMemo(() => {
+    // count the number of each component
+    const countMap = new Map<string, number>()
+    props.drawingComponents.forEach((component) => {
+      const count = countMap.get(component.name) ?? 0
+      countMap.set(component.name, count + 1)
+    })
+    // convert to {name, count} format
+    const result: DrawingComponent[] = []
+    countMap.forEach((count, name) => {
+      result.push({ id: name, name, count })
+    })
+
+    return result
+  }, [props.drawingComponents])
 
   return (
     <Table
@@ -67,7 +83,7 @@ const DrawingComponentTable = (props: DrawingComponentTableProps) => {
         )
       }
       columns={columns}
-      dataSource={props.drawingComponents}
+      dataSource={data}
     />
   )
 }
