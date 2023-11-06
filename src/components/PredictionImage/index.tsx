@@ -1,20 +1,27 @@
 import { BgColorsOutlined, FilterOutlined } from '@ant-design/icons'
 import {
   Button,
+  Checkbox,
   Col,
   Modal,
   Row,
   Segmented,
+  Space,
   Tabs,
   Typography,
   message,
   type TabsProps,
-  Checkbox,
-  Space,
 } from 'antd'
 import type Konva from 'konva'
 import { useRouter } from 'next/router'
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   Image as KonvaImage,
   Label,
@@ -31,9 +38,9 @@ import {
   type Hull,
 } from '~/models/drawings.model'
 import { api } from '~/utils/api'
+import { evaluate_cmap } from '~/utils/js-colormaps'
 import DrawingComponentTable from '../PredictionTable/DrawingComponentTable'
 import MissingComponents from './MissingComponents'
-import { evaluate_cmap } from '~/utils/js-colormaps'
 
 export interface RectangleProps {
   key: string
@@ -216,11 +223,11 @@ const DrawingImage = ({
   ]
 
   useEffect(() => {
-    status === 'loaded' && fitImage()
+    if (status === 'loaded') fitImage()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status])
+  }, [])
 
-  return <>{image && <KonvaImage image={image} alt="" />}</>
+  return <>{<KonvaImage image={image} alt="" />}</>
 }
 
 const scaleBy = 1.01
@@ -259,28 +266,17 @@ function touchEnabled() {
 function Hulls(props: { points: { x: number; y: number }[] }) {
   return (
     <>
+      {/* Use polygon instead */}
       <Line
         points={props.points.flatMap((point) => [point.x, point.y])}
         stroke="red"
         strokeWidth={5}
+        fill="red"
+        opacity={0.5}
         // dash={[10, 5]}
         lineCap="round"
         lineJoin="round"
-      />
-
-      {/* Close line */}
-      <Line
-        points={[
-          props.points[0]?.x ?? 0,
-          props.points[0]?.y ?? 0,
-          props.points[props.points.length - 1]?.x ?? 0,
-          props.points[props.points.length - 1]?.y ?? 0,
-        ]}
-        stroke="red"
-        strokeWidth={5}
-        // dash={[10, 5]}
-        lineCap="round"
-        lineJoin="round"
+        closed
       />
     </>
   )
@@ -333,7 +329,7 @@ PredictionImageProps) {
   })
 
   // handler: handleModalOpen
-  const handleModalOpen = () => {
+  const handleModalOpen = useCallback(() => {
     void router.push({
       pathname: router.pathname,
       query: {
@@ -341,7 +337,7 @@ PredictionImageProps) {
         creating: 'true',
       },
     })
-  }
+  }, [router])
 
   // handler: handleModalCancle
   const handleModalCancle = () => {
@@ -564,7 +560,7 @@ PredictionImageProps) {
     }
   }
   // create a function like zoomState function that will fit the stage into the column width
-  function fitImage() {
+  const fitImage = useCallback(() => {
     if (stageRef.current !== null) {
       const stage = stageRef.current
       if (!imageFile) return
@@ -578,8 +574,8 @@ PredictionImageProps) {
       stage.position({ x: 0, y: 0 })
       stage.batchDraw()
     }
-  }
-  function handleTouch(e: Konva.KonvaEventObject<TouchEvent>) {
+  }, [imageFile, predictedImageColRef])
+  const handleTouch = useCallback((e: Konva.KonvaEventObject<TouchEvent>) => {
     e.evt.preventDefault()
     const touch1 = e.evt.touches[0]
     const touch2 = e.evt.touches[1]
@@ -634,15 +630,19 @@ PredictionImageProps) {
         stage.position(newPos)
         stage.batchDraw()
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         lastDist = dist
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         lastCenter = newCenter
       }
     }
-  }
-  function handleTouchEnd() {
+  }, [])
+  const handleTouchEnd = useCallback(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     lastCenter = null
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     lastDist = 0
-  }
+  }, [])
 
   // handlers: on tabs change
   const onTabsChange = (key: string) => {
@@ -650,297 +650,323 @@ PredictionImageProps) {
   }
 
   // constL tabs items
-  const tabsItems: TabsProps['items'] = [
-    {
-      label: 'Image Result',
-      key: '1',
-      children: (
-        <Row
-          style={{
-            pointerEvents: 'none',
-          }}>
-          {/* Wrapper for Konva stage */}
-          <Col
-            span={24}
-            ref={predictedImageColRef}
+  const tabsItems: TabsProps['items'] = useMemo(
+    () => [
+      {
+        label: 'Image Result',
+        key: '1',
+        children: (
+          <Row
             style={{
-              pointerEvents: 'auto',
+              pointerEvents: 'none',
             }}>
-            <Stage
-              onLoaded={() => {
-                fitImage()
-              }}
-              width={stageSize.width || 600}
-              height={stageSize.height || 600}
-              draggable={!touchEnabled()}
-              onWheel={zoomStage}
-              onTouchMove={handleTouch}
-              onTouchEnd={handleTouchEnd}
-              ref={stageRef}
-
-              // this is for moving the labels (future feature)
-              // onMouseDown={checkDeselect}
-              // onTouchStart={checkDeselect}
-            >
-              <Layer>
-                <DrawingImage
-                  src={
-                    imageFile
-                      ? URL.createObjectURL(imageFile)
-                      : 'data:image/png;base64,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'
-                  }
-                  fitImage={fitImage}
-                />
-                {rectangles.map((rect, i) => {
-                  return (
-                    <Rectangle
-                      key={i}
-                      shapeProps={rect}
-                      // isSelected={rect.id === selectedId}
-                      // onSelect={() => {
-                      //   selectShape(rect.id)
-                      // }}
-                      // onChange={(newAttrs: RectangleProps) => {
-                      //   const rects = rectangles.slice()
-                      //   rects[i] = newAttrs
-                      //   setRectangles(rects)
-                      // }}
-                    />
-                  )
-                })}
-
-                {/* hulls */}
-                {hulls.map((hull, i) => {
-                  if (
-                    missingComponents.find(
-                      (component) =>
-                        component.lineTypeName === hull.clusterLineTypeName,
-                    ) &&
-                    showError === 'true'
-                  )
-                    return <Hulls key={i} points={hull.points} />
-
-                  return null
-                })}
-                {/* <Hulls points={hulls?.[3]?.points ?? []} /> */}
-              </Layer>
-            </Stage>
-          </Col>
-
-          {/* Wrapper for absolute div */}
-          <Col
-            span={24}
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-            }}>
-            {/* Start new row */}
-            <Row
+            {/* Wrapper for Konva stage */}
+            <Col
+              span={24}
+              ref={predictedImageColRef}
               style={{
+                pointerEvents: 'auto',
+              }}>
+              <Stage
+                onLoaded={() => {
+                  fitImage()
+                }}
+                width={stageSize.width || 600}
+                height={stageSize.height || 600}
+                draggable={!touchEnabled()}
+                onWheel={zoomStage}
+                onTouchMove={handleTouch}
+                onTouchEnd={handleTouchEnd}
+                ref={stageRef}
+
+                // this is for moving the labels (future feature)
+                // onMouseDown={checkDeselect}
+                // onTouchStart={checkDeselect}
+              >
+                <Layer>
+                  <DrawingImage
+                    src={
+                      imageFile
+                        ? URL.createObjectURL(imageFile)
+                        : 'data:image/png;base64,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'
+                    }
+                    fitImage={fitImage}
+                  />
+                  {rectangles.map((rect, i) => {
+                    return (
+                      <Rectangle
+                        key={i}
+                        shapeProps={rect}
+                        // isSelected={rect.id === selectedId}
+                        // onSelect={() => {
+                        //   selectShape(rect.id)
+                        // }}
+                        // onChange={(newAttrs: RectangleProps) => {
+                        //   const rects = rectangles.slice()
+                        //   rects[i] = newAttrs
+                        //   setRectangles(rects)
+                        // }}
+                      />
+                    )
+                  })}
+
+                  {/* hulls */}
+                  {hulls.map((hull, i) => {
+                    if (
+                      missingComponents.find(
+                        (component) =>
+                          component.lineTypeName === hull.clusterLineTypeName,
+                      ) &&
+                      showError === 'true'
+                    )
+                      return <Hulls key={i} points={hull.points} />
+
+                    return null
+                  })}
+                  {/* <Hulls points={hulls?.[3]?.points ?? []} /> */}
+                </Layer>
+              </Stage>
+            </Col>
+
+            {/* Wrapper for absolute div */}
+            <Col
+              span={24}
+              style={{
+                position: 'absolute',
                 width: '100%',
                 height: '100%',
-                padding: '10px',
               }}>
-              {/* leftTop as goal items */}
-              <Col
-                span={12}
+              {/* Start new row */}
+              <Row
                 style={{
-                  display: 'flex',
-                  justifyContent: 'flex-start',
+                  width: '100%',
+                  height: '100%',
+                  padding: '10px',
                 }}>
-                <Space direction="vertical" size="small" align="start">
-                  {/* Display missing components */}
-                  <MissingComponents missingComponents={missingComponents} />
-                </Space>
-              </Col>
-              {/* rightTop as tools */}
-              <Col
-                span={12}
-                style={{
-                  textAlign: 'right',
-                }}>
-                <Row gutter={[0, 4]}>
-                  <Col span={24}>
-                    <Button
-                      size="small"
-                      onClick={fitImage}
-                      style={{
-                        pointerEvents: 'auto',
-                      }}>
-                      Fit to screen
-                    </Button>
-                  </Col>
+                {/* leftTop as goal items */}
+                <Col
+                  span={12}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <Space direction="vertical" size="small" align="start">
+                    {/* Display missing components */}
+                    <MissingComponents missingComponents={missingComponents} />
+                  </Space>
+                </Col>
+                {/* rightTop as tools */}
+                <Col
+                  span={12}
+                  style={{
+                    textAlign: 'right',
+                  }}>
+                  <Row gutter={[0, 4]}>
+                    <Col span={24}>
+                      <Button
+                        size="small"
+                        onClick={fitImage}
+                        style={{
+                          pointerEvents: 'auto',
+                        }}>
+                        Fit to screen
+                      </Button>
+                    </Col>
 
-                  <Col span={24}>
-                    <Segmented
-                      style={{
-                        pointerEvents: 'auto',
-                      }}
-                      size="small"
-                      defaultValue="Found"
-                      options={[
-                        {
-                          label: 'Found',
-                          value: 'Found',
-                          icon:
-                            display === 'found' ? (
-                              <FilterOutlined />
-                            ) : undefined,
-                        },
-
-                        {
-                          value: 'Remaining',
-                          label: 'Remaining',
-                          icon:
-                            display === 'remaining' ? (
-                              <FilterOutlined />
-                            ) : undefined,
-                        },
-                        {
-                          value: 'All',
-                          label: 'All',
-                          icon:
-                            display === 'all' ? <FilterOutlined /> : undefined,
-                        },
-                      ]}
-                      onChange={(value) => {
-                        const valueString = value.toString().toLocaleLowerCase()
-                        void router.push(
+                    <Col span={24}>
+                      <Segmented
+                        style={{
+                          pointerEvents: 'auto',
+                        }}
+                        size="small"
+                        defaultValue="Found"
+                        options={[
                           {
-                            pathname: router.pathname,
-                            query: {
-                              ...router.query,
-                              display: valueString,
+                            label: 'Found',
+                            value: 'Found',
+                            icon:
+                              display === 'found' ? (
+                                <FilterOutlined />
+                              ) : undefined,
+                          },
+
+                          {
+                            value: 'Remaining',
+                            label: 'Remaining',
+                            icon:
+                              display === 'remaining' ? (
+                                <FilterOutlined />
+                              ) : undefined,
+                          },
+                          {
+                            value: 'All',
+                            label: 'All',
+                            icon:
+                              display === 'all' ? (
+                                <FilterOutlined />
+                              ) : undefined,
+                          },
+                        ]}
+                        onChange={(value) => {
+                          const valueString = value
+                            .toString()
+                            .toLocaleLowerCase()
+                          void router.push(
+                            {
+                              pathname: router.pathname,
+                              query: {
+                                ...router.query,
+                                display: valueString,
+                              },
                             },
-                          },
-                          undefined,
-                          {
-                            scroll: false,
-                          },
-                        )
-                      }}
-                    />
-                  </Col>
-
-                  {/* Color by class or display*/}
-                  <Col span={24}>
-                    <Segmented
-                      style={{
-                        pointerEvents: 'auto',
-                      }}
-                      size="small"
-                      defaultValue="Class"
-                      // options={['Class', 'Display']}
-                      options={[
-                        {
-                          label: 'Class',
-                          value: 'Class',
-                          icon:
-                            colorby === 'class' ? (
-                              <BgColorsOutlined />
-                            ) : undefined,
-                        },
-                        {
-                          value: 'Display',
-                          label: 'Display',
-                          icon:
-                            colorby === 'display' ? (
-                              <BgColorsOutlined />
-                            ) : undefined,
-                        },
-                        {
-                          value: 'Cluster',
-                          label: 'Cluster',
-                          icon:
-                            colorby === 'cluster' ? (
-                              <BgColorsOutlined />
-                            ) : undefined,
-                        },
-                      ]}
-                      onChange={(value) => {
-                        const valueString = value.toString().toLocaleLowerCase()
-                        void router.push(
-                          {
-                            pathname: router.pathname,
-                            query: {
-                              ...router.query,
-                              colorby: valueString,
+                            undefined,
+                            {
+                              scroll: false,
                             },
-                          },
-                          undefined,
-                          {
-                            scroll: false,
-                          },
-                        )
-                      }}
-                    />
-                  </Col>
+                          )
+                        }}
+                      />
+                    </Col>
 
-                  {/* Show possible missing areas */}
-                  <Col span={24}>
-                    <Checkbox
-                      prefixCls="show-error-checkbox"
-                      style={{
-                        pointerEvents: 'auto',
-                        color: showError === 'true' ? '#000000E0' : '#000000A6',
-                        background: 'rgb(250, 250, 250,0.5)',
-                        backdropFilter: 'blur(1px)',
-                      }}
-                      checked={showError === 'true'}
-                      onChange={(e) => {
-                        void router.push(
+                    {/* Color by class or display*/}
+                    <Col span={24}>
+                      <Segmented
+                        style={{
+                          pointerEvents: 'auto',
+                        }}
+                        size="small"
+                        defaultValue="Class"
+                        // options={['Class', 'Display']}
+                        options={[
                           {
-                            pathname: router.pathname,
-                            query: {
-                              ...router.query,
-                              showError: e.target.checked.toString(),
+                            label: 'Class',
+                            value: 'Class',
+                            icon:
+                              colorby === 'class' ? (
+                                <BgColorsOutlined />
+                              ) : undefined,
+                          },
+                          {
+                            value: 'Display',
+                            label: 'Display',
+                            icon:
+                              colorby === 'display' ? (
+                                <BgColorsOutlined />
+                              ) : undefined,
+                          },
+                          {
+                            value: 'Cluster',
+                            label: 'Cluster',
+                            icon:
+                              colorby === 'cluster' ? (
+                                <BgColorsOutlined />
+                              ) : undefined,
+                          },
+                        ]}
+                        onChange={(value) => {
+                          const valueString = value
+                            .toString()
+                            .toLocaleLowerCase()
+                          void router.push(
+                            {
+                              pathname: router.pathname,
+                              query: {
+                                ...router.query,
+                                colorby: valueString,
+                              },
                             },
-                          },
-                          undefined,
-                          {
-                            scroll: false,
-                          },
-                        )
-                      }}>
-                      Show possible missing areas
-                    </Checkbox>
-                  </Col>
-                </Row>
-              </Col>
+                            undefined,
+                            {
+                              scroll: false,
+                            },
+                          )
+                        }}
+                      />
+                    </Col>
 
-              {/* leftBottom as tools */}
-              <Col
-                span={12}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column-reverse',
-                  alignItems: 'flex-start',
-                }}>
-                <Row gutter={[0, 4]}>
-                  <Col span={24}>
-                    <Button
-                      size="small"
-                      onClick={() => handleModalOpen()}
-                      style={{
-                        pointerEvents: 'auto',
-                      }}>
-                      Use as a new template
-                    </Button>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-      ),
-    },
-    {
-      label: 'Table Result',
-      key: '2',
-      children: predictionTable,
-    },
-  ]
+                    {/* Show possible missing areas */}
+                    <Col span={24}>
+                      <Checkbox
+                        prefixCls="show-error-checkbox"
+                        style={{
+                          pointerEvents: 'auto',
+                          color:
+                            showError === 'true' ? '#000000E0' : '#000000A6',
+                          background: 'rgb(250, 250, 250,0.5)',
+                          backdropFilter: 'blur(1px)',
+                        }}
+                        checked={showError === 'true'}
+                        onChange={(e) => {
+                          void router.push(
+                            {
+                              pathname: router.pathname,
+                              query: {
+                                ...router.query,
+                                showError: e.target.checked.toString(),
+                              },
+                            },
+                            undefined,
+                            {
+                              scroll: false,
+                            },
+                          )
+                        }}>
+                        Show possible missing areas
+                      </Checkbox>
+                    </Col>
+                  </Row>
+                </Col>
+
+                {/* leftBottom as tools */}
+                <Col
+                  span={12}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column-reverse',
+                    alignItems: 'flex-start',
+                  }}>
+                  <Row gutter={[0, 4]}>
+                    <Col span={24}>
+                      <Button
+                        size="small"
+                        onClick={() => handleModalOpen()}
+                        style={{
+                          pointerEvents: 'auto',
+                        }}>
+                        Use as a new template
+                      </Button>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        ),
+      },
+      {
+        label: 'Table Result',
+        key: '2',
+        children: predictionTable,
+      },
+    ],
+    [
+      colorby,
+      display,
+      fitImage,
+      handleModalOpen,
+      handleTouch,
+      handleTouchEnd,
+      hulls,
+      imageFile,
+      missingComponents,
+      predictionTable,
+      rectangles,
+      router,
+      showError,
+      stageSize.height,
+      stageSize.width,
+    ],
+  )
 
   return (
     <>

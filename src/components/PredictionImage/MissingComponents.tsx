@@ -53,7 +53,11 @@ export default function MissingComponents(props: MissingComponentsProps) {
     {
       key: '1',
       label: (
-        <Typography.Text type="danger">{`${props.missingComponents.length} components are missing`}</Typography.Text>
+        <Typography.Text
+          type="danger"
+          style={{
+            fontWeight: 'bold',
+          }}>{`${props.missingComponents.length} components are missing`}</Typography.Text>
       ),
       children: content,
     },
