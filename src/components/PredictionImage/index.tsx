@@ -352,8 +352,6 @@ PredictionImageProps) {
 
   // handler: handleModalOk
   const handleModalOk = async () => {
-    debugger
-
     interface DrawingComponent {
       id: string
       name: string
@@ -604,7 +602,7 @@ PredictionImageProps) {
       const imageWidth = image.width() ?? 0
       const colWidth = predictedImageColRef.current?.offsetWidth ?? 0
       const newScale = colWidth / imageWidth
-      // debugger
+
       stage.scale({ x: newScale, y: newScale })
       stage.position({ x: 0, y: 0 })
       stage.batchDraw()
