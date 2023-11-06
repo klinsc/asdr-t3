@@ -225,7 +225,7 @@ const DrawingImage = ({
   useEffect(() => {
     if (status === 'loaded') fitImage()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [status])
 
   return <>{<KonvaImage image={image} alt="" />}</>
 }
