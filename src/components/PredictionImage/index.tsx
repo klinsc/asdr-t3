@@ -288,7 +288,7 @@ interface PredictionImageProps {
   remainingComponents: BoundingBox[]
   foundComponents: BoundingBox[]
   predictionTable: JSX.Element
-  drawingComponents: DrawingComponent[]
+  drawingComponents: BoundingBox[]
   missingComponents: BoundingBox[]
   hulls: Hull[]
   clusteredFoundComponents: BoundingBox[]
@@ -352,7 +352,42 @@ PredictionImageProps) {
 
   // handler: handleModalOk
   const handleModalOk = async () => {
-    await createDrawingTemplate.mutateAsync(drawingComponents)
+    debugger
+
+    interface DrawingComponent {
+      id: string
+      name: string
+      count: number
+    }
+
+    const data = () => {
+      const newData = drawingComponents.map((component) => {
+        return {
+          id: component.componentId,
+          name: component.name,
+          count: 1,
+        }
+      }) as DrawingComponent[]
+
+      // count duplicate
+      const result: DrawingComponent[] = []
+
+      newData.forEach((item) => {
+        const index = result.findIndex(
+          (resultItem) => resultItem.id === item.id,
+        )
+        if (index >= 0) {
+          const thisItem = result[index]
+          if (thisItem) thisItem.count += 1
+        } else {
+          result.push(item)
+        }
+      })
+
+      return result
+    }
+
+    await createDrawingTemplate.mutateAsync(data())
 
     await router.push({
       pathname: router.pathname,

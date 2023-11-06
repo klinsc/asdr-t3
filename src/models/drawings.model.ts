@@ -35,6 +35,7 @@ export interface BoundingBox {
   clusterLineTypeId: string
   lineTypeIdNumber: string
   lineTypeName: string
+  componentId: string
 }
 
 export interface Point {
