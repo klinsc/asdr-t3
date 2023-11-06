@@ -42,9 +42,7 @@ export default function Home() {
   // hooks
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [lineTypes, setLineTypes] = useState<LineType[]>([])
-  const [drawingComponents, setDrawingComponents] = useState<
-    DrawingComponent[]
-  >([])
+  const [drawingComponents, setDrawingComponents] = useState<BoundingBox[]>([])
   const [foundComponents, setFoundComponents] = useState<BoundingBox[]>([])
   const [missingComponents, setMissingComponents] = useState<BoundingBox[]>([])
   const [remainingComponents, setRemainingComponents] = useState<BoundingBox[]>(

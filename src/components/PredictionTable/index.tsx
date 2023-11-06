@@ -12,7 +12,7 @@ import RemainingComponentTable from './RemainingComponentTable'
 
 interface PredictionTableProps {
   lineTypes: LineType[]
-  drawingComponents: DrawingComponent[]
+  drawingComponents: BoundingBox[]
   missingComponents: BoundingBox[]
   remainingComponents: BoundingBox[]
   csvUrl: string

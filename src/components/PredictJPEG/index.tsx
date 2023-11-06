@@ -15,7 +15,7 @@ import { api } from '~/utils/api'
 interface PredictJPEGProps {
   imageFile: File | null
   setLineTypes: (lineTypes: LineType[]) => void
-  setDrawingComponents: (drawingComponents: DrawingComponent[]) => void
+  setDrawingComponents: (drawingComponents: BoundingBox[]) => void
   setFoundComponents: (foundComponents: BoundingBox[]) => void
   setMissingComponents: (missingComponents: BoundingBox[]) => void
   setRemainingComponents: (remainingComponents: BoundingBox[]) => void
@@ -97,7 +97,7 @@ export default function PredictJPEG({
       // const lineTypes = JSON.parse(json.line_types) as LineType[]
       const predicted_components = JSON.parse(
         json.predicted_components,
-      ) as DrawingComponent[]
+      ) as BoundingBox[]
       const missing_components = JSON.parse(
         json.missing_components,
       ) as BoundingBox[]
