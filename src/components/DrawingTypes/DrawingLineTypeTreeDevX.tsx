@@ -1041,38 +1041,6 @@ const DrawingLineTypeTreeDevX = ({
                     </Col>
 
                     <Col span={24}>
-                      <Radio.Group
-                        size="small"
-                        onChange={(e: RadioChangeEvent) => {
-                          const componentType = String(e.target.value as string)
-
-                          void router.push(
-                            {
-                              pathname: '/drawingtypes',
-                              query: {
-                                ...router.query,
-                                componentType,
-                              },
-                            },
-                            undefined,
-                            { scroll: false },
-                          )
-                        }}
-                        value={componentType as string}>
-                        {
-                          // import componentType enum
-                          Object.values(ComponentType).map((componentType) => (
-                            <Radio key={componentType} value={componentType}>
-                              {/* ComponentType with first letter is a capital */}
-                              {componentType?.[0]?.toUpperCase() +
-                                componentType.slice(1)}
-                            </Radio>
-                          ))
-                        }
-                      </Radio.Group>
-                    </Col>
-
-                    <Col span={24}>
                       <Space size="small">
                         <Button
                           type="text"
@@ -1290,44 +1258,6 @@ const DrawingLineTypeTreeDevX = ({
                                 }}
                               />
                             </Space.Compact>
-                          </Col>
-
-                          <Col span={24}>
-                            <Radio.Group
-                              size="small"
-                              onChange={(e: RadioChangeEvent) => {
-                                const componentType = String(
-                                  e.target.value as string,
-                                )
-
-                                void router.push(
-                                  {
-                                    pathname: '/drawingtypes',
-                                    query: {
-                                      ...router.query,
-                                      componentType,
-                                    },
-                                  },
-                                  undefined,
-                                  { scroll: false },
-                                )
-                              }}
-                              value={componentType as string}>
-                              {
-                                // import componentType enum
-                                Object.values(ComponentType).map(
-                                  (componentType) => (
-                                    <Radio
-                                      key={componentType}
-                                      value={componentType}>
-                                      {/* ComponentType with first letter is a capital */}
-                                      {componentType?.[0]?.toUpperCase() +
-                                        componentType.slice(1)}
-                                    </Radio>
-                                  ),
-                                )
-                              }
-                            </Radio.Group>
                           </Col>
 
                           <Col span={24}>
