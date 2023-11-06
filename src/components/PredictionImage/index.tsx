@@ -34,8 +34,7 @@ import {
 import useImage from 'use-image'
 import {
   type BoundingBox,
-  type DrawingComponent,
-  type Hull,
+  type Hull
 } from '~/models/drawings.model'
 import { api } from '~/utils/api'
 import { evaluate_cmap } from '~/utils/js-colormaps'
@@ -683,8 +682,8 @@ PredictionImageProps) {
   }
 
   // constL tabs items
-  const tabsItems: TabsProps['items'] = useMemo(
-    () => [
+  const tabsItems: TabsProps['items'] = useMemo(() => {
+    return [
       {
         label: 'Image Result',
         key: '1',
@@ -702,7 +701,7 @@ PredictionImageProps) {
               }}>
               <Stage
                 onLoaded={() => {
-                  fitImage()
+                  // fitImage()
                 }}
                 width={stageSize.width || 600}
                 height={stageSize.height || 600}
@@ -981,25 +980,25 @@ PredictionImageProps) {
         key: '2',
         children: predictionTable,
       },
-    ],
-    [
-      colorby,
-      display,
-      fitImage,
-      handleModalOpen,
-      handleTouch,
-      handleTouchEnd,
-      hulls,
-      imageFile,
-      missingComponents,
-      predictionTable,
-      rectangles,
-      router,
-      showError,
-      stageSize.height,
-      stageSize.width,
-    ],
-  )
+    ]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    colorby,
+    display,
+    fitImage,
+    handleModalOpen,
+    handleTouch,
+    handleTouchEnd,
+    hulls,
+    imageFile,
+    missingComponents,
+    // predictionTable, // cause re-render when focus
+    rectangles,
+    router,
+    showError,
+    stageSize.height,
+    stageSize.width,
+  ])
 
   return (
     <>

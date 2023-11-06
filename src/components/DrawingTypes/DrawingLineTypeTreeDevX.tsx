@@ -7,14 +7,13 @@ import {
   PlusOutlined,
 } from '@ant-design/icons'
 import { css, cx } from '@emotion/css'
-import { ComponentType } from '@prisma/client'
+import { type ComponentType } from '@prisma/client'
 import {
   Button,
   Col,
   Input,
   InputNumber,
   Modal,
-  Radio,
   Row,
   Select,
   Space,
@@ -23,7 +22,6 @@ import {
   Typography,
   message,
   type InputRef,
-  type RadioChangeEvent,
 } from 'antd'
 import type { DataNode, TreeProps } from 'antd/es/tree'
 import { useRouter } from 'next/router'

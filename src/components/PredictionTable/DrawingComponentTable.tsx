@@ -1,10 +1,10 @@
 import { Table, Typography } from 'antd'
 import type { ColumnsType, TableProps } from 'antd/es/table'
 import { useMemo } from 'react'
-import type { DrawingComponent } from '~/models/drawings.model'
+import type { BoundingBox, DrawingComponent } from '~/models/drawings.model'
 
 interface DrawingComponentTableProps {
-  drawingComponents: DrawingComponent[]
+  drawingComponents: BoundingBox[]
   size?: 'small' | 'middle' | 'large'
   bordered?: boolean
   pageSize?: number
