@@ -113,7 +113,7 @@ const PredictionTable = ({
           style={{
             display: hidden[0] ? 'block' : 'none',
           }}>
-          {/* <DrawingComponentTable drawingComponents={drawingComponents} /> */}
+          <DrawingComponentTable drawingComponents={drawingComponents} />
         </Col>
         {/* <Col
           span={8}
