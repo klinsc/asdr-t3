@@ -32,10 +32,7 @@ import {
   Text,
 } from 'react-konva'
 import useImage from 'use-image'
-import {
-  type BoundingBox,
-  type Hull
-} from '~/models/drawings.model'
+import { type BoundingBox, type Hull } from '~/models/drawings.model'
 import { api } from '~/utils/api'
 import { evaluate_cmap } from '~/utils/js-colormaps'
 import DrawingComponentTable from '../PredictionTable/DrawingComponentTable'
@@ -355,23 +352,26 @@ PredictionImageProps) {
       id: string
       name: string
       count: number
+      clusterLineTypeId: string
     }
-
+    debugger
     const data = () => {
-      const newData = drawingComponents.map((component) => {
+      const newData = clusteredFoundComponents.map((component) => {
         return {
           id: component.componentId,
           name: component.name,
           count: 1,
+          clusterLineTypeId: component.clusterLineTypeId,
         }
       }) as DrawingComponent[]
 
       // count duplicate
       const result: DrawingComponent[] = []
-
       newData.forEach((item) => {
         const index = result.findIndex(
-          (resultItem) => resultItem.id === item.id,
+          (resultItem) =>
+            resultItem.id === item.id &&
+            resultItem.clusterLineTypeId === item.clusterLineTypeId,
         )
         if (index >= 0) {
           const thisItem = result[index]
@@ -1022,7 +1022,7 @@ PredictionImageProps) {
               style={{
                 margin: 0,
               }}>
-              Use as a new template
+              Use as a new drawing type
             </Typography.Title>
             <Typography.Text type="secondary">
               Create a new drawing type from these components

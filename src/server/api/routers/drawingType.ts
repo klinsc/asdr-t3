@@ -1,3 +1,4 @@
+import { count } from 'console'
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
 
@@ -190,12 +191,13 @@ export const drawingTypeRouter = createTRPCRouter({
           id: z.string(),
           name: z.string(),
           count: z.number(),
+          clusterLineTypeId: z.string(),
         }),
       ),
     )
     .mutation(async ({ input, ctx }) => {
+      // create drawingType
       let newDrawingName = 'new drawingType'
-
       // get existing drawingType with name like 'new drawingType'
       const drawingTypes = await ctx.prisma.drawingType.findMany({
         where: {
@@ -208,7 +210,6 @@ export const drawingTypeRouter = createTRPCRouter({
         // if exists, increment name
         newDrawingName = `${newDrawingName} (${drawingTypes.length + 1})`
       }
-
       // create drawingType, name 'new drawingType'
       const drawingType = await ctx.prisma.drawingType.create({
         data: {
@@ -216,24 +217,72 @@ export const drawingTypeRouter = createTRPCRouter({
         },
       })
 
-      // create lineType, name 'new lineType'
-      const lineType = await ctx.prisma.lineType.create({
-        data: {
-          name: 'new lineType',
-          drawingTypeId: drawingType.id,
-          index: 0,
-        },
+      // group component base on clusterLineTypeId
+      const clusterLineTypeId = input.map(
+        (component) => component.clusterLineTypeId,
+      )
+      // remove duplicates
+      const uniqueClusterLineTypeId = Array.from(new Set(clusterLineTypeId))
+      // grouped components
+      interface GroupedComponent {
+        clusterLineTypeId: string
+        name: string
+        components: typeof input
+      }
+      const groupedComponents = [] as GroupedComponent[]
+      uniqueClusterLineTypeId.map((clusterLineTypeId) => {
+        const components = input.filter(
+          (component) => component.clusterLineTypeId === clusterLineTypeId,
+        )
+        groupedComponents.push({
+          name: '',
+          clusterLineTypeId: clusterLineTypeId,
+          components: components,
+        })
       })
 
-      // create lineTypeComponents
-      await ctx.prisma.lineTypeComponent.createMany({
-        data: input.map((component, index) => ({
-          lineTypeId: lineType.id,
-          componentId: component.id,
-          index,
-          count: component.count,
-        })),
-      })
+      // get line type name
+      await Promise.all(
+        groupedComponents.map(async (groupedComponent) => {
+          const lineType = await ctx.prisma.lineType.findUnique({
+            where: {
+              id: groupedComponent.clusterLineTypeId.split('-')[0],
+            },
+          })
+          if (!lineType) {
+            return
+          }
+          groupedComponent.name = lineType.name
+        }),
+      )
+
+      await Promise.all(
+        groupedComponents.map(async (groupedComponent, index) => {
+          // create lineType
+          const lineType = await ctx.prisma.lineType.create({
+            data: {
+              name: groupedComponent.name,
+              drawingTypeId: drawingType.id,
+              count: groupedComponent.components.length,
+              index,
+            },
+          })
+
+          // create lineTypeComponents
+          await Promise.all(
+            groupedComponent.components.map(async (component, index) => {
+              await ctx.prisma.lineTypeComponent.create({
+                data: {
+                  lineTypeId: lineType.id,
+                  componentId: component.id,
+                  count: component.count,
+                  index,
+                },
+              })
+            }),
+          )
+        }),
+      )
 
       return
     }),
