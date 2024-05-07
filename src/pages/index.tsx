@@ -59,7 +59,7 @@ export default function Home() {
                   color: 'white',
                   margin: 0,
                 }}>
-                asdr is here to help you 🤗
+                ASDR is here to help you 🤗
               </Typography.Title>
             </Col>
 
@@ -99,7 +99,7 @@ export default function Home() {
                   color: 'white',
                   margin: 0,
                 }}>
-                Get rid of the manual work and let asdr do it for you!
+                Get rid of the manual work and let ASDR do it for you!
               </Typography.Title>
             </Col>
           </Row>
@@ -111,7 +111,7 @@ export default function Home() {
           <Typography.Title level={2}>How it works?</Typography.Title>
 
           <Typography.Paragraph>
-            The asdr is a web application that uses machine learning to analyze
+            The ASDR is a web application that uses machine learning to analyze
             electrical drawings and give you the results.
           </Typography.Paragraph>
 
@@ -119,7 +119,7 @@ export default function Home() {
             1. Upload your electrical drawing.
           </Typography.Paragraph>
 
-          <Typography.Paragraph>2. asdr will analyze it.</Typography.Paragraph>
+          <Typography.Paragraph>2. ASDR will analyze it.</Typography.Paragraph>
 
           <Typography.Paragraph>
             3. See what components are in the drawing or missing!

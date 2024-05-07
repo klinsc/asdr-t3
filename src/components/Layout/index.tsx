@@ -280,7 +280,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
         <Footer style={{ textAlign: 'center' }}>
           <Row justify="center" align="middle">
             <Col span={24}>
-              asdr ©2023 Created by Chatbordin Klinsrisuk, m6422040904,
+              The ASDR ©2023 Created by Chatbordin Klinsrisuk, m6422040904,
               Thammasat University, Thailand
             </Col>
 
