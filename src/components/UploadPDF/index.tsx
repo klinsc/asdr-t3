@@ -84,6 +84,16 @@ export default function UploadPDF({
         void messageAPI.error('You can only upload one file')
         return Upload.LIST_IGNORE
       }
+      
+      const isImage =
+        file.type === 'image/jpg' ||
+        file.type === 'image/png' ||
+        file.type === 'image/jpeg'
+      if (isImage) {
+        setImageFile(file)
+        next()
+        return false
+      }
 
       const isPDF = file.type === 'application/pdf'
       if (!isPDF) {
