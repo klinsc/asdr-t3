@@ -354,7 +354,7 @@ PredictionImageProps) {
       count: number
       clusterLineTypeId: string
     }
-    debugger
+
     const data = () => {
       const newData = clusteredFoundComponents.map((component) => {
         return {
