@@ -1,4 +1,3 @@
-import { count } from 'console'
 import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
 
