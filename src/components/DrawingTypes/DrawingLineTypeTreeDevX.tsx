@@ -1816,7 +1816,7 @@ const DrawingLineTypeTreeDevX = ({
               className="draggable-tree"
               draggable
               selectable={false}
-              defaultExpandAll
+              // defaultExpandAll
               allowDrop={allowDrop}
               onDrop={onDrop}
               disabled={
