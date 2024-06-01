@@ -263,7 +263,7 @@ export const drawingTypeRouter = createTRPCRouter({
             data: {
               name: groupedComponent.name,
               drawingTypeId: drawingType.id,
-              count: groupedComponent.components.length,
+              // count: groupedComponent.components.length,
               index,
             },
           })
