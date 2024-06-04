@@ -191,7 +191,7 @@ export function evaluate_cmap(x: number, name: string, reverse: boolean) {
 
   // Ensure that the value of `x` is valid (i.e., 0 <= x <= 1)
   if (x < 0 || x > 1) {
-    debugger
+    //debugger
     console.error('Illegal value for x! Must be in [0, 1].')
     return [0, 0, 0]
   }

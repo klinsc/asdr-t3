@@ -147,7 +147,7 @@ export default function ComponentList() {
 
   // handlers: submit
   const handleCreateVersion = () => {
-    debugger
+    //debugger
     const name = nameRef.current?.input?.value
     const emoji = emojiRef.current?.input?.value
     const description = descriptionRef.current?.input?.value
@@ -597,13 +597,13 @@ export default function ComponentList() {
                   type="file"
                   accept=".xml"
                   onChange={(e) => {
-                    debugger
+                    //debugger
                     const file = e.target?.files?.[0]
                     if (!file) return
 
                     const reader = new FileReader()
                     reader.onload = (e) => {
-                      debugger
+                      //debugger
                       const xml = e.target?.result as string
                       console.log(xml)
 
