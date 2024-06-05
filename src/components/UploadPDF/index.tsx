@@ -40,7 +40,7 @@ export default function UploadPDF({
     customRequest: () => {
       const formData = new FormData()
       fileList.forEach((file) => {
-        formData.append('files[]', file as RcFile)
+        formData.append('image', file as RcFile)
       })
       setIsLoading(true)
       // You can use any AJAX library you like
@@ -84,7 +84,7 @@ export default function UploadPDF({
         void messageAPI.error('You can only upload one file')
         return Upload.LIST_IGNORE
       }
-      
+
       const isImage =
         file.type === 'image/jpg' ||
         file.type === 'image/png' ||

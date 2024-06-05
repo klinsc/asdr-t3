@@ -66,7 +66,7 @@ export default function PredictJPEG({
     try {
       setIsLoading(true)
       const formData = new FormData()
-      formData.append('files[]', imageFile as RcFile)
+      formData.append('image', imageFile as RcFile)
       // You can use any AJAX library you like
       const response = await fetch(
         `${serverGetSelected?.data?.url}predict?drawingTypeId=${drawingTypeId}`,
