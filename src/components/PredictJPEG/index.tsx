@@ -14,6 +14,7 @@ import { api } from '~/utils/api'
 
 interface PredictJPEGProps {
   imageFile: File | null
+  fileName: string
   setLineTypes: (lineTypes: LineType[]) => void
   setDrawingComponents: (drawingComponents: BoundingBox[]) => void
   setFoundComponents: (foundComponents: BoundingBox[]) => void
@@ -32,6 +33,7 @@ interface PredictJPEGProps {
 
 export default function PredictJPEG({
   imageFile,
+  fileName,
   // setLineTypes,
   setDrawingComponents,
   setFoundComponents,
@@ -69,7 +71,7 @@ export default function PredictJPEG({
       formData.append('image', imageFile as RcFile)
       // You can use any AJAX library you like
       const response = await fetch(
-        `${serverGetSelected?.data?.url}predict?drawingTypeId=${drawingTypeId}`,
+        `${serverGetSelected?.data?.url}predict?drawingTypeId=${drawingTypeId}&fileName=${fileName}`,
         {
           method: 'POST',
           headers: {

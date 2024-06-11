@@ -14,6 +14,7 @@ import { api } from '~/utils/api'
 interface UploadPDFProps {
   imageFile: File | null
   setImageFile: (imageFile: File | null) => void
+  setFileName: (fileName: string) => void
   next: () => void
   isLoading: boolean
   setIsLoading: (isLoading: boolean) => void
@@ -22,6 +23,7 @@ interface UploadPDFProps {
 export default function UploadPDF({
   imageFile,
   setImageFile,
+  setFileName,
   next,
   isLoading,
   setIsLoading,
@@ -41,6 +43,7 @@ export default function UploadPDF({
       const formData = new FormData()
       fileList.forEach((file) => {
         formData.append('image', file as RcFile)
+        setFileName(file.name)
       })
       setIsLoading(true)
       // You can use any AJAX library you like
