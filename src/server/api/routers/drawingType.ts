@@ -175,6 +175,7 @@ export const drawingTypeRouter = createTRPCRouter({
               componentId: lineTypeComponent.componentId,
               index: lineTypeComponent.index,
               count: lineTypeComponent.count,
+              componentType: lineTypeComponent.componentType,
             },
           })
         }),
@@ -276,6 +277,7 @@ export const drawingTypeRouter = createTRPCRouter({
                   componentId: component.id,
                   count: component.count,
                   index,
+                  componentType: 'optional',
                 },
               })
             }),

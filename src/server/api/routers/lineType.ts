@@ -361,6 +361,7 @@ export const lineTypeRouter = createTRPCRouter({
         data: lineTypeComponents.map((lineTypeComponent) => ({
           lineTypeId: newLineType.id,
           componentId: lineTypeComponent.componentId,
+          componentType: lineTypeComponent.componentType,
           index: lineTypeComponent.index,
           count: lineTypeComponent.count,
         })),
