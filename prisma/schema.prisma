@@ -141,7 +141,7 @@ model LineTypeComponent {
   id            String        @id @default(cuid())
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  componentType ComponentType @default(mandatory)
+  componentType ComponentType @default(optional)
   count         Int           @default(1)
   lineTypeId    String
   componentId   String
