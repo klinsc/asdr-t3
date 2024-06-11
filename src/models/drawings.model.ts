@@ -49,3 +49,10 @@ export interface Hull {
   points: Point[]
   clusterLineTypeName: string
 }
+
+export interface FoundComponentHull {
+  key: string
+  foundLineTypeId: string
+  points: Point[]
+  foundLineTypeName: string
+}
