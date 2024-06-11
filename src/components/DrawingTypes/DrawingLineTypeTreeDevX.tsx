@@ -1315,7 +1315,7 @@ const DrawingLineTypeTreeDevX = ({
                               value={componentType as string}>
                               {
                                 // import componentType enum
-                                Object.values(ComponentType).map(
+                                Object.values(ComponentTypeClient).map(
                                   (componentType) => (
                                     <Radio
                                       key={componentType}
