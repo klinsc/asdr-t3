@@ -41,6 +41,7 @@ export default function Home() {
 
   // hooks
   const [imageFile, setImageFile] = useState<File | null>(null)
+  const [fileName, setFileName] = useState<string>('')
   const [lineTypes, setLineTypes] = useState<LineType[]>([])
   const [drawingComponents, setDrawingComponents] = useState<BoundingBox[]>([])
   const [foundComponents, setFoundComponents] = useState<BoundingBox[]>([])
@@ -169,6 +170,7 @@ export default function Home() {
               <UploadPDF
                 imageFile={imageFile}
                 setImageFile={setImageFile}
+                setFileName={setFileName}
                 next={next}
                 isLoading={isLoading}
                 setIsLoading={setIsLoading}
@@ -224,6 +226,7 @@ export default function Home() {
               }}>
               <PredictJPEG
                 imageFile={imageFile}
+                fileName={fileName}
                 setLineTypes={setLineTypes}
                 setDrawingComponents={setDrawingComponents}
                 setFoundComponents={setFoundComponents}

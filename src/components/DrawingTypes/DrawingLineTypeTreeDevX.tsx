@@ -1059,13 +1059,15 @@ const DrawingLineTypeTreeDevX = ({
                         value={componentType as string}>
                         {
                           // import componentType enum
-                          Object.values(ComponentType).map((componentType) => (
-                            <Radio key={componentType} value={componentType}>
-                              {/* ComponentType with first letter is a capital */}
-                              {componentType?.[0]?.toUpperCase() +
-                                componentType.slice(1)}
-                            </Radio>
-                          ))
+                          Object.values(ComponentTypeClient).map(
+                            (componentType) => (
+                              <Radio key={componentType} value={componentType}>
+                                {/* ComponentType with first letter is a capital */}
+                                {componentType?.[0]?.toUpperCase() +
+                                  componentType.slice(1)}
+                              </Radio>
+                            ),
+                          )
                         }
                       </Radio.Group>
                     </Col>
