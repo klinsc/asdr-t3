@@ -306,6 +306,9 @@ PredictionImageProps) {
   const router = useRouter()
   const { creating, display, colorby, showError } = router.query
 
+  // session
+  const { data: session } = useSession()
+
   const [messageAPI, contextHolder] = message.useMessage()
 
   // states
@@ -805,116 +808,119 @@ PredictionImageProps) {
                       </Button>
                     </Col>
 
-                    <Col span={24}>
-                      <Segmented
-                        style={{
-                          pointerEvents: 'auto',
-                        }}
-                        size="small"
-                        defaultValue="Found"
-                        options={[
-                          {
-                            label: 'Found',
-                            value: 'Found',
-                            icon:
-                              display === 'found' ? (
-                                <FilterOutlined />
-                              ) : undefined,
-                          },
-
-                          {
-                            value: 'Remaining',
-                            label: 'Remaining',
-                            icon:
-                              display === 'remaining' ? (
-                                <FilterOutlined />
-                              ) : undefined,
-                          },
-                          {
-                            value: 'All',
-                            label: 'All',
-                            icon:
-                              display === 'all' ? (
-                                <FilterOutlined />
-                              ) : undefined,
-                          },
-                        ]}
-                        onChange={(value) => {
-                          const valueString = value
-                            .toString()
-                            .toLocaleLowerCase()
-                          void router.push(
+                    {session && (
+                      <Col span={24}>
+                        <Segmented
+                          style={{
+                            pointerEvents: 'auto',
+                          }}
+                          size="small"
+                          defaultValue="Found"
+                          options={[
                             {
-                              pathname: router.pathname,
-                              query: {
-                                ...router.query,
-                                display: valueString,
+                              label: 'Found',
+                              value: 'Found',
+                              icon:
+                                display === 'found' ? (
+                                  <FilterOutlined />
+                                ) : undefined,
+                            },
+
+                            {
+                              value: 'Remaining',
+                              label: 'Remaining',
+                              icon:
+                                display === 'remaining' ? (
+                                  <FilterOutlined />
+                                ) : undefined,
+                            },
+                            {
+                              value: 'All',
+                              label: 'All',
+                              icon:
+                                display === 'all' ? (
+                                  <FilterOutlined />
+                                ) : undefined,
+                            },
+                          ]}
+                          onChange={(value) => {
+                            const valueString = value
+                              .toString()
+                              .toLocaleLowerCase()
+                            void router.push(
+                              {
+                                pathname: router.pathname,
+                                query: {
+                                  ...router.query,
+                                  display: valueString,
+                                },
                               },
-                            },
-                            undefined,
-                            {
-                              scroll: false,
-                            },
-                          )
-                        }}
-                      />
-                    </Col>
-
+                              undefined,
+                              {
+                                scroll: false,
+                              },
+                            )
+                          }}
+                        />
+                      </Col>
+                    )}
                     {/* Color by class or display*/}
-                    <Col span={24}>
-                      <Segmented
-                        style={{
-                          pointerEvents: 'auto',
-                        }}
-                        size="small"
-                        defaultValue="Class"
-                        // options={['Class', 'Display']}
-                        options={[
-                          {
-                            label: 'Class',
-                            value: 'Class',
-                            icon:
-                              colorby === 'class' ? (
-                                <BgColorsOutlined />
-                              ) : undefined,
-                          },
-                          {
-                            value: 'Display',
-                            label: 'Display',
-                            icon:
-                              colorby === 'display' ? (
-                                <BgColorsOutlined />
-                              ) : undefined,
-                          },
-                          {
-                            value: 'Cluster',
-                            label: 'Cluster',
-                            icon:
-                              colorby === 'cluster' ? (
-                                <BgColorsOutlined />
-                              ) : undefined,
-                          },
-                        ]}
-                        onChange={(value) => {
-                          const valueString = value
-                            .toString()
-                            .toLocaleLowerCase()
-                          void router.push(
+                    {session && (
+                      <Col span={24}>
+                        <Segmented
+                          style={{
+                            pointerEvents: 'auto',
+                          }}
+                          size="small"
+                          defaultValue="Class"
+                          // options={['Class', 'Display']}
+                          options={[
                             {
-                              pathname: router.pathname,
-                              query: {
-                                ...router.query,
-                                colorby: valueString,
+                              label: 'Class',
+                              value: 'Class',
+                              icon:
+                                colorby === 'class' ? (
+                                  <BgColorsOutlined />
+                                ) : undefined,
+                            },
+                            {
+                              value: 'Display',
+                              label: 'Display',
+                              icon:
+                                colorby === 'display' ? (
+                                  <BgColorsOutlined />
+                                ) : undefined,
+                            },
+                            {
+                              value: 'Cluster',
+                              label: 'Cluster',
+                              icon:
+                                colorby === 'cluster' ? (
+                                  <BgColorsOutlined />
+                                ) : undefined,
+                            },
+                          ]}
+                          onChange={(value) => {
+                            const valueString = value
+                              .toString()
+                              .toLocaleLowerCase()
+                            void router.push(
+                              {
+                                pathname: router.pathname,
+                                query: {
+                                  ...router.query,
+                                  colorby: valueString,
+                                },
                               },
-                            },
-                            undefined,
-                            {
-                              scroll: false,
-                            },
-                          )
-                        }}
-                      />
-                    </Col>
+                              undefined,
+                              {
+                                scroll: false,
+                              },
+                            )
+                          }}
+                        />
+                      </Col>
+                    )}
 
                     {/* Show possible missing areas */}
                     <Col span={24}>
