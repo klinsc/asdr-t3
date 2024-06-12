@@ -1,4 +1,5 @@
 import { Collapse, Typography, theme, type CollapseProps } from 'antd'
+import { useSession } from 'next-auth/react'
 import { useMemo } from 'react'
 import { type BoundingBox } from '~/models/drawings.model'
 
@@ -9,11 +10,15 @@ interface MissingComponentsProps {
 export default function MissingComponents(props: MissingComponentsProps) {
   const { token } = theme.useToken()
 
+  // session
+  const { data: session } = useSession()
+
   const content = useMemo(() => {
     // group by component name
     const groupedComponents = [] as {
       name: string
       count: number
+      lineTypeName: string
     }[]
     // debugger
     for (const component of props.missingComponents) {
@@ -24,6 +29,7 @@ export default function MissingComponents(props: MissingComponentsProps) {
         groupedComponents.push({
           name: component.name,
           count: 1,
+          lineTypeName: component.lineTypeName,
         })
       } else {
         const component = groupedComponents[index]
@@ -42,12 +48,14 @@ export default function MissingComponents(props: MissingComponentsProps) {
               textAlign: 'left',
               marginBottom: 0,
             }}>
-            {`${component.name} x${component.count}`}
+            {session
+              ? `${component.name} x${component.count}`
+              : `${component.name} x${component.count} (in ${component.lineTypeName})`}
           </Typography.Paragraph>
         ))}
       </>
     )
-  }, [props.missingComponents])
+  }, [props.missingComponents, session])
 
   const items: CollapseProps['items'] = [
     {
