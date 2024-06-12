@@ -14,6 +14,8 @@ import {
   Input,
   InputNumber,
   Modal,
+  Radio,
+  type RadioChangeEvent,
   Row,
   Select,
   Space,
@@ -24,6 +26,7 @@ import {
   type InputRef,
 } from 'antd'
 import type { DataNode, TreeProps } from 'antd/es/tree'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { type NodeMouseEventParams } from 'rc-tree/lib/contextTypes'
 import { useRef, useState } from 'react'
@@ -38,10 +41,10 @@ const editTextNode = css`
   }
 `
 
-// enum ComponentType {
-//   MANDATORY = 'mandatory',
-//   OPTIONAL = 'optional',
-// }
+enum ComponentTypeClient {
+  MANDATORY = 'mandatory',
+  OPTIONAL = 'optional',
+}
 
 interface DrawingLineTypeTreeProps {
   drawingTypeId: string
@@ -63,6 +66,9 @@ const DrawingLineTypeTreeDevX = ({
     count,
     editingComponent,
   } = router.query
+
+  // session
+  const { data: session } = useSession()
 
   // states: infoOnMouseEnter
   const [infoOnMouseEnter, setInfoOnMouseEnter] =
@@ -1038,39 +1044,45 @@ const DrawingLineTypeTreeDevX = ({
                       </Space.Compact>
                     </Col>
 
-                    <Col span={24}>
-                      <Radio.Group
-                        size="small"
-                        onChange={(e: RadioChangeEvent) => {
-                          const componentType = String(e.target.value as string)
+                    {session && (
+                      <Col span={24}>
+                        <Radio.Group
+                          size="small"
+                          onChange={(e: RadioChangeEvent) => {
+                            const componentType = String(
+                              e.target.value as string,
+                            )
 
-                          void router.push(
-                            {
-                              pathname: '/drawingtypes',
-                              query: {
-                                ...router.query,
-                                componentType,
+                            void router.push(
+                              {
+                                pathname: '/drawingtypes',
+                                query: {
+                                  ...router.query,
+                                  componentType,
+                                },
                               },
-                            },
-                            undefined,
-                            { scroll: false },
-                          )
-                        }}
-                        value={componentType as string}>
-                        {
-                          // import componentType enum
-                          Object.values(ComponentTypeClient).map(
-                            (componentType) => (
-                              <Radio key={componentType} value={componentType}>
-                                {/* ComponentType with first letter is a capital */}
-                                {componentType?.[0]?.toUpperCase() +
-                                  componentType.slice(1)}
-                              </Radio>
-                            ),
-                          )
-                        }
-                      </Radio.Group>
-                    </Col>
+                              undefined,
+                              { scroll: false },
+                            )
+                          }}
+                          value={componentType as string}>
+                          {
+                            // import componentType enum
+                            Object.values(ComponentTypeClient).map(
+                              (componentType) => (
+                                <Radio
+                                  key={componentType}
+                                  value={componentType}>
+                                  {/* ComponentType with first letter is a capital */}
+                                  {componentType?.[0]?.toUpperCase() +
+                                    componentType.slice(1)}
+                                </Radio>
+                              ),
+                            )
+                          }
+                        </Radio.Group>
+                      </Col>
+                    )}
 
                     <Col span={24}>
                       <Space size="small">
@@ -1390,6 +1402,17 @@ const DrawingLineTypeTreeDevX = ({
                       <>
                         <Typography.Text
                           className={cx(editTextNode)}
+                          style={
+                            session
+                              ? {
+                                  fontWeight:
+                                    lineTypeComponent.componentType ===
+                                    ComponentTypeClient.MANDATORY
+                                      ? 'bold'
+                                      : '',
+                                }
+                              : {}
+                          }
                           onClick={() => {
                             void router.push(
                               {
@@ -1410,7 +1433,14 @@ const DrawingLineTypeTreeDevX = ({
                               { scroll: false },
                             )
                           }}>
-                          {`${lineTypeComponent.Component.name} x${lineTypeComponent.count}`}
+                          {`${
+                            lineTypeComponent.componentType ===
+                              ComponentTypeClient.MANDATORY && session
+                              ? '*'
+                              : ''
+                          }${lineTypeComponent.Component.name} x${
+                            lineTypeComponent.count
+                          }`}
                         </Typography.Text>
 
                         {/* onHover Buttons */}
