@@ -7,6 +7,7 @@ import { useEffect } from 'react'
 import type {
   BoundingBox,
   DrawingComponent,
+  FoundComponentHull,
   Hull,
   LineType,
 } from '~/models/drawings.model'
@@ -22,6 +23,7 @@ interface PredictJPEGProps {
   setRemainingComponents: (remainingComponents: BoundingBox[]) => void
   setClusteredFoundComponents: (clusteredFoundComponents: BoundingBox[]) => void
   setHulls: (hulls: Hull[]) => void
+  setFoundComponentHulls: (foundComponentHulls: FoundComponentHull[]) => void
   isLoading: boolean
   setIsLoading: (isLoading: boolean) => void
   setCsvUrl: (csvUrl: string) => void
@@ -41,6 +43,7 @@ export default function PredictJPEG({
   setRemainingComponents,
   setHulls,
   setClusteredFoundComponents,
+  setFoundComponentHulls,
   isLoading,
   setIsLoading,
   // setCsvUrl,
@@ -92,6 +95,7 @@ export default function PredictJPEG({
         found_components: string
         hulls: string
         clustered_found_components: string
+        found_component_hulls: string
       }
       if (response.status !== 200) throw new Error('Prediction failed!')
       // debugger
@@ -110,10 +114,13 @@ export default function PredictJPEG({
         json.predicted_components,
       ) as BoundingBox[]
       const foundComponents = JSON.parse(json.found_components) as BoundingBox[]
-      const hulls = JSON.parse(json.hulls) as Hull[]
-      const clusteredFoundComponents = JSON.parse(
-        json.clustered_found_components,
-      ) as BoundingBox[]
+      // const hulls = JSON.parse(json.hulls) as Hull[]
+      // const clusteredFoundComponents = JSON.parse(
+      //   json.clustered_found_components,
+      // ) as BoundingBox[]
+      const foundComponentHulls = JSON.parse(
+        json.found_component_hulls,
+      ) as FoundComponentHull[]
 
       console.log('predicted_components')
       console.table(predicted_components)
@@ -127,11 +134,14 @@ export default function PredictJPEG({
       console.log('missing_components')
       console.table(missing_components)
 
-      console.log('hulls')
-      console.table(hulls)
+      // console.log('hulls')
+      // console.table(hulls)
 
-      console.log('clustered_found_components')
-      console.table(clusteredFoundComponents)
+      // console.log('clustered_found_components')
+      // console.table(clusteredFoundComponents)
+
+      console.log('found_hulls')
+      console.table(foundComponentHulls)
 
       // debugger
       // setLineTypes(lineTypes)
@@ -140,8 +150,9 @@ export default function PredictJPEG({
       setMissingComponents(missing_components)
       setRemainingComponents(remainingComponents)
       setPredictedComponents(predictedComponents)
-      setHulls(hulls)
-      setClusteredFoundComponents(clusteredFoundComponents)
+      // setHulls(hulls)
+      // setClusteredFoundComponents(clusteredFoundComponents)
+      setFoundComponentHulls(foundComponentHulls)
 
       // temporary: disabled csv and json
 
