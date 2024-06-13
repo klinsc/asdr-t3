@@ -74,7 +74,11 @@ export default function PredictJPEG({
       formData.append('image', imageFile as RcFile)
       // You can use any AJAX library you like
       const response = await fetch(
-        `${serverGetSelected?.data?.url}predict?drawingTypeId=${drawingTypeId}&fileName=${fileName}`,
+        `${
+          serverGetSelected?.data?.url
+        }predict?drawingTypeId=${drawingTypeId}&fileName=${
+          fileName ? fileName : imageFile?.name
+        }`,
         {
           method: 'POST',
           headers: {
