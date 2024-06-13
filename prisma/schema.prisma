@@ -106,6 +106,7 @@ model DrawingType {
   description String?
   Drawing     Drawing[]
   LineType    LineType[]
+  display     Boolean    @default(false)
 }
 
 model LineType {

@@ -4,6 +4,9 @@ import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
 export const drawingTypeRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.drawingType.findMany({
+      where: {
+        display: true,
+      },
       orderBy: {
         createdAt: 'asc',
       },
