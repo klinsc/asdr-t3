@@ -119,6 +119,12 @@ model LineType {
   drawingTypeId     String
   DrawingType       DrawingType         @relation(fields: [drawingTypeId], references: [id])
   LineTypeComponent LineTypeComponent[]
+
+  // component type mandatory will have the following properties
+  marginLeft   Float?
+  marginTop    Float?
+  marginRight  Float?
+  marginBottom Float?
 }
 
 model Component {
