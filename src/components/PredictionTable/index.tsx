@@ -1,4 +1,4 @@
-import { Checkbox, Col, Row, Space } from 'antd'
+import { Button, Checkbox, Col, Row, Space } from 'antd'
 import { useEffect, useState } from 'react'
 import type {
   BoundingBox,
@@ -13,6 +13,7 @@ import RemainingComponentTable from './RemainingComponentTable'
 interface PredictionTableProps {
   lineTypes: LineType[]
   drawingComponents: BoundingBox[]
+  foundComponents: BoundingBox[]
   missingComponents: BoundingBox[]
   remainingComponents: BoundingBox[]
   csvUrl: string
@@ -24,14 +25,14 @@ const checkBoxes = [
     name: 'Drawing Components',
     index: 0,
   },
-  {
-    name: 'Line Types',
-    index: 1,
-  },
-  {
-    name: 'Remaining Components',
-    index: 2,
-  },
+  // {
+  //   name: 'Line Types',
+  //   index: 1,
+  // },
+  // {
+  //   name: 'Remaining Components',
+  //   index: 2,
+  // },
   {
     name: 'Missing Components',
     index: 3,
@@ -43,6 +44,7 @@ type Hiddens = [boolean, boolean, boolean, boolean]
 const PredictionTable = ({
   lineTypes,
   drawingComponents,
+  foundComponents,
   missingComponents,
   remainingComponents,
   csvUrl,
@@ -73,17 +75,48 @@ const PredictionTable = ({
 
   return (
     <>
-      {/* <Space style={{ width: '100%', justifyContent: 'center' }}>
-        {csvUrl && (
+      <Space style={{ width: '100%', justifyContent: 'center' }}>
+        {foundComponents && foundComponents?.length > 0 && (
           <Button
             type="link"
-            href={csvUrl}
-            target="_blank"
-            rel="noopener noreferrer">
+            // href={csvUrl}
+            // target="_blank"
+            // rel="noopener noreferrer"
+            onClick={() => {
+              const link = document.createElement('a')
+              link.href = csvUrl
+
+              // create a csv of the found components
+              // const csv = foundComponents
+              //   .map((component) => {
+              //     return `${component.name},${component.xmin},${component.ymin},${component.xmax},${component.ymax},${component.confidence}`
+              //   })
+              //   .join('\n')
+
+              // create a csv of the found components with headers name, xmin, ymin, xmax, ymax, confidence
+              const csv = [
+                ['name', 'xmin', 'ymin', 'xmax', 'ymax', 'confidence'],
+                ...foundComponents.map((component) => [
+                  component.name,
+                  component.xmin,
+                  component.ymin,
+                  component.xmax,
+                  component.ymax,
+                  component.confidence,
+                ]),
+              ]
+                .map((row) => row.join(','))
+                .join('\n')
+
+              const blob = new Blob([csv], { type: 'text/csv' })
+              link.href = URL.createObjectURL(blob)
+              link.download = 'found_components.csv'
+              link.click()
+            }}>
             Download CSV
           </Button>
         )}
-        {jsonUrl && (
+        {/* {jsonUrl && (
           <Button
             type="link"
             href={jsonUrl}
@@ -91,8 +124,8 @@ const PredictionTable = ({
             rel="noopener noreferrer">
             Download JSON
           </Button>
-        )}
-      </Space> */}
+        )} */}
+      </Space>
 
       <Row justify="center" align="top" gutter={[16, 16]}>
         <Col span={24}>
@@ -129,12 +162,12 @@ const PredictionTable = ({
           }}>
           <RemainingComponentTable remainingComponents={remainingComponents} />
         </Col> */}
-        {/* <Col
+        <Col
           style={{
             display: hidden[3] ? 'block' : 'none',
           }}>
           <MissingComponentTable missingComponents={missingComponents} />
-        </Col> */}
+        </Col>
       </Row>
     </>
   )
