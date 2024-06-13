@@ -16,6 +16,7 @@ import type Konva from 'konva'
 import { useRouter } from 'next/router'
 import {
   Fragment,
+  use,
   useCallback,
   useEffect,
   useMemo,
@@ -32,11 +33,16 @@ import {
   Text,
 } from 'react-konva'
 import useImage from 'use-image'
-import { type BoundingBox, type Hull } from '~/models/drawings.model'
+import {
+  type FoundComponentHull,
+  type BoundingBox,
+  type Hull,
+} from '~/models/drawings.model'
 import { api } from '~/utils/api'
 import { evaluate_cmap } from '~/utils/js-colormaps'
 import DrawingComponentTable from '../PredictionTable/DrawingComponentTable'
 import MissingComponents from './MissingComponents'
+import { useSession } from 'next-auth/react'
 
 export interface RectangleProps {
   key: string
@@ -51,6 +57,7 @@ export interface RectangleProps {
   strokeWidth: number
   visible: boolean
   clusterLineTypeId: string
+  lineTypeName: string
 }
 
 const Rectangle = ({
@@ -259,20 +266,23 @@ function touchEnabled() {
   )
 }
 
-function Hulls(props: { points: { x: number; y: number }[] }) {
+function Hulls(props: { points: [] }) {
+  // Convert points array to the format required by Konva Line component
+  const flattenedPoints = props.points.flatMap((point) => [point[0], point[1]])
+
   return (
     <>
       {/* Use polygon instead */}
       <Line
-        points={props.points.flatMap((point) => [point.x, point.y])}
+        points={flattenedPoints}
         stroke="red"
-        strokeWidth={5}
+        strokeWidth={100}
         fill="red"
-        opacity={0.5}
-        // dash={[10, 5]}
+        opacity={0.3}
         lineCap="round"
         lineJoin="round"
         closed
+        tension={0.5} // Add tension to create smooth curves
       />
     </>
   )
@@ -288,6 +298,7 @@ interface PredictionImageProps {
   missingComponents: BoundingBox[]
   hulls: Hull[]
   clusteredFoundComponents: BoundingBox[]
+  foundComponentHulls: FoundComponentHull[]
 }
 
 export default function PredictionImage({
@@ -300,6 +311,7 @@ export default function PredictionImage({
   missingComponents,
   hulls,
   clusteredFoundComponents,
+  foundComponentHulls,
 }: // predictedImageColRef
 PredictionImageProps) {
   // router
@@ -399,7 +411,7 @@ PredictionImageProps) {
   }
 
   // update rectangles when jsonResult changes
-  const rectangles = useMemo(() => {
+  const rectangles: RectangleProps[] = useMemo(() => {
     // with opacity .5 in green == 80 code
     const foundColor = '#73d13d'
     // with opacity .5 in yellow
@@ -444,6 +456,7 @@ PredictionImageProps) {
             name: result.name,
             visible: true,
             clusterLineTypeId: result.clusterLineTypeId,
+            lineTypeName: '',
           }
         }
 
@@ -462,6 +475,7 @@ PredictionImageProps) {
           name: result.name,
           visible: true,
           clusterLineTypeId: result.clusterLineTypeId,
+          lineTypeName: '',
         }
       })
     }
@@ -486,6 +500,7 @@ PredictionImageProps) {
           name: result.name,
           visible: true,
           clusterLineTypeId: result.clusterLineTypeId,
+          lineTypeName: '',
         }
       })
     }
@@ -508,6 +523,7 @@ PredictionImageProps) {
           name: result.name,
           visible: true,
           clusterLineTypeId: result.clusterLineTypeId,
+          lineTypeName: '',
         }
       })
     }
@@ -531,6 +547,7 @@ PredictionImageProps) {
         name: result.name,
         visible: true,
         clusterLineTypeId: result.clusterLineTypeId,
+        lineTypeName: result.lineTypeName,
       }
     })
   }, [
@@ -746,7 +763,7 @@ PredictionImageProps) {
                   })}
 
                   {/* hulls */}
-                  {hulls.map((hull, i) => {
+                  {/* {hulls.map((hull, i) => {
                     if (
                       missingComponents.find(
                         (component) =>
@@ -757,8 +774,20 @@ PredictionImageProps) {
                       return <Hulls key={i} points={hull.points} />
 
                     return null
+                  })} */}
+                  {foundComponentHulls.map((hull, i) => {
+                    if (
+                      missingComponents.find(
+                        (component) =>
+                          component.lineTypeName.split('-')[0] ===
+                          hull.foundLineTypeName.split('-')[0],
+                      )
+                    ) {
+                      return <Hulls key={i} points={hull.points as []} />
+                    }
+
+                    return null
                   })}
-                  {/* <Hulls points={hulls?.[3]?.points ?? []} /> */}
                 </Layer>
               </Stage>
             </Col>
@@ -923,7 +952,7 @@ PredictionImageProps) {
                     )}
 
                     {/* Show possible missing areas */}
-                    <Col span={24}>
+                    {/* <Col span={24}>
                       <Checkbox
                         prefixCls="show-error-checkbox"
                         style={{
@@ -951,7 +980,7 @@ PredictionImageProps) {
                         }}>
                         Show possible missing areas
                       </Checkbox>
-                    </Col>
+                    </Col> */}
                   </Row>
                 </Col>
 

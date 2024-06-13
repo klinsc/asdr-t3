@@ -24,13 +24,14 @@ import PredictJPEG from '~/components/PredictJPEG'
 import PredictionImage from '~/components/PredictionImage'
 import PredictionTable from '~/components/PredictionTable'
 import UploadPDF from '~/components/UploadPDF'
-import type {
-  BoundingBox,
-  DrawingComponent,
-  Hull,
-  LineType,
-  MissingComponent,
-  RemainingComponent,
+import {
+  type FoundComponentHull,
+  type BoundingBox,
+  type DrawingComponent,
+  type Hull,
+  type LineType,
+  type MissingComponent,
+  type RemainingComponent,
 } from '~/models/drawings.model'
 import { api } from '~/utils/api'
 
@@ -60,6 +61,9 @@ export default function Home() {
   const [hulls, setHulls] = useState<Hull[]>([])
   const [clusteredFoundComponents, setClusteredFoundComponents] = useState<
     BoundingBox[]
+  >([])
+  const [foundComponentHulls, setFoundComponentHulls] = useState<
+    FoundComponentHull[]
   >([])
   // const predictedImageColRef = useRef<HTMLDivElement>(null)
 
@@ -234,6 +238,7 @@ export default function Home() {
                 setRemainingComponents={setRemainingComponents}
                 setClusteredFoundComponents={setClusteredFoundComponents}
                 setHulls={setHulls}
+                setFoundComponentHulls={setFoundComponentHulls}
                 isLoading={isLoading}
                 setIsLoading={setIsLoading}
                 setCsvUrl={setCsvUrl}
@@ -265,10 +270,12 @@ export default function Home() {
                 remainingComponents={remainingComponents}
                 hulls={hulls}
                 clusteredFoundComponents={clusteredFoundComponents}
+                foundComponentHulls={foundComponentHulls}
                 predictionTable={
                   <PredictionTable
                     lineTypes={lineTypes}
                     drawingComponents={drawingComponents}
+                    foundComponents={foundComponents}
                     remainingComponents={remainingComponents}
                     missingComponents={missingComponents}
                     csvUrl={csvUrl}
@@ -301,6 +308,7 @@ export default function Home() {
       csvUrl,
       jsonUrl,
       router,
+      foundComponentHulls,
     ],
   )
   const items = steps.map((item) => ({ key: item.title, title: item.title }))
