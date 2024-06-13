@@ -10,8 +10,8 @@ export interface DrawingComponent {
 }
 
 export interface MissingComponent {
+  id: string
   name: string
-  line_type: string
   count: number
 }
 
