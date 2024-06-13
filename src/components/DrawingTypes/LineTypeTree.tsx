@@ -247,7 +247,7 @@ const LineTypeTree = () => {
 
           {/* Select a component type */}
           <Select
-            defaultValue="mandatory"
+            defaultValue="optional"
             options={[
               { value: 'mandatory', label: 'Mandatory' },
               { value: 'optional', label: 'Optional' },
