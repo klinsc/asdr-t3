@@ -49,8 +49,8 @@ export default function MissingComponents(props: MissingComponentsProps) {
               marginBottom: 0,
             }}>
             {session
-              ? `${component.name} x${component.count}`
-              : `${component.name} x${component.count} (in ${component.lineTypeName})`}
+              ? `${component.name} x${component.count} (in ${component.lineTypeName})`
+              : `${component.name} x${component.count}`}
           </Typography.Paragraph>
         ))}
       </>
